@@ -37,8 +37,6 @@ build:
   before_script:
     - echo $DOCKER_REGISTRY_PASS | docker login --username $DOCKER_REGISTRY_USER --password-stdin
   script:
-    - whoami
-    - docker ps -a
     - docker build -t $IMAGE_NAME:$IMAGE_TAG .
     - docker push $IMAGE_NAME:$IMAGE_TAG
   tags:
@@ -48,6 +46,7 @@ deploy:
   stage: deploy
   before_script:
   script:
+    - ls ~/.ssh
     - ssh elice@34.64.229.17 "cat /etc/os-release"
     - cat /etc/os-release
   tags:
