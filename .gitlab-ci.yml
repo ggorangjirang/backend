@@ -16,6 +16,9 @@ compile:
     - gradle build --exclude-task test
   tags:
     - compile
+  rules:
+    - if: $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "dev"
+    - if: $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == $CI_DEFAULT_BRANCH
 
 test:
   stage: test
@@ -25,6 +28,9 @@ test:
     - gradle build test
   tags:
     - test
+  rules:
+    - if: $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "dev"
+    - if: $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == $CI_DEFAULT_BRANCH
 
 build:
   stage: build
@@ -40,6 +46,8 @@ build:
     - docker push $IMAGE_NAME:$IMAGE_TAG
   tags:
     - build
+  rules:
+    - if: $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == $CI_DEFAULT_BRANCH
 
 deploy:
   stage: deploy
@@ -56,3 +64,6 @@ deploy:
         docker run -d -p 8080:8080 --name app $IMAGE_NAME:$IMAGE_TAG"
   tags:
     - deploy
+  rules:
+    - if: $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == $CI_DEFAULT_BRANCH
+
