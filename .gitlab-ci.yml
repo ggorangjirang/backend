@@ -37,8 +37,9 @@ build:
   before_script:
     - echo $DOCKER_REGISTRY_PASS | docker login --username $DOCKER_REGISTRY_USER --password-stdin
   script:
-    - sudo docker build -t $IMAGE_NAME:$IMAGE_TAG .
-    - sudo docker push $IMAGE_NAME:$IMAGE_TAG
+    - docker ps -a
+    - docker build -t $IMAGE_NAME:$IMAGE_TAG .
+    - docker push $IMAGE_NAME:$IMAGE_TAG
   tags:
     - build
 
