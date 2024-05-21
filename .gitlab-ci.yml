@@ -1,6 +1,6 @@
 variables:
   IMAGE_NAME: junyhehe/ggorangjirang
-  IMAGE_TAG: 1.0
+  IMAGE_TAG: "1.0"
 
 stages:
   - compile
