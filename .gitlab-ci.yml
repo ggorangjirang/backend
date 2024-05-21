@@ -20,6 +20,7 @@ compile:
     - if: $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "dev"
     - if: $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == $CI_DEFAULT_BRANCH
 
+
 test:
   stage: test
   before_script: 
@@ -32,6 +33,7 @@ test:
   rules:
     - if: $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "dev"
     - if: $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == $CI_DEFAULT_BRANCH
+
 
 build:
   stage: build
@@ -49,6 +51,10 @@ build:
     - build
   rules:
     - if: $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == $CI_DEFAULT_BRANCH
+<<<<<<< HEAD
+=======
+
+>>>>>>> f899457ea12c8dbb17836025c255d88565128672
 
 deploy:
   stage: deploy
@@ -57,7 +63,16 @@ deploy:
     - mkdir -p ~/.ssh
     - ssh-keyscan -H 34.64.229.17 >> ~/.ssh/known_hosts
   script:
+<<<<<<< HEAD
     - ssh -i $SSH_KEY elice@34.64.229.17 "echo $DOCKER_REGISTRY_PASS | docker login --username $DOCKER_REGISTRY_USER --password-stdin && docker rm app -f || true && docker rmi $IMAGE_NAME:$IMAGE_TAG || true && docker pull $IMAGE_NAME:$IMAGE_TAG && docker run -d -p 8080:8080 --name app $IMAGE_NAME:$IMAGE_TAG"
+=======
+    - ssh -i $SSH_KEY elice@34.64.229.17 "
+      $DOCKER_REGISTRY_PASS | docker login --username $DOCKER_REGISTRY_USER --password-stdin &&
+      docker pull $IMAGE_NAME:$IMAGE_TAG &&
+      docker stop app || true &&
+      docker rm app || true &&
+      docker run -d -p 8080:8080 --name app $IMAGE_NAME:$IMAGE_TAG"
+>>>>>>> f899457ea12c8dbb17836025c255d88565128672
   tags:
     - deploy
   rules:
