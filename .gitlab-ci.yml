@@ -57,14 +57,12 @@ deploy:
     - ssh-keyscan -H 34.64.229.17 >> ~/.ssh/known_hosts
   script:
     - ssh -i $SSH_KEY elice@34.64.229.17 "
-        $DOCKER_REGISTRY_PASS | sudo docker login --username $DOCKER_REGISTRY_USER --password-stdin &&
+        $DOCKER_REGISTRY_PASS | docker login --username $DOCKER_REGISTRY_USER --password-stdin &&
         docker pull $IMAGE_NAME:$IMAGE_TAG &&
         docker stop app || true &&
         docker rm app || true &&
-        sleep 3 &&
         docker run -d -p 8080:8080 --name app $IMAGE_NAME:$IMAGE_TAG"
   tags:
     - deploy
   rules:
     - if: $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "main"
-
