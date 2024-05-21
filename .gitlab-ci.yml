@@ -14,6 +14,8 @@ compile:
     - export PATH="/home/ubuntu/.sdkman/candidates/gradle/current/bin:$PATH"
   script:
     - gradle build --exclude-task test
+  tags:
+    - compile
 
 test:
   stage: test
@@ -22,6 +24,8 @@ test:
     - export PATH="/home/ubuntu/.sdkman/candidates/gradle/current/bin:$PATH"
   script:
     - gradle build test
+  tags:
+    - test
 
 build:
   stage: build
@@ -35,6 +39,8 @@ build:
   script:
     - docker build -t $IMAGE_NAME:$IMAGE_TAG .
     - docker push $IMAGE_NAME:$IMAGE_TAG
+  tags:
+    - build
 
 deploy:
   stage: deploy
@@ -42,3 +48,5 @@ deploy:
   script:
     - ssh elice@34.64.229.17 "cat /etc/os-release"
     - cat /etc/os-release
+  tags:
+    - deploy
