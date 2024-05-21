@@ -17,7 +17,7 @@ compile:
   tags:
     - compile
   rules:
-    - if: $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "dev"
+    - if: $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "main"
     - if: $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == $CI_DEFAULT_BRANCH
 
 test:
@@ -29,7 +29,7 @@ test:
   tags:
     - test
   rules:
-    - if: $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "dev"
+    - if: $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "main"
     - if: $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == $CI_DEFAULT_BRANCH
 
 build:
@@ -47,7 +47,7 @@ build:
   tags:
     - build
   rules:
-    - if: $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == $CI_DEFAULT_BRANCH
+    - if: $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "main"
 
 deploy:
   stage: deploy
@@ -65,5 +65,7 @@ deploy:
   tags:
     - deploy
   rules:
-    - if: $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == $CI_DEFAULT_BRANCH
+    - if: $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "main"
+
+
 
