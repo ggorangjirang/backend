@@ -61,6 +61,7 @@ deploy:
         docker pull $IMAGE_NAME:$IMAGE_TAG &&
         docker stop app || true &&
         docker rm app || true &&
+        sleep 3 &&
         docker run -d -p 8080:8080 --name app $IMAGE_NAME:$IMAGE_TAG"
   tags:
     - deploy
