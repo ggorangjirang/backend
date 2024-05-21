@@ -45,8 +45,10 @@ build:
 deploy:
   stage: deploy
   before_script:
+    - chmod 400 $SSH_KEY
+    - mkdir -p ~/.ssh
+    - ssh-keyscan -H 34.64.229.17 >> ~/.ssh/known_hosts
   script:
-    - ls ~/.ssh
     - ssh elice@34.64.229.17 "cat /etc/os-release"
     - cat /etc/os-release
   tags:
