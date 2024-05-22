@@ -1,4 +1,4 @@
-package com.elice.ggorangjirang.subcategory.controller;
+package com.elice.ggorangjirang.subcategories.controller;
 
 import org.springframework.stereotype.Controller;
 

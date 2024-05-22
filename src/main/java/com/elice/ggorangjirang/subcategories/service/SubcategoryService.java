@@ -1,9 +1,9 @@
-package com.elice.ggorangjirang.subcategory.service;
+package com.elice.ggorangjirang.subcategories.service;
 
-import com.elice.ggorangjirang.subcategory.dto.AddSubcategoryRequest;
-import com.elice.ggorangjirang.subcategory.dto.UpdateSubcategoryRequest;
-import com.elice.ggorangjirang.subcategory.entity.Subcategory;
-import com.elice.ggorangjirang.subcategory.repository.SubcategoryRepository;
+import com.elice.ggorangjirang.subcategories.dto.AddSubcategoryRequest;
+import com.elice.ggorangjirang.subcategories.dto.UpdateSubcategoryRequest;
+import com.elice.ggorangjirang.subcategories.entity.Subcategory;
+import com.elice.ggorangjirang.subcategories.repository.SubcategoryRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

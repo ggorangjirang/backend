@@ -1,8 +1,8 @@
 package com.elice.ggorangjirang.products.entity;
 
-import com.elice.ggorangjirang.category.entity.Category;
+import com.elice.ggorangjirang.categories.entity.Category;
 import com.elice.ggorangjirang.reviews.entity.Review;
-import com.elice.ggorangjirang.subcategory.entity.Subcategory;
+import com.elice.ggorangjirang.subcategories.entity.Subcategory;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;

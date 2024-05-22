@@ -1,9 +1,9 @@
-package com.elice.ggorangjirang.category.service;
+package com.elice.ggorangjirang.categories.service;
 
-import com.elice.ggorangjirang.category.dto.AddCategoryRequest;
-import com.elice.ggorangjirang.category.dto.UpdateCategoryRequest;
-import com.elice.ggorangjirang.category.entity.Category;
-import com.elice.ggorangjirang.category.repository.CategoryRepository;
+import com.elice.ggorangjirang.categories.dto.AddCategoryRequest;
+import com.elice.ggorangjirang.categories.dto.UpdateCategoryRequest;
+import com.elice.ggorangjirang.categories.entity.Category;
+import com.elice.ggorangjirang.categories.repository.CategoryRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

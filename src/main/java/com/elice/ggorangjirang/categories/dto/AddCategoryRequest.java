@@ -1,6 +1,6 @@
-package com.elice.ggorangjirang.category.dto;
+package com.elice.ggorangjirang.categories.dto;
 
-import com.elice.ggorangjirang.category.entity.Category;
+import com.elice.ggorangjirang.categories.entity.Category;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

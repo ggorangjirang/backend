@@ -1,6 +1,6 @@
-package com.elice.ggorangjirang.category.repository;
+package com.elice.ggorangjirang.categories.repository;
 
-import com.elice.ggorangjirang.category.entity.Category;
+import com.elice.ggorangjirang.categories.entity.Category;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
