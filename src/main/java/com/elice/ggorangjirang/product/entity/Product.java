@@ -3,10 +3,7 @@ package com.elice.ggorangjirang.product.entity;
 import com.elice.ggorangjirang.category.entity.Category;
 import com.elice.ggorangjirang.subcategory.entity.Subcategory;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -16,6 +13,7 @@ import java.time.LocalDateTime;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
 @EntityListeners(AuditingEntityListener.class)
 public class Product {
 
@@ -39,17 +37,23 @@ public class Product {
     @Column(name = "discount_rate")
     private float discountRate;
 
-    @Column(name = "stock")
-    private int stock;
-
     @Column(name = "image_url")
     private String imageUrl;
 
+    // 상품 상세페이지 조회수
     @Column(name = "view_count")
     private int viewCount = 0;
 
+    // 판매량을 나타내는 수
     @Column(name = "order_count")
     private int orderCount = 0;
+
+    // 재고량. 주문 결제가 완료되면 판매량만큼 stock 을 깎아줘야 함
+    @Column(name = "stock")
+    private int stock;
+
+    @Column(name = "is_sold_out", nullable = false)
+    private boolean isSoldOut = (stock == 0);
 
     @Column(name = "created_at")
     @CreatedDate
@@ -79,7 +83,31 @@ public class Product {
         this.imageUrl = imageUrl;
         this.viewCount = 0;
         this.orderCount = 0;
+        this.isSoldOut = (stock == 0);
         this.category = category;
         this.subcategory = subcategory;
+    }
+
+
+    // ProductController 에서 호출하기
+    public void addViewCount() {
+        this.viewCount += 1;
+    }
+
+
+    // 결제 완료 시 quantity 만큼 판매량 증가
+    public void addOrderCount(int quantity) {
+        this.orderCount = this.orderCount + quantity;
+    }
+
+    // 결제 완료 시 quantity 만큼 재고량 감소 및 재고량 0 도달 시 품절 처리
+    public void updateStock(int quantity) {
+        this.stock = this.stock - quantity;
+        if(this.stock <= 0) {
+            this.stock = 0;
+            this.isSoldOut = true;
+        } else {
+            this.isSoldOut = false;
+        }
     }
 }
