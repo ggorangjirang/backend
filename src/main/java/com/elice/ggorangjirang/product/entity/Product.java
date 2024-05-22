@@ -1,6 +1,7 @@
 package com.elice.ggorangjirang.product.entity;
 
 import com.elice.ggorangjirang.category.entity.Category;
+import com.elice.ggorangjirang.review.entity.Review;
 import com.elice.ggorangjirang.subcategory.entity.Subcategory;
 import jakarta.persistence.*;
 import lombok.*;
@@ -9,6 +10,8 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -55,6 +58,9 @@ public class Product {
     @Column(name = "is_sold_out", nullable = false)
     private boolean isSoldOut = (stock == 0);
 
+    @Column(name = "is_deleted", nullable = false)
+    private boolean isDeleted = false;
+
     @Column(name = "created_at")
     @CreatedDate
     private LocalDateTime createdAt;
@@ -71,6 +77,9 @@ public class Product {
     @JoinColumn(name = "subcategory_id", nullable = false)
     private Subcategory subcategory;
 
+    @OneToMany(mappedBy = "product", cascade = CascadeType.REMOVE)
+    private List<Review> reviews = new ArrayList<>();
+
     @Builder
     public Product(String name, String description, int price, LocalDateTime expirationDate, float discountRate,
                    int stock, String imageUrl, Category category, Subcategory subcategory) {
@@ -86,6 +95,7 @@ public class Product {
         this.isSoldOut = (stock == 0);
         this.category = category;
         this.subcategory = subcategory;
+        this.isDeleted = false;
     }
 
 
