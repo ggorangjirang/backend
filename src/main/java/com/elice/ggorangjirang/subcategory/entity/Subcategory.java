@@ -3,6 +3,7 @@ package com.elice.ggorangjirang.subcategory.entity;
 import com.elice.ggorangjirang.category.entity.Category;
 import com.elice.ggorangjirang.product.entity.Product;
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -31,4 +32,8 @@ public class Subcategory {
         this.subcategoryName = subcategoryName;
     }
 
+    @Builder
+    public Subcategory(String subcategoryName) {
+        this.subcategoryName = subcategoryName;
+    }
 }

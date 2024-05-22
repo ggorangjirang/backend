@@ -55,6 +55,9 @@ public class Product {
     @Column(name = "is_sold_out", nullable = false)
     private boolean isSoldOut = (stock == 0);
 
+    @Column(name = "is_deleted", nullable = false)
+    private boolean isDeleted = false;
+
     @Column(name = "created_at")
     @CreatedDate
     private LocalDateTime createdAt;
@@ -86,6 +89,7 @@ public class Product {
         this.isSoldOut = (stock == 0);
         this.category = category;
         this.subcategory = subcategory;
+        this.isDeleted = false;
     }
 
 

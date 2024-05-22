@@ -2,6 +2,7 @@ package com.elice.ggorangjirang.category.entity;
 
 import com.elice.ggorangjirang.subcategory.entity.Subcategory;
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -23,6 +24,11 @@ public class Category {
     private List<Subcategory> subcategories = new ArrayList<>();
 
     public void update(String categoryName) {
+        this.categoryName = categoryName;
+    }
+
+    @Builder
+    public Category(String categoryName) {
         this.categoryName = categoryName;
     }
 }
