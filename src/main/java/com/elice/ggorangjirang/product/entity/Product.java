@@ -1,6 +1,7 @@
 package com.elice.ggorangjirang.product.entity;
 
 import com.elice.ggorangjirang.category.entity.Category;
+import com.elice.ggorangjirang.review.entity.Review;
 import com.elice.ggorangjirang.subcategory.entity.Subcategory;
 import jakarta.persistence.*;
 import lombok.*;
@@ -9,6 +10,8 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -73,6 +76,9 @@ public class Product {
     @ManyToOne
     @JoinColumn(name = "subcategory_id", nullable = false)
     private Subcategory subcategory;
+
+    @OneToMany(mappedBy = "product", cascade = CascadeType.REMOVE)
+    private List<Review> reviews = new ArrayList<>();
 
     @Builder
     public Product(String name, String description, int price, LocalDateTime expirationDate, float discountRate,
