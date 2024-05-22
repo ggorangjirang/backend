@@ -1,6 +1,6 @@
 package com.elice.ggorangjirang.deliveries.dto;
 
-public class DeliveriesDto {
+public class DeliveryDto {
 
   private String name;
 

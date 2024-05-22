@@ -1,6 +1,6 @@
 package com.elice.ggorangjirang.deliveries.dto;
 
-public class DeliveriesStatusDto {
+public class DeliveryStatusDto {
 
   private String status;
 
