@@ -1,4 +1,4 @@
-package com.elice.ggorangjirang.product.controller;
+package com.elice.ggorangjirang.products.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.RestController;

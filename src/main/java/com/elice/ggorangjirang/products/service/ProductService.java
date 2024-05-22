@@ -1,4 +1,4 @@
-package com.elice.ggorangjirang.product.service;
+package com.elice.ggorangjirang.products.service;
 
 import org.springframework.stereotype.Service;
 

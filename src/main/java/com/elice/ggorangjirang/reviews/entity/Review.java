@@ -1,6 +1,6 @@
-package com.elice.ggorangjirang.review.entity;
+package com.elice.ggorangjirang.reviews.entity;
 
-import com.elice.ggorangjirang.product.entity.Product;
+import com.elice.ggorangjirang.products.entity.Product;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

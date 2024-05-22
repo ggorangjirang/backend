@@ -1,7 +1,7 @@
-package com.elice.ggorangjirang.product.entity;
+package com.elice.ggorangjirang.products.entity;
 
 import com.elice.ggorangjirang.category.entity.Category;
-import com.elice.ggorangjirang.review.entity.Review;
+import com.elice.ggorangjirang.reviews.entity.Review;
 import com.elice.ggorangjirang.subcategory.entity.Subcategory;
 import jakarta.persistence.*;
 import lombok.*;

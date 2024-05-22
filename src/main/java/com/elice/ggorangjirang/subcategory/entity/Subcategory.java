@@ -1,7 +1,7 @@
 package com.elice.ggorangjirang.subcategory.entity;
 
 import com.elice.ggorangjirang.category.entity.Category;
-import com.elice.ggorangjirang.product.entity.Product;
+import com.elice.ggorangjirang.products.entity.Product;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;

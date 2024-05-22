@@ -1,6 +1,6 @@
-package com.elice.ggorangjirang.product.repository;
+package com.elice.ggorangjirang.products.repository;
 
-import com.elice.ggorangjirang.product.entity.Product;
+import com.elice.ggorangjirang.products.entity.Product;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

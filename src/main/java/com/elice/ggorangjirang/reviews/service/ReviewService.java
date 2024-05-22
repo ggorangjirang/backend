@@ -1,8 +1,8 @@
-package com.elice.ggorangjirang.review.service;
+package com.elice.ggorangjirang.reviews.service;
 
-import com.elice.ggorangjirang.review.dto.AddReviewRequest;
-import com.elice.ggorangjirang.review.entity.Review;
-import com.elice.ggorangjirang.review.repository.ReviewRepository;
+import com.elice.ggorangjirang.reviews.dto.AddReviewRequest;
+import com.elice.ggorangjirang.reviews.entity.Review;
+import com.elice.ggorangjirang.reviews.repository.ReviewRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

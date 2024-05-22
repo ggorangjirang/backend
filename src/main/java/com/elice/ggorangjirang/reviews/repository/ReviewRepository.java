@@ -1,6 +1,6 @@
-package com.elice.ggorangjirang.review.repository;
+package com.elice.ggorangjirang.reviews.repository;
 
-import com.elice.ggorangjirang.review.entity.Review;
+import com.elice.ggorangjirang.reviews.entity.Review;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
