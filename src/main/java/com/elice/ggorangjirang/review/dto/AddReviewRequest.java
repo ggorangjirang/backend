@@ -9,12 +9,13 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Getter
 public class AddReviewRequest {
+    private String title;
     private String content;
-
     private String imageUrl;
 
     public Review toEntity() {
         return Review.builder()
+                .title(title)
                 .content(content)
                 .imageUrl(imageUrl)
                 .build();

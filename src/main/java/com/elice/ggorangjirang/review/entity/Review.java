@@ -23,6 +23,9 @@ public class Review {
     @Column(name = "id", updatable = false)
     private Long id;
 
+    @Column(name = "title")
+    private String title;
+
     @Column(name = "content")
     private String content;
 
@@ -42,7 +45,8 @@ public class Review {
 //    private User user;
 
     @Builder
-    public Review(String content, String imageUrl) {
+    public Review(String title, String content, String imageUrl) {
+        this.title = title;
         this.content = content;
         this.imageUrl = imageUrl;
     }
