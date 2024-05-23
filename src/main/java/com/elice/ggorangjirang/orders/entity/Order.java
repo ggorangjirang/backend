@@ -61,4 +61,10 @@ public class Order {
     return orderItems.stream().mapToInt(OrderItem::getPrice).sum();
   }
 
+  public double getTotalAmount() {
+    return orderItems.stream()
+        .mapToDouble(item -> item.getQuantity() * item.getPrice())
+        .sum();
+  }
+
 }
