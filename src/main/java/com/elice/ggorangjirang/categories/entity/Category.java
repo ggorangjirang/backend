@@ -21,7 +21,7 @@ public class Category {
     @Column(name = "category_name", nullable = false)
     private String categoryName;
 
-    @OneToMany(mappedBy = "category", cascade = CascadeType.REMOVE)
+    @OneToMany(mappedBy = "category")
     private List<Subcategory> subcategories = new ArrayList<>();
 
     public void update(String categoryName) {

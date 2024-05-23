@@ -1,6 +1,7 @@
 package com.elice.ggorangjirang.products.entity;
 
 import com.elice.ggorangjirang.categories.entity.Category;
+import com.elice.ggorangjirang.orders.entity.OrderItem;
 import com.elice.ggorangjirang.reviews.entity.Review;
 import com.elice.ggorangjirang.subcategories.entity.Subcategory;
 import jakarta.persistence.*;
@@ -71,19 +72,21 @@ public class Product {
     private LocalDateTime updatedAt;
 
     @ManyToOne
-    @JoinColumn(name = "category_id", nullable = false)
-    private Category category;
-
-    @ManyToOne
-    @JoinColumn(name = "subcategory_id", nullable = false)
+    @JoinColumn(name = "subcategory_id")
     private Subcategory subcategory;
+
+    @OneToMany(mappedBy = "product")
+    private List<OrderItem> orderItems = new ArrayList<>();
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.REMOVE)
     private List<Review> reviews = new ArrayList<>();
 
+//    @OneToMany(mappedBy = "product")
+//    private List<CartItem> cartItems = new ArrayList<>();
+
     @Builder
     public Product(String name, String description, int price, LocalDateTime expirationDate, float discountRate,
-                   int stock, String imageUrl, Category category, Subcategory subcategory) {
+                   int stock, String imageUrl, Subcategory subcategory) {
         this.name = name;
         this.description = description;
         this.price = price;
@@ -94,7 +97,6 @@ public class Product {
         this.viewCount = 0;
         this.orderCount = 0;
         this.isSoldOut = (stock == 0);
-        this.category = category;
         this.subcategory = subcategory;
         this.isDeleted = false;
     }
