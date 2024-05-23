@@ -8,6 +8,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -15,6 +16,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor
+@Table(name = "order_item")
 public class OrderItem {
 
   @Id
@@ -38,5 +40,9 @@ public class OrderItem {
     this.quantity = quantity;
     this.price = price;
     this.product = product;
+  }
+
+  public void setOrder(Order order) {
+    this.order = order;
   }
 }
