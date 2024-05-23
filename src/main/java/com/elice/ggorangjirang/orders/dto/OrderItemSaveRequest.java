@@ -10,7 +10,6 @@ import lombok.Setter;
 @Setter
 public class OrderItemSaveRequest {
 
-  // 추후 가져오기
   private Long productId;
 
   private Integer price;
@@ -21,7 +20,6 @@ public class OrderItemSaveRequest {
   public OrderItem toEntity(Product product) {
     return OrderItem.builder()
         .product(product)
-        .price(price)
         .quantity(quantity)
         .price(product.getPrice() * quantity)
         .build();
