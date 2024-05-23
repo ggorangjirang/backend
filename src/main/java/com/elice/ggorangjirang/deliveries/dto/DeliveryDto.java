@@ -1,5 +1,10 @@
 package com.elice.ggorangjirang.deliveries.dto;
 
+import jakarta.persistence.Column;
+import java.time.LocalDate;
+import lombok.Data;
+
+@Data
 public class DeliveryDto {
 
   private String name;
@@ -13,5 +18,7 @@ public class DeliveryDto {
   private String detailAddress;
 
   private String request;
+
+  private LocalDate arrivalDate;
 
 }

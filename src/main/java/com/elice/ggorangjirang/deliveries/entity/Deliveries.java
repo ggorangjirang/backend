@@ -1,11 +1,14 @@
 package com.elice.ggorangjirang.deliveries.entity;
 
+import com.elice.ggorangjirang.orders.entity.Order;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToOne;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import lombok.Getter;
@@ -26,9 +29,9 @@ public class Deliveries {
   @Column(nullable = false)
   private String status;
 
-//  @OneToOne(fetch = FetchType.EAGER)
-//  @JoinColumn(name="order_id")
-//  private order order;
+  @OneToOne(fetch = FetchType.EAGER)
+  @JoinColumn(name="order_id")
+  private Order order;
 
   @Column(nullable = false)
   private String name;

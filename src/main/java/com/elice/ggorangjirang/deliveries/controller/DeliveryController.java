@@ -1,28 +1,51 @@
 package com.elice.ggorangjirang.deliveries.controller;
 
+import java.util.List;
+import org.springframework.ui.Model;
+import com.elice.ggorangjirang.deliveries.dto.DeliveryDto;
+import com.elice.ggorangjirang.deliveries.dto.DeliveryStatusDto;
+import com.elice.ggorangjirang.deliveries.entity.Deliveries;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
+import com.elice.ggorangjirang.deliveries.service.DeliveryService;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 
 @Controller
 @RequiredArgsConstructor
 public class DeliveryController {
 
- /* @PostMapping("/deliveries")
-  public DeliveriesDto AddDeliveries(){
+  private final DeliveryService deliveryService;
 
-    return "deliveries";
+  @PostMapping("/deliveries")
+  public String addDeliveries(@RequestBody DeliveryDto deliveryDto) {
+    deliveryService.addDelivery(deliveryDto);
+    return "/deliveries";
   }
 
   @GetMapping("/deliveries/{id}")
-  public DeliveriesDto viewDeliveries(@PathVariable long id){
+  public String viewDeliveries(@PathVariable long id, Model model) {
+    Deliveries delivery = deliveryService.getDeliveryById(id);
+    model.addAttribute("delivery", delivery);
+    return "delivery";
+  }
 
+  // 특정 주문에 대한 모든 배송 정보 조회
+  @GetMapping("/admin/orders/{orderId}/deliveries")
+  public String viewDeliveriesByOrderId(@PathVariable long orderId, Model model) {
+    List<Deliveries> deliveriesList = deliveryService.getDeliveriesByOrderId(orderId);
+    model.addAttribute("deliveries", deliveriesList);
     return "deliveries";
   }
 
-  @PatchMapping("admin/deliveries/{id}/status")
-  public DeliveriesStatusDto updateDeliveriesStatus(@PathVariable long id){
-
-    return "deliveries";
+  // 상태 업데이트
+  @PatchMapping("/admin/deliveries/{id}/status")
+  public String updateDeliveriesStatus(@PathVariable long id, @RequestBody DeliveryStatusDto statusDto) {
+    deliveryService.updateDeliveryStatus(id, statusDto.getStatus());
+    return "redirect:/admin/deliveries";
   }
-  */
+
 }
