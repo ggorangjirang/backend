@@ -2,6 +2,7 @@ package com.elice.ggorangjirang.orders.dto;
 
 
 import com.elice.ggorangjirang.orders.entity.OrderItem;
+import com.elice.ggorangjirang.products.entity.Product;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -17,9 +18,9 @@ public class OrderItemSaveRequest {
   private Integer quantity;
 
 
-  public OrderItem toEntity(){
+  public OrderItem toEntity(Product product) {
     return OrderItem.builder()
-        .productId(productId)
+        .product(product)
         .price(price)
         .quantity(quantity)
         .build();

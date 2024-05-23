@@ -19,11 +19,7 @@ public class OrderSaveRequest {
   private String streetAddress;
   private String detailAddress;
 
-  public Order toEntity(){
-    List<OrderItem> orderItems = orderItem.stream()
-        .map(OrderItemSaveRequest::toEntity)
-        .collect(Collectors.toList());
-
+  public Order toEntity(List<OrderItem> orderItems) {
     return Order.builder()
         .userId(userId)
         .orderItems(orderItems)
