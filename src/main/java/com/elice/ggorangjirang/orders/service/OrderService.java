@@ -1,5 +1,6 @@
 package com.elice.ggorangjirang.orders.service;
 
+import com.elice.ggorangjirang.orders.dto.OrderResponse;
 import com.elice.ggorangjirang.orders.dto.OrderSaveRequest;
 import com.elice.ggorangjirang.orders.entity.Order;
 import com.elice.ggorangjirang.orders.entity.OrderItem;
@@ -35,5 +36,11 @@ public class OrderService {
     return orderRepository.save(order);
   }
 
+  public List<OrderResponse> getOrdersByUserId(Long userId) {
+    List<Order> orders = orderRepository.findByUserId(userId);
+    return orders.stream()
+        .map(OrderResponse::fromEntity)
+        .collect(Collectors.toList());
+  }
 
 }
