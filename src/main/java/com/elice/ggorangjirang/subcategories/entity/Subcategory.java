@@ -13,6 +13,7 @@ import java.util.List;
 @Entity
 @Getter
 @NoArgsConstructor
+@Table(name = "subcategories")
 public class Subcategory {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,10 +23,10 @@ public class Subcategory {
     private String subcategoryName;
 
     @ManyToOne
-    @JoinColumn(name = "parent_category_id", nullable = false)
+    @JoinColumn(name = "parent_category_id")
     private Category category;
 
-    @OneToMany(mappedBy = "subcategory", cascade = CascadeType.REMOVE)
+    @OneToMany(mappedBy = "subcategory")
     private List<Product> products = new ArrayList<>();
 
     public void update(String subcategoryName) {
