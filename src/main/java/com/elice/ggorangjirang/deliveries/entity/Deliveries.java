@@ -8,12 +8,15 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
 @Getter
 @Setter
+@NoArgsConstructor
 public class Deliveries {
 
   @Id
@@ -48,4 +51,10 @@ public class Deliveries {
   @Column(nullable = false)
   private String detailAddress;
 
+  @Builder
+  public Deliveries(String zipcode, String streetAddress, String detailAddress){
+    this.zipcode = zipcode;
+    this.streetAddress = streetAddress;
+    this.detailAddress = detailAddress;
+  }
 }
