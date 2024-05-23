@@ -12,6 +12,9 @@
 .idea/**/usage.statistics.xml
 .idea/**/dictionaries
 .idea/**/shelf
+application.yaml
+application-dev.yml
+application-local.yml
 
 # AWS User-specific
 .idea/**/aws.xml
