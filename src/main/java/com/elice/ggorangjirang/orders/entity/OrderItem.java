@@ -1,6 +1,7 @@
 package com.elice.ggorangjirang.orders.entity;
 
 
+import com.elice.ggorangjirang.products.entity.Product;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -24,17 +25,18 @@ public class OrderItem {
 
   private Integer price;
 
-  // 추후 매핑;
-  private Long productId;
+  @ManyToOne
+  @JoinColumn(name = "product_id", nullable = false)
+  private Product product;
 
   @ManyToOne
   @JoinColumn(name = "order_id", nullable = false)
   private Order order;
 
   @Builder
-  public OrderItem(Integer quantity, Integer price, Long productId) {
+  public OrderItem(Integer quantity, Integer price, Product product) {
     this.quantity = quantity;
     this.price = price;
-    this.productId = productId;
+    this.product = product;
   }
 }

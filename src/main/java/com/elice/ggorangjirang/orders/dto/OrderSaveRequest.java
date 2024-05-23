@@ -1,5 +1,6 @@
 package com.elice.ggorangjirang.orders.dto;
 
+import com.elice.ggorangjirang.deliveries.entity.Deliveries;
 import com.elice.ggorangjirang.orders.entity.Order;
 import com.elice.ggorangjirang.orders.entity.OrderItem;
 import java.util.ArrayList;
@@ -15,21 +16,13 @@ public class OrderSaveRequest {
   private List<OrderItemSaveRequest> orderItem = new ArrayList<>();
 
   // 추후 Delivery 도메인에서 가져오는 필드
-  private String zipcode;
-  private String streetAddress;
-  private String detailAddress;
+  private Deliveries deliveries;
 
-  public Order toEntity(){
-    List<OrderItem> orderItems = orderItem.stream()
-        .map(OrderItemSaveRequest::toEntity)
-        .collect(Collectors.toList());
-
+  public Order toEntity(List<OrderItem> orderItems) {
     return Order.builder()
         .userId(userId)
         .orderItems(orderItems)
-        .zipcode(zipcode)
-        .streetAddress(streetAddress)
-        .detailAddress(detailAddress)
+        .deliveries(deliveries)
         .build();
   }
 
