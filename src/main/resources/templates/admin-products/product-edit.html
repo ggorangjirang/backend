@@ -1,10 +1,203 @@
 <!DOCTYPE html>
-<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
-    <title>Title</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>꼬랑지랑 - 상품 수정하기</title>
+    <!-- bulma css 관련 -->
+    <link
+            rel="stylesheet"
+            href="https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.min.css"
+    />
+    <!-- 폰트 어썸: 아이콘 -->
+    <script
+            defer
+            src="https://kit.fontawesome.com/9daa42bcef.js"
+            crossorigin="anonymous"
+    ></script>
+    <!-- AWS S3 사용하기 위한 파일 -->
+    <script src="https://sdk.amazonaws.com/js/aws-sdk-2.410.0.min.js"></script>
+    <!-- 커스텀 css, js -->
+    <link rel="stylesheet" href="../../static/css/product-add.css" />
+    <script src="../../static/js/product-add.js" type="module" defer></script>
 </head>
 <body>
+<!-- 헤더 -->
+<nav class="navbar" role="navigation" aria-label="main navigation">
+    <div class="container mt-3">
+        <div class="navbar-brand">
+            <a class="navbar-item" href="/">
+                <span class="has-text-link">꼬랑지랑</span>
+            </a>
+        </div>
+    </div>
+</nav>
 
+
+<!-- 제품 추가 폼(Form) -->
+<section class="section">
+    <div class="container">
+        <a
+                class="link link-offset-1 link-offset-2-hover text-sm fs-6 mb-2 d-block"
+                style="transition: all 0.1s ease-in-out"
+                th:href="@{/admin}"
+        >&larr; 관리자 페이지</a>
+        <div class="register-product-form-container">
+            <form class="box register-product-form-box"
+                  id="registerProductForm"
+                  th:action="@{/seller/{productId}(productId=${productDto.id})}"
+                  method="post">
+                <p class="title is-5" style="color: #edb946">제품 정보를 수정하세요</p>
+                <div class="field">
+                    <label class="label" for="titleInput">제품 이름</label>
+                    <div class="control">
+                        <input
+                                class="input"
+                                id="titleInput"
+                                type="text"
+                                autocomplete="on"
+                                name="name"
+                                th:value="${productDto.name}"
+                        />
+                    </div>
+                </div>
+
+                <div class="field">
+                    <label class="label" for="categorySelectBox">세부 카테고리</label>
+                    <div class="control">
+                        <div class="select is-fullwidth">
+                            <select id="categorySelectBox" name="subcategoryId">
+                                <option value="">세부 카테고리를 선택해주세요.</option>
+                                <th:block th:each="subcategory : ${subcategories}">
+                                    <option th:value="${subcategory.id}"
+                                            th:selected="${request.subcategoryId == subcategory.id}"
+                                            th:text="${subcategory.subcategoryName}">세부 카테고리 이름</option>
+                                </th:block>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="field">
+                    <label class="label" for="shortDescriptionInput">요약 설명</label>
+                    <div class="control">
+                <textarea
+                        class="textarea"
+                        id="shortDescriptionInput"
+                        rows="3"
+                        autocomplete="on"
+                        name="summary"
+                        th:text="${request.description}"
+                ></textarea>
+                    </div>
+                </div>
+
+                <div class="field">
+                    <label class="label" for="detailDescriptionInput"
+                    >상세 설명</label
+                    >
+                    <div class="control">
+                <textarea
+                        class="textarea"
+                        id="detailDescriptionInput"
+                        rows="8"
+                        autocomplete="on"
+                        name="description"
+                        th:text="${productDto.description}"
+                ></textarea>
+                    </div>
+                </div>
+
+                <div class="field is-fullwidth">
+                    <label class="label" for="imageInput">제품 사진</label>
+                    <figure class="image is-128x128">
+                        <img id="currentImage" th:src="@{${productDto.image}}" alt="Current Product Image"> <!-- Display current image -->
+                    </figure>
+                    <div class="file has-name is-fullwidth">
+                        <label class="file-label">
+                            <input
+                                    class="file-input"
+                                    id="imageInput"
+                                    type="file"
+                                    name="image"
+                                    accept=".png, .jpeg, .jpg"
+                            />
+                            <span class="file-cta">
+                    <span class="file-icon">
+                      <i class="fas fa-upload"></i>
+                    </span>
+                    <span class="file-label"> 사진 변경 </span>
+                  </span>
+                            <span class="file-name" id="fileNameSpan">
+                    새 사진 파일 선택 (png, jpg, jpeg)
+                  </span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="field">
+                    <label class="label" for="inventoryInput">재고 수</label>
+                    <div class="control">
+                        <input
+                                class="input"
+                                id="inventoryInput"
+                                type="number"
+                                autocomplete="on"
+                                name="stock"
+                                th:value="${productDto.stock}"
+                        />
+                    </div>
+                </div>
+
+                <div class="field">
+                    <label class="label" for="priceInput">가격</label>
+                    <div class="field">
+                        <div class="control has-icons-right">
+                            <input
+                                    class="input"
+                                    id="priceInput"
+                                    type="number"
+                                    autocomplete="on"
+                                    name="price"
+                                    th:value="${productDto.price}"
+                            />
+                            <span class="icon is-small is-right"> 원 </span>
+                        </div>
+                    </div>
+                </div>
+
+                <div
+                        class="field is-grouped is-grouped-multiline mt-3"
+                        id="keywordContainer"
+                ></div>
+
+                <div class="mt-5">
+                    <button type="submit" class="button is-primary is-fullwidth" id="submitButton"
+                            style="background-color: #edb946;">
+                        제품 정보 업데이트
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
 </body>
 </html>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+      // 카테고리 선택 상자 요소를 가져옵니다.
+      const categorySelectBox = document.getElementById("categorySelectBox");
+
+      // 카테고리 선택 상자의 변경 사항을 감지하는 이벤트 리스너를 추가합니다.
+      categorySelectBox.addEventListener("change", function() {
+        // 선택된 카테고리의 값과 텍스트를 가져옵니다.
+        const selectedValue = categorySelectBox.value;
+        const selectedText = categorySelectBox.options[categorySelectBox.selectedIndex].text;
+
+        // 콘솔에 선택된 카테고리의 값을 로깅합니다.
+        console.log("선택된 카테고리 ID: " + selectedValue);
+        console.log("선택된 카테고리 이름: " + selectedText);
+      });
+    });
+</script>
