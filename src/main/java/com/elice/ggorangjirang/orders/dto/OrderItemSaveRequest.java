@@ -23,6 +23,7 @@ public class OrderItemSaveRequest {
         .product(product)
         .price(price)
         .quantity(quantity)
+        .price(product.getPrice() * quantity)
         .build();
   }
 }
