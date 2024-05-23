@@ -1,9 +1,12 @@
 package com.elice.ggorangjirang.carts.entity;
 
-import com.elice.ggorangjirang.products.entity.Product;
+import com.elice.ggorangjirang.cartitems.entity.CartItem;
 //import com.elice.ggorangjirang.users.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Builder
 @Data
@@ -16,14 +19,22 @@ public class Cart {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long cartId;
 
-//    @ManyToOne
+//    @OneToOne
 //    @JoinColumn(name = "user_id", nullable = false)
-//    private Users user;
+//    private User user;
 
-    @ManyToOne
-    @JoinColumn(name = "product_id", nullable = false)
-    private Product product;
+    @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<CartItem> cartItems = new ArrayList<>();
 
-    @Column(name = "cart_count", nullable = false)
-    private int cartCount;
+    // 장바구니 아이템 추가
+    public void addCartItem(CartItem cartItem) {
+        cartItems.add(cartItem);
+        cartItem.setCart(this);
+    }
+
+    // 장바구니 아이템 제거
+    public void removeCartItem(CartItem cartItem) {
+        cartItems.remove(cartItem);
+        cartItem.setCart(null);
+    }
 }
