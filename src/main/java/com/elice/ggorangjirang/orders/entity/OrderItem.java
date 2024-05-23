@@ -39,4 +39,8 @@ public class OrderItem {
     this.price = price;
     this.product = product;
   }
+
+  public void setOrder(Order order) {
+    this.order = order;
+  }
 }

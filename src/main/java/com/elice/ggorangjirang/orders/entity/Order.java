@@ -12,6 +12,7 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import lombok.Builder;
 import lombok.Getter;
@@ -42,14 +43,20 @@ public class Order {
   private Deliveries deliveries;
 
   @Builder
-  public Order(Long userId, List<OrderItem> orderItems, Deliveries deliveries){
+  public Order(Long userId, List<OrderItem> orderItems, Deliveries deliveries) {
     this.orderDate = LocalDateTime.now();
     this.status = "PENDING";
     this.userId = userId;
-    this.orderItems = orderItems;
     this.deliveries = deliveries;
-    this.totalAmount = calculateTotalAmount(orderItems);
+    this.orderItems = orderItems == null ? new ArrayList<>() : orderItems;
+    this.totalAmount = calculateTotalAmount(this.orderItems);
   }
+
+  public void addOrderItem(OrderItem orderItem) {
+    orderItems.add(orderItem);
+    orderItem.setOrder(this);
+  }
+
   private Integer calculateTotalAmount(List<OrderItem> orderItems) {
     return orderItems.stream().mapToInt(OrderItem::getPrice).sum();
   }
