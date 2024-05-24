@@ -6,12 +6,14 @@ import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 @Getter
+@Setter
 @NoArgsConstructor
 @Table(name = "subcategories")
 public class Subcategory {
@@ -22,6 +24,9 @@ public class Subcategory {
     @Column(name = "subcategory_name", nullable = false)
     private String subcategoryName;
 
+    @Column(name = "category_id", nullable = true)
+    private Long categoryId;
+
     @ManyToOne
     @JoinColumn(name = "parent_category_id")
     private Category category;
@@ -29,12 +34,17 @@ public class Subcategory {
     @OneToMany(mappedBy = "subcategory")
     private List<Product> products = new ArrayList<>();
 
-    public void update(String subcategoryName) {
+    public void update(String subcategoryName, Category category, Long categoryId) {
         this.subcategoryName = subcategoryName;
+        this.category = category;
+        this.categoryId = categoryId;
     }
 
     @Builder
-    public Subcategory(String subcategoryName) {
+    public Subcategory(String subcategoryName, Long categoryId) {
         this.subcategoryName = subcategoryName;
+        this.categoryId = categoryId;
+        this.category = new Category();
+        this.category.setId(categoryId);
     }
 }
