@@ -10,6 +10,7 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -37,7 +38,7 @@ public class Product {
     private int price;
 
     @Column(name = "expiration_date")
-    private LocalDateTime expirationDate;
+    private LocalDate expirationDate;
 
     @Column(name = "discount_rate")
     private float discountRate;
@@ -88,7 +89,7 @@ public class Product {
 //    private List<CartItem> cartItems = new ArrayList<>();
 
     @Builder
-    public Product(String name, String description, int price, LocalDateTime expirationDate, float discountRate,
+    public Product(String name, String description, int price, LocalDate expirationDate, float discountRate,
                    String imageUrl, int stock, Long subcategoryId) {
         this.name = name;
         this.description = description;
@@ -106,7 +107,7 @@ public class Product {
         this.isDeleted = false;
     }
 
-    public void update(String name, String description, int price, LocalDateTime expirationDate, float discountRate,
+    public void update(String name, String description, int price, LocalDate expirationDate, float discountRate,
                        String imageUrl, int stock, Long subcategoryId, Subcategory subcategory) {
         this.name = name;
         this.description = description;

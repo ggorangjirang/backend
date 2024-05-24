@@ -6,7 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -17,7 +17,7 @@ public class UpdateProductRequest {
     private String name;
     private String description;
     private int price;
-    private LocalDateTime expirationDate;
+    private LocalDate expirationDate;
     private float discountRate;
     private String imageUrl;
     private int stock;
