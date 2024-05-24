@@ -54,10 +54,25 @@ public class Deliveries {
   @Column(nullable = false)
   private String detailAddress;
 
-  @Builder
-  public Deliveries(String zipcode, String streetAddress, String detailAddress){
-    this.zipcode = zipcode;
-    this.streetAddress = streetAddress;
-    this.detailAddress = detailAddress;
+//  @Builder
+//  public Deliveries(String zipcode, String streetAddress, String detailAddress){
+//    this.zipcode = zipcode;
+//    this.streetAddress = streetAddress;
+//    this.detailAddress = detailAddress;
+//  }
+
+  public static Deliveries createDelivery(String zipcode, String streetAddress, String detailAddress, String status, String request,
+      LocalDate arrivalDate, Integer phoneNumber, String name) {
+    Deliveries deliveries = new Deliveries();
+    deliveries.setZipcode(zipcode);
+    deliveries.setStreetAddress(streetAddress);
+    deliveries.setDetailAddress(detailAddress);
+    deliveries.setStatus(status);
+    deliveries.setRequest(request);
+    deliveries.setArrivalDate(arrivalDate);
+    deliveries.setPhoneNumber(phoneNumber);
+    deliveries.setName(name);
+
+    return deliveries;
   }
 }
