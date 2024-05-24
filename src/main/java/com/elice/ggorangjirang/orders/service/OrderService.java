@@ -25,4 +25,20 @@ public class OrderService {
     return orderRepository.save(createdOrder);
   }
 
+  // 회원 별 조회
+  public Order findById(Long id) {
+    return orderRepository.findById(id)
+        .orElseThrow(() -> new IllegalArgumentException("not found orderId  : " + id));
+  }
+
+  // 모든 회원 조회
+  public List<Order> findAllByUserId(Long userId){
+    return orderRepository.findAllByUserId(userId);
+  }
+
+  // 주문 삭제
+  public void deleteById(Long id){
+    orderRepository.deleteById(id);
+  }
+
 }
