@@ -71,12 +71,15 @@ public class Product {
     @LastModifiedDate
     private LocalDateTime updatedAt;
 
+    @Column(name = "pseudo_category_id", nullable = true)
+    private Long subcategoryId;
+
     @ManyToOne
     @JoinColumn(name = "subcategory_id")
     private Subcategory subcategory;
 
-//    @OneToMany(mappedBy = "product")
-//    private List<OrderItem> orderItems = new ArrayList<>();
+    @OneToMany(mappedBy = "product")
+    private List<OrderItem> orderItems = new ArrayList<>();
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.REMOVE)
     private List<Review> reviews = new ArrayList<>();
@@ -86,21 +89,35 @@ public class Product {
 
     @Builder
     public Product(String name, String description, int price, LocalDateTime expirationDate, float discountRate,
-                   int stock, String imageUrl, Subcategory subcategory) {
+                   String imageUrl, int stock, Long subcategoryId) {
         this.name = name;
         this.description = description;
         this.price = price;
         this.expirationDate = expirationDate;
         this.discountRate = discountRate;
-        this.stock = stock;
         this.imageUrl = imageUrl;
+        this.stock = stock;
+        this.subcategoryId = subcategoryId;
+        this.subcategory = new Subcategory();
+        this.subcategory.setId(subcategoryId);
         this.viewCount = 0;
         this.orderCount = 0;
         this.isSoldOut = (stock == 0);
-        this.subcategory = subcategory;
         this.isDeleted = false;
     }
 
+    public void update(String name, String description, int price, LocalDateTime expirationDate, float discountRate,
+                       String imageUrl, int stock, Long subcategoryId, Subcategory subcategory) {
+        this.name = name;
+        this.description = description;
+        this.price = price;
+        this.expirationDate = expirationDate;
+        this.discountRate = discountRate;
+        this.imageUrl = imageUrl;
+        this.stock = stock;
+        this.subcategoryId = subcategoryId;
+        this.subcategory = subcategory;
+    }
 
     // ProductController 에서 호출하기
     public void addViewCount() {
@@ -112,6 +129,7 @@ public class Product {
     public void addOrderCount(int quantity) {
         this.orderCount = this.orderCount + quantity;
     }
+
 
     // 결제 완료 시 quantity 만큼 재고량 감소 및 재고량 0 도달 시 품절 처리
     public void updateStock(int quantity) {

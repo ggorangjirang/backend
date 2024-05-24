@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Getter
 @Setter
-public class AddProductRequest {
+public class UpdateProductRequest {
 
     private String name;
     private String description;
