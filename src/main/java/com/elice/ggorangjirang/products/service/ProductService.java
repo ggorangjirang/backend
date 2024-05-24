@@ -55,6 +55,6 @@ public class ProductService {
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("not found: " + id));
 
-        productRepository.deleteById(product.getId());
+        productRepository.delete(product);
     }
 }
