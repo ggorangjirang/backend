@@ -62,6 +62,20 @@ public class Order {
     }
   }
 
+  // 주문 생성
+  public static Order createOrder(Long userId, Deliveries delivery, List<OrderItem> orderItems){
+    Order order = new Order();
+    order.setUserId(userId);
 
+    order.setDeliveries(delivery);
+
+    for(OrderItem orderItem : orderItems){
+      order.addOrderItem(orderItem);
+    }
+    order.setOrderStatus(OrderStatus.ORDER);
+    order.setOrderDate(LocalDateTime.now());
+
+    return order;
+  }
 
 }
