@@ -6,14 +6,14 @@ import com.elice.ggorangjirang.subcategories.dto.AddSubcategoryRequest;
 import com.elice.ggorangjirang.subcategories.dto.UpdateSubcategoryRequest;
 import com.elice.ggorangjirang.subcategories.entity.Subcategory;
 import com.elice.ggorangjirang.subcategories.repository.SubcategoryRepository;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 @Transactional
 public class SubcategoryService {
     private final SubcategoryRepository subcategoryRepository;
