@@ -46,9 +46,11 @@ public class Review {
 //    private User user;
 
     @Builder
-    public Review(String title, String content, String imageUrl) {
+    public Review(String title, String content, String imageUrl, Product product/*, User user*/) {
         this.title = title;
         this.content = content;
         this.imageUrl = imageUrl;
+        this.product = product;
+        /* this.user = user; */
     }
 }
