@@ -1,48 +1,55 @@
 package com.elice.ggorangjirang.orders.entity;
 
-
 import com.elice.ggorangjirang.products.entity.Product;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import lombok.Builder;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Getter
-@NoArgsConstructor
+@Setter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "order_item")
 public class OrderItem {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @Column(name = "order_item_id")
   private Long id;
 
-  private Integer quantity;
+  private int orderPrice;
 
-  private Integer price;
+  private int quantity;
 
-  @ManyToOne
-  @JoinColumn(name = "product_id", nullable = false)
+  // OrderItem 연관관계
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "product_id")
   private Product product;
 
-  @ManyToOne
-  @JoinColumn(name = "order_id", nullable = false)
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "order_id")
   private Order order;
 
-  @Builder
-  public OrderItem(Integer quantity, Integer price, Product product) {
-    this.quantity = quantity;
-    this.price = price;
-    this.product = product;
+  // 추후 장바구니 구현 매핑
+
+
+  public static OrderItem createOrderItem(Product product, int orderPrice, int quantity) {
+    OrderItem orderItem = new OrderItem();
+    orderItem.setProduct(product);
+    orderItem.setOrderPrice(orderPrice);
+    orderItem.setQuantity(quantity);
+
+    return orderItem;
   }
 
-  public void setOrder(Order order) {
-    this.order = order;
-  }
 }
