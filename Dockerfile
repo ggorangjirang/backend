@@ -16,4 +16,4 @@ EXPOSE 8080
 
 USER nobody
 
-ENTRYPOINT ["java", "-jar", "app.jar"]
+ENTRYPOINT ["java", "-jar", "-Dspring.profiles.active=dev", "app.jar"]
