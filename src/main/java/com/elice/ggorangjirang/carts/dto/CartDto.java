@@ -1,47 +1,35 @@
 package com.elice.ggorangjirang.carts.dto;
 
+import com.elice.ggorangjirang.cartitems.dto.CartItemDto;
 import com.elice.ggorangjirang.carts.entity.Cart;
 import lombok.Builder;
 import lombok.Data;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Data
 @Builder
 public class CartDto {
     private Long cartId;
-    private Long productId;
     private Long userId;
-    private int cartCount;
-    private String productName;
-    private int productPrice;
+    private List<CartItemDto> cartItems;
 
     // DTO를 엔티티로 변환
     public static Cart toEntity(CartDto cartDto) {
         return Cart.builder()
-            .cartId(cartDto.getCartId())
-            .cartCount(cartDto.getCartCount())
+            .id(cartDto.getCartId())
             .build();
     }
 
     // 엔티티를 DTO로 변환
-    public static CartDto fromEntity(Cart cart, String productName, int productPrice) {
-        return CartDto.builder()
-            .cartId(cart.getCartId())
-            .productId(cart.getProduct().getId())
-//            .userId(cart.getUser().getId())
-            .cartCount(cart.getCartCount())
-            .productName(productName)
-            .productPrice(productPrice)
-            .build();
-    }
-
-    // 엔티티를 DTO로 변환 (productName과 productPrice가 필요 없는 경우)
     public static CartDto fromEntity(Cart cart) {
         return CartDto.builder()
-            .cartId(cart.getCartId())
-            .productId(cart.getProduct().getId())
+            .cartId(cart.getId())
 //            .userId(cart.getUser().getId())
-            .cartCount(cart.getCartCount())
+            .cartItems(cart.getCartItems().stream()
+                .map(CartItemDto::fromEntity)
+                .collect(Collectors.toList()))
             .build();
     }
 }
-

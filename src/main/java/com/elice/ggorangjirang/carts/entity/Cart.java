@@ -1,40 +1,43 @@
 package com.elice.ggorangjirang.carts.entity;
 
 import com.elice.ggorangjirang.cartitems.entity.CartItem;
-//import com.elice.ggorangjirang.users.entity.User;
+//import com.elice.ggorangjirang.users.entity.Users;
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import java.util.ArrayList;
+import java.time.LocalDateTime;
 import java.util.List;
 
-@Builder
-@Data
 @Entity
+@Table(name = "carts")
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "cart")
+@Builder
+@EntityListeners(AuditingEntityListener.class)
 public class Cart {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long cartId;
+    @Column(name = "id", updatable = false)
+    private Long id;
 
 //    @OneToOne
 //    @JoinColumn(name = "user_id", nullable = false)
-//    private User user;
+//    private Users user;
 
     @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<CartItem> cartItems = new ArrayList<>();
+    private List<CartItem> cartItems;
 
-    // 장바구니 아이템 추가
-    public void addCartItem(CartItem cartItem) {
-        cartItems.add(cartItem);
-        cartItem.setCart(this);
-    }
+    @CreatedDate
+    @Column(name = "created_at", updatable = false)
+    private LocalDateTime createdAt;
 
-    // 장바구니 아이템 제거
-    public void removeCartItem(CartItem cartItem) {
-        cartItems.remove(cartItem);
-        cartItem.setCart(null);
-    }
+    @LastModifiedDate
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
 }
