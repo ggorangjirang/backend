@@ -5,7 +5,6 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.elice.ggorangjirang.users.repository.UserRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import lombok.Data;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,7 +20,7 @@ import java.util.Optional;
 @Service
 public class JwtService {
 
-    @Value("${jwt.secretkey}")
+    @Value("${jwt.secretKey}")
     private String secretKey;
 
     @Value("${jwt.access.expiration}")
