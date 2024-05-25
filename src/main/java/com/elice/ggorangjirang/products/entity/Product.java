@@ -1,5 +1,6 @@
 package com.elice.ggorangjirang.products.entity;
 
+import com.elice.ggorangjirang.cartitems.entity.CartItem;
 import com.elice.ggorangjirang.categories.entity.Category;
 import com.elice.ggorangjirang.orders.entity.OrderItem;
 import com.elice.ggorangjirang.reviews.entity.Review;
@@ -85,8 +86,8 @@ public class Product {
     @OneToMany(mappedBy = "product", cascade = CascadeType.REMOVE)
     private List<Review> reviews = new ArrayList<>();
 
-//    @OneToMany(mappedBy = "product")
-//    private List<CartItem> cartItems = new ArrayList<>();
+    @OneToMany(mappedBy = "product")
+    private List<CartItem> cartItems = new ArrayList<>();
 
     @Builder
     public Product(String name, String description, int price, LocalDate expirationDate, float discountRate,
