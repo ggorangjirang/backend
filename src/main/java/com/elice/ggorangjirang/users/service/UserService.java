@@ -15,7 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class UserService {
     private final UserRepository userRepository;
 
-    private final PasswordEncoder passwordEncoder;
+    //private final PasswordEncoder passwordEncoder;
 
 
     public void signUp(UserSignupDto userSignupDto) throws Exception {
@@ -30,7 +30,7 @@ public class UserService {
             .role(Role.USER)
             .build();
 
-        users.passwordEncode(passwordEncoder);
+        //users.passwordEncode(passwordEncoder);
         userRepository.save(users);
     }
 
