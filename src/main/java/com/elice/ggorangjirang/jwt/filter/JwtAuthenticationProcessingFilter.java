@@ -24,7 +24,7 @@ import java.io.IOException;
 @Slf4j
 public class JwtAuthenticationProcessingFilter extends OncePerRequestFilter {
 
-    private static final String NO_CHECK_URL = "/login";
+    private static final String NO_CHECK_URL = "/login"; // "/login"으로 들어오는 요청은 Filter 작동x
 
     private final JwtService jwtService;
     private final UserRepository userRepository;
@@ -56,6 +56,7 @@ public class JwtAuthenticationProcessingFilter extends OncePerRequestFilter {
         }
     }
 
+    // Refresh Token으로 유저 정보 찾기 + 토큰 재발급 메소드
     public void checkRefreshTokenAndReIssueAccessToken(HttpServletResponse response, String refreshToken) {
         userRepository.findByRefreshToken(refreshToken)
             .ifPresent(users -> {
@@ -65,6 +66,7 @@ public class JwtAuthenticationProcessingFilter extends OncePerRequestFilter {
             });
     }
 
+    // Access Token 체크 + 인증 처리 메소드
     public void checkAccessTokenAndAuthentication(HttpServletRequest request, HttpServletResponse response,
                                                  FilterChain filterChain) throws ServletException, IOException {
         log.info("checkAccessTokenAndAuthentication() 호출");
@@ -76,6 +78,7 @@ public class JwtAuthenticationProcessingFilter extends OncePerRequestFilter {
         filterChain.doFilter(request, response);
     }
 
+    // Refresh Token 재발급 + DB에 업데이트 메소드
     private String reIssueRefreshToken(Users users) {
         String reIssuedRefreshToken = jwtService.createRefreshToken();
         users.updateRefreshToken(reIssuedRefreshToken);
@@ -84,13 +87,23 @@ public class JwtAuthenticationProcessingFilter extends OncePerRequestFilter {
     }
 
     // 인증 허가 메소드
-    public void saveAuthentication(User myUser) {
+    public void saveAuthentication(Users myUser) {
         String password = myUser.getPassword();
 
         if(password == null) {
             // 소셜 로그인시
         }
 
+        UserDetails userDetails = org.springframework.security.core.userdetails.User.builder()
+            .username(myUser.getEmail())
+            .password(password)
+            .roles(myUser.getRole().name())
+            .build();
 
+        Authentication authentication =
+            new UsernamePasswordAuthenticationToken(userDetails, null,
+                authoritiesMapper.mapAuthorities(userDetails.getAuthorities()));
+
+        SecurityContextHolder.getContext().setAuthentication(authentication);
     }
 }
