@@ -1,6 +1,7 @@
 package com.elice.ggorangjirang.categories.service;
 
 import com.elice.ggorangjirang.categories.dto.AddCategoryRequest;
+import com.elice.ggorangjirang.categories.dto.CategoryResponse;
 import com.elice.ggorangjirang.categories.dto.UpdateCategoryRequest;
 import com.elice.ggorangjirang.categories.entity.Category;
 import com.elice.ggorangjirang.categories.repository.CategoryRepository;
@@ -9,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -49,5 +51,14 @@ public class CategoryService {
                 .orElseThrow(() -> new IllegalArgumentException("not found: " + id));
 
         categoryRepository.deleteById(category.getId());
+    }
+
+    public List<CategoryResponse> getCategoryNames() {
+        List<Category> categories = categoryRepository.findAll();
+        return categories.stream()
+                .map(category -> new CategoryResponse(
+                        category.getCategoryName()
+                ))
+                .collect(Collectors.toList());
     }
 }
