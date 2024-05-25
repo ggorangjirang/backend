@@ -1,16 +1,22 @@
 package com.elice.ggorangjirang.products.service;
 
 import com.elice.ggorangjirang.products.dto.AddProductRequest;
+import com.elice.ggorangjirang.products.dto.ListProductResponse;
 import com.elice.ggorangjirang.products.dto.UpdateProductRequest;
 import com.elice.ggorangjirang.products.entity.Product;
 import com.elice.ggorangjirang.products.repository.ProductRepository;
 import com.elice.ggorangjirang.subcategories.entity.Subcategory;
 import com.elice.ggorangjirang.subcategories.repository.SubcategoryRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -56,5 +62,40 @@ public class ProductService {
                 .orElseThrow(() -> new IllegalArgumentException("not found: " + id));
 
         productRepository.delete(product);
+    }
+
+    private ListProductResponse convertToListProductResponse(Product product) {
+        return new ListProductResponse(product.getName(), product.getDiscountRate(), product.getPrice(),
+                product.getImageUrl(), product.getStock());
+    }
+
+    public List<ListProductResponse> getEightLimitedSaleProducts() {
+        List<Product> products = productRepository.findLimitedSaleProducts();
+        Collections.shuffle(products);
+        return products.stream()
+                .limit(8)
+                .map(this::convertToListProductResponse)
+                .collect(Collectors.toList());
+    }
+
+    public Page<ListProductResponse> getAllLimitedSaleProducts(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Product> productPage = productRepository.findLimitedSaleProducts(pageable);
+        return productPage.map(this::convertToListProductResponse);
+    }
+
+    public List<ListProductResponse> getEightBestSellingProducts() {
+        List<Product> products = productRepository.findBestSellingProducts();
+        Collections.shuffle(products);
+        return products.stream()
+                .limit(8)
+                .map(this::convertToListProductResponse)
+                .collect(Collectors.toList());
+    }
+
+    public Page<ListProductResponse> getAllBestSellingProducts(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Product> productPage = productRepository.findBestSellingProducts(pageable);
+        return productPage.map(this::convertToListProductResponse);
     }
 }
