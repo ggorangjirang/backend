@@ -1,0 +1,10 @@
+jwt:
+  secretKey: mysecrethaha
+
+  access:
+    expiration: 3600000 # 1시간
+    header: Authorization
+
+  refresh:
+    expiration: 1209600000 # 2주
+    header: Refresh-Token
