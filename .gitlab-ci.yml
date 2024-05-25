@@ -3,9 +3,22 @@ variables:
   IMAGE_TAG: "1.0"
 
 stages:
+  - compile
   - test
   - build
   - deploy
+
+compile:
+  stage: compile
+  before_script:
+    - export PATH="/home/ubuntu/.sdkman/candidates/gradle/current/bin:$PATH"
+  script:
+    - gradle build --exclude-task test
+  tags:
+    - compile
+  rules:
+    - if: $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "main"
+    - if: $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == $CI_DEFAULT_BRANCH
 
 test:
   stage: test
