@@ -9,6 +9,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
+import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import lombok.Builder;
@@ -36,22 +37,21 @@ public class Deliveries {
   @JoinColumn(name="order_id")
   private Order order;
 
-  @Column(nullable = false)
+  @NotNull(message = "이름은 필수입니다.")
   private String name;
 
-  @Column(nullable = false)
+  @NotNull(message = "전화번호는 필수입니다.")
   private int phoneNumber;
 
-  @Column(nullable = false)
   private String request;
 
-  @Column(nullable = false)
+  @NotNull(message = "우편번호는 필수입니다.")
   private String zipcode;
 
-  @Column(nullable = false)
+  @NotNull(message = "주소 입력은 필수 입니다.")
   private String streetAddress;
 
-  @Column(nullable = false)
+  @NotNull(message = "상세 주소는 필수 입니다.")
   private String detailAddress;
 
 //  @Builder
