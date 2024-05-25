@@ -19,3 +19,6 @@ spring:
 
   h2:
     console.enabled: true
+
+  profiles:
+    active: jwt
