@@ -99,4 +99,33 @@ public class ProductService {
         return productPage.map(this::convertToListProductResponse);
     }
 
+    public Page<ListProductResponse> getProductsByOrderCountDesc(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Product> productPage = productRepository.findByOrderCountDesc(pageable);
+        return productPage.map(this::convertToListProductResponse);
+    }
+
+    public Page<ListProductResponse> getProductsByCreatedAtDesc(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Product> productPage = productRepository.findByCreatedAtDesc(pageable);
+        return productPage.map(this::convertToListProductResponse);
+    }
+
+    public Page<ListProductResponse> getProductsByPriceAsc(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Product> productPage = productRepository.findByPriceAsc(pageable);
+        return productPage.map(this::convertToListProductResponse);
+    }
+
+    public Page<ListProductResponse> getProductsByPriceDesc(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Product> productPage = productRepository.findByPriceDesc(pageable);
+        return productPage.map(this::convertToListProductResponse);
+    }
+
+    public Page<ListProductResponse> getProductsByViewCountDesc(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Product> productPage = productRepository.findByViewCountDesc(pageable);
+        return productPage.map(this::convertToListProductResponse);
+    }
 }

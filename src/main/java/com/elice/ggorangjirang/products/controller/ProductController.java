@@ -46,4 +46,44 @@ public class ProductController {
         Page<ListProductResponse> products = productService.getAllBestSellingProducts(page, size);
         return ResponseEntity.ok(products);
     }
+
+    @GetMapping("/by-order-count-desc")
+    public ResponseEntity<Page<ListProductResponse>> getProductsByOrderCountDesc(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "16") int size) {
+        Page<ListProductResponse> products = productService.getProductsByOrderCountDesc(page, size);
+        return ResponseEntity.ok(products);
+    }
+
+    @GetMapping("/by-created-at-desc")
+    public ResponseEntity<Page<ListProductResponse>> getProductsByCreatedAtDesc(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "16") int size) {
+        Page<ListProductResponse> products = productService.getProductsByCreatedAtDesc(page, size);
+        return ResponseEntity.ok(products);
+    }
+
+    @GetMapping("/by-price-asc")
+    public ResponseEntity<Page<ListProductResponse>> getProductsByPriceAsc(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "16") int size) {
+        Page<ListProductResponse> products = productService.getProductsByPriceAsc(page, size);
+        return ResponseEntity.ok(products);
+    }
+
+    @GetMapping("/by-price-desc")
+    public ResponseEntity<Page<ListProductResponse>> getProductsByPriceDesc(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "16") int size) {
+        Page<ListProductResponse> products = productService.getProductsByPriceDesc(page, size);
+        return ResponseEntity.ok(products);
+    }
+
+    @GetMapping("/by-view-count-desc")
+    public ResponseEntity<Page<ListProductResponse>> getProductsByViewCountDesc(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "16") int size) {
+        Page<ListProductResponse> products = productService.getProductsByViewCountDesc(page, size);
+        return ResponseEntity.ok(products);
+    }
 }
