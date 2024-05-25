@@ -22,4 +22,21 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
 
     @Query("SELECT p FROM Product p WHERE p.viewCount >= 700 AND p.orderCount >= 100")
     Page<Product> findBestSellingProducts(Pageable pageable);
+
+    @Query("SELECT p FROM Product p ORDER BY p.orderCount DESC")
+    Page<Product> findByOrderCountDesc(Pageable pageable);
+
+    @Query("SELECT p FROM Product p ORDER BY p.createdAt DESC")
+    Page<Product> findByCreatedAtDesc(Pageable pageable);
+
+    @Query("SELECT p FROM Product p ORDER BY p.price ASC")
+    Page<Product> findByPriceAsc(Pageable pageable);
+
+    @Query("SELECT p FROM Product p ORDER BY p.price DESC")
+    Page<Product> findByPriceDesc(Pageable pageable);
+
+    @Query("SELECT p FROM Product p ORDER BY p.viewCount DESC")
+    Page<Product> findByViewCountDesc(Pageable pageable);
+
+
 }
