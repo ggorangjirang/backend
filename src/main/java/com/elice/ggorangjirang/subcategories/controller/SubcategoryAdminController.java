@@ -16,7 +16,7 @@ import java.util.List;
 @Controller
 @RequestMapping("/admin/subcategories")
 @RequiredArgsConstructor
-public class SubcategoryController {
+public class SubcategoryAdminController {
 
     private final CategoryService categoryService;
     private final SubcategoryService subcategoryService;
