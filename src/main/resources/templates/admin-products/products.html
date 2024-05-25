@@ -42,7 +42,6 @@
     <div class="container mt-3">
         <div class="navbar-brand">
             <a class="navbar-item" href="/static">
-                <img src="/images/elice-rabbit.png" width="30" height="30" />
                 <span class="has-text-link">꼬랑지랑</span>
             </a>
 
@@ -71,38 +70,38 @@
 
         <!-- 상품 목록 -->
         <section class="section">
-            <div class="container product-item-container" id="producItemContainer">
-                <table class="table table-striped">
+            <div class="container product-item-container" id="producItemContainer" style="margin-left: -16%;">
+                <table class="table table-striped" style="width: 126%;">
                     <thead>
                     <tr>
-                        <th>번호</th>
-                        <th>이름</th>
-                        <th>분류</th>
-                        <th>가격</th>
-                        <th>할인율</th>
-                        <th>유통기한</th>
-                        <th>수량</th>
-                        <th>조회수</th>
-                        <th>누적판매량</th>
-                        <th>품절여부</th>
-                        <th>게시 날짜</th>
-                        <th>최종 수정 날짜</th>
+                        <th style="text-align: center;">번호</th>
+                        <th style="text-align: center;">이름</th>
+                        <th style="text-align: center;">분류</th>
+                        <th style="text-align: center;">가격</th>
+                        <th style="text-align: center;">할인율</th>
+                        <th style="text-align: center;">유통기한</th>
+                        <th style="text-align: center;">수량</th>
+                        <th style="text-align: center;">조회수</th>
+                        <th style="text-align: center;">누적판매량</th>
+                        <th style="text-align: center;">품절여부</th>
+                        <th style="text-align: center;">게시 날짜</th>
+                        <th style="text-align: center;">최종 수정 날짜</th>
                     </tr>
                     </thead>
                     <tbody>
                     <tr th:each="product : ${products}" th:data-product-id="${product.id}" class="clickable-row">
-                        <td th:text="${product.id}">번호</td>
-                        <td th:text="${product.name}">이름</td>
-                        <td th:text="${product.subcategory != null ? product.subcategory.subcategoryName : '없음'}">분류</td>
-                        <td th:text="${product.price}">가격</td>
-                        <td th:text="${product.discountRate}">할인율</td>
-                        <td th:text="${product.expirationDate != null ? product.expirationDate : '없음'}">유통기한</td>
-                        <td th:text="${product.stock}">수량</td>
-                        <td th:text="${product.viewCount}">조회수</td>
-                        <td th:text="${product.orderCount}">누적판매량</td>
-                        <td th:text="${product.isSoldOut ? '품절' : '판매중'}">품절여부</td>
-                        <td th:text="${#temporals.format(product.createdAt, 'yyyy-MM-dd HH:mm:ss')}">게시 날짜</td>
-                        <td th:text="${#temporals.format(product.updatedAt, 'yyyy-MM-dd HH:mm:ss')}">최종 수정 날짜</td>
+                        <td style="text-align: center;" th:text="${product.id}">번호</td>
+                        <td style="text-align: center;" th:text="${product.name}">이름</td>
+                        <td style="text-align: center;" th:text="${product.subcategory != null ? product.subcategory.subcategoryName : '없음'}">분류</td>
+                        <td style="text-align: center;" th:text="${product.price}">가격</td>
+                        <td style="text-align: center;" th:text="${product.discountRate}">할인율</td>
+                        <td style="text-align: center;" th:text="${product.expirationDate != null ? product.expirationDate : '없음'}">유통기한</td>
+                        <td style="text-align: center;" th:text="${product.stock}">수량</td>
+                        <td style="text-align: center;" th:text="${product.viewCount}">조회수</td>
+                        <td style="text-align: center;" th:text="${product.orderCount}">누적판매량</td>
+                        <td style="text-align: center;" th:text="${product.isSoldOut ? '품절' : '판매중'}">품절여부</td>
+                        <td style="text-align: center;" th:text="${#temporals.format(product.createdAt, 'yyyy-MM-dd HH:mm:ss')}">게시 날짜</td>
+                        <td style="text-align: center;" th:text="${#temporals.format(product.updatedAt, 'yyyy-MM-dd HH:mm:ss')}">최종 수정 날짜</td>
                         <td>
                             <a href="#" th:href="@{/admin/products/{id}/edit(id=${product.id})}"
                                class="btn btn-primary" role="button" onclick="event.stopPropagation();">수정</a>
