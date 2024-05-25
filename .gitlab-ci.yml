@@ -23,9 +23,9 @@ compile:
 test:
   stage: test
   before_script: 
-    - echo $PATH
     - export PATH="/home/ubuntu/.sdkman/candidates/gradle/current/bin:$PATH"
   script:
+    - cat $ENV_YML > src/main/resources/env.yml
     - gradle build test
   tags:
     - test
@@ -41,6 +41,7 @@ build:
   variables:
     DOCKER_TLS_CERTDIR: "/certs"
   before_script:
+    - cat $ENV_YML > src/main/resources/env.yml
     - echo $DOCKER_REGISTRY_PASS | docker login --username $DOCKER_REGISTRY_USER --password-stdin
   script:
     - docker build -t $IMAGE_NAME:$IMAGE_TAG .
@@ -62,4 +63,3 @@ deploy:
     - deploy
   rules:
     - if: $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "main"
-
