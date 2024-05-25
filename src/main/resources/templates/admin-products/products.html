@@ -104,7 +104,8 @@
                         <td th:text="${#temporals.format(product.createdAt, 'yyyy-MM-dd HH:mm:ss')}">게시 날짜</td>
                         <td th:text="${#temporals.format(product.updatedAt, 'yyyy-MM-dd HH:mm:ss')}">최종 수정 날짜</td>
                         <td>
-                            <a href="#" th:href="@{/seller/{id}/edit(id=${product.id})}" class="btn btn-primary" role="button">수정</a>
+                            <a href="#" th:href="@{/admin/products/{id}/edit(id=${product.id})}"
+                               class="btn btn-primary" role="button" onclick="event.stopPropagation();">수정</a>
                         </td>
                         <td>
                             <button class="btn btn-danger" th:attr="data-product-id=${product.id}" onclick="openModal(this.getAttribute('data-product-id'), event)">삭제</button>
@@ -122,11 +123,11 @@
     <div class="modal-background"></div>
     <div class="modal-card">
         <header class="modal-card-head">
-            <p class="modal-card-title">제품 삭제 확인</p>
+            <p class="modal-card-title">상품 삭제 확인</p>
             <button class="delete" aria-label="close" onclick="closeModal()"></button>
         </header>
         <section class="modal-card-body">
-            제품을 삭제하시겠습니까?
+            상품을 삭제하게 되면 복구할 수 없습니다. 정말로 해당 상품을 삭제하시겠습니까?
         </section>
         <footer class="modal-card-foot">
             <button class="button is-danger" id="confirmDelete">삭제</button>
