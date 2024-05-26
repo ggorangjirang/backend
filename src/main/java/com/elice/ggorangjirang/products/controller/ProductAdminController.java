@@ -1,5 +1,6 @@
 package com.elice.ggorangjirang.products.controller;
 
+import com.elice.ggorangjirang.amazonS3.service.S3Service;
 import com.elice.ggorangjirang.products.dto.AddProductRequest;
 import com.elice.ggorangjirang.products.dto.UpdateProductRequest;
 import com.elice.ggorangjirang.products.entity.Product;
@@ -10,7 +11,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 @Controller
@@ -20,6 +23,7 @@ public class ProductAdminController {
 
     private final SubcategoryService subcategoryService;
     private final ProductService productService;
+    private final S3Service s3Service;
 
     @GetMapping
     public String getProducts(Model model) {
@@ -41,7 +45,10 @@ public class ProductAdminController {
     }
 
     @PostMapping("/add")
-    public String createProduct(@ModelAttribute AddProductRequest request) {
+    public String createProduct(@ModelAttribute AddProductRequest request,
+                                @RequestParam("imageFile") MultipartFile imageFile) throws IOException {
+        String imageUrl = s3Service.uploadFile(imageFile);
+        request.setImageUrl(imageUrl);
         productService.createProduct(request);
         return "redirect:/admin/products";
     }
