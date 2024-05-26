@@ -28,13 +28,13 @@ public class CartService {
 //            .build();
 //
 //        Cart savedCart = cartRepository.save(cart);
-//        return CartDto.fromEntity(savedCart);
+//        return CartDto.toDto(savedCart);
 //    }
 
     @Transactional(readOnly = true)
     public CartDto getCartById(Long id) {
         Optional<Cart> cart = cartRepository.findById(id);
-        return cart.map(CartDto::fromEntity).orElse(null);
+        return cart.map(CartDto::toDto).orElse(null);
     }
 
     @Transactional

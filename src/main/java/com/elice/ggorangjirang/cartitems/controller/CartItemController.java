@@ -1,6 +1,7 @@
 package com.elice.ggorangjirang.cartitems.controller;
 
 import com.elice.ggorangjirang.cartitems.dto.CartItemDto;
+import com.elice.ggorangjirang.cartitems.dto.CartItemRequestDto;
 import com.elice.ggorangjirang.cartitems.service.CartItemService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -16,8 +17,12 @@ public class CartItemController {
     private final CartItemService cartItemService;
 
     @PostMapping
-    public ResponseEntity<CartItemDto> addCartItem(@RequestParam Long cartId, @RequestParam Long productId, @RequestParam int quantity) {
-        CartItemDto cartItemDto = cartItemService.addCartItem(cartId, productId, quantity);
+    public ResponseEntity<CartItemDto> addCartItem(@RequestBody CartItemRequestDto cartItemRequestDto) {
+        CartItemDto cartItemDto = cartItemService.addCartItem(
+            cartItemRequestDto.getCartId(),
+            cartItemRequestDto.getProductId(),
+            cartItemRequestDto.getQuantity()
+        );
         return ResponseEntity.ok(cartItemDto);
     }
 
@@ -27,15 +32,15 @@ public class CartItemController {
         return ResponseEntity.ok(cartItems);
     }
 
-    @PutMapping("/{cartItemId}")
-    public ResponseEntity<CartItemDto> updateCartItem(@PathVariable Long cartItemId, @RequestParam int quantity) {
-        CartItemDto cartItemDto = cartItemService.updateCartItem(cartItemId, quantity);
+    @PutMapping("/{id}")
+    public ResponseEntity<CartItemDto> updateCartItem(@PathVariable Long id, @RequestParam int quantity) {
+        CartItemDto cartItemDto = cartItemService.updateCartItem(id, quantity);
         return ResponseEntity.ok(cartItemDto);
     }
 
-    @DeleteMapping("/{cartItemId}")
-    public ResponseEntity<Void> deleteCartItem(@PathVariable Long cartItemId) {
-        cartItemService.deleteCartItem(cartItemId);
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteCartItem(@PathVariable Long id) {
+        cartItemService.deleteCartItem(id);
         return ResponseEntity.noContent().build();
     }
 }
