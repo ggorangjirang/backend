@@ -121,7 +121,7 @@ public class Product {
         this.subcategory = subcategory;
     }
 
-    // ProductController 에서 호출하기
+    // 상세 페이지 접속 시 조회수 1 증가
     public void addViewCount() {
         this.viewCount += 1;
     }
