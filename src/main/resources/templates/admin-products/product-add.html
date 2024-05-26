@@ -16,6 +16,7 @@
             src="https://kit.fontawesome.com/9daa42bcef.js"
             crossorigin="anonymous"
     ></script>
+
     <!-- AWS S3 사용하기 위한 파일 -->
     <script src="https://sdk.amazonaws.com/js/aws-sdk-2.410.0.min.js"></script>
     <!-- 커스텀 css, js -->
@@ -48,7 +49,8 @@
             <form class="box register-product-form-box"
                   id="registerProductForm"
                   th:action="@{/admin/products/add}"
-                  method="post">
+                  method="post"
+                  enctype="multipart/form-data">
                 <p class="title is-5" style="color: #edb946">상품 추가하기</p>
                 <div class="field">
                     <label class="label" for="name">상품명</label>
@@ -153,17 +155,27 @@
                     </div>
                 </div>
 
-                <div class="field">
-                    <label class="label" for="imageUrlInput">상품 이미지 URL</label>
-                    <div class="control">
-                        <input
-                                class="input"
-                                id="imageUrlInput"
-                                type="text"
-                                placeholder="이미지 URL을 입력해주세요."
-                                autocomplete="on"
-                                name="imageUrl"
-                        />
+                <div class="field is-fullwidth mb-5">
+                    <label class="label" for="imageInput">상품 이미지</label>
+                    <div class="file has-name is-fullwidth">
+                        <label class="file-label">
+                            <input
+                                    class="file-input"
+                                    id="imageInput"
+                                    type="file"
+                                    name="imageFile"
+                                    accept="image/*"
+                            />
+                            <span class="file-cta">
+                    <span class="file-icon">
+                      <i class="fas fa-upload"></i>
+                    </span>
+                    <span class="file-label"> 사진 업로드 </span>
+                  </span>
+                            <span class="file-name" id="fileNameSpan">
+                    사진파일 (png, jpg, jpeg)
+                  </span>
+                        </label>
                     </div>
                 </div>
 
