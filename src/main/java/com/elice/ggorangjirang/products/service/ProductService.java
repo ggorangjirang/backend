@@ -156,6 +156,9 @@ public class ProductService {
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Product not found with id: " + id));
 
+        product.addViewCount();
+        productRepository.save(product);
+
         String subcategoryName = product.getSubcategory() != null ?
                 product.getSubcategory().getSubcategoryName() :
                 null;
