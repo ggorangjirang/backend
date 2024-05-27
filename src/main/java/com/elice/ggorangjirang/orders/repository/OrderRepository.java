@@ -7,5 +7,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface OrderRepository extends JpaRepository<Order, Long> {
 
   // 추후 userId 매핑 후 변경
-  List<Order> findAllByUserId(Long userId);
+  List<Order> findAllByUsers_Id(Long userId);
 }
