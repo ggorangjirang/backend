@@ -78,10 +78,10 @@ public class ReviewService {
         Users user = userRepository.findById(request.getUserId())
                 .orElseThrow(() -> new IllegalArgumentException("not found: " + request.getUserId()));
 
-//        boolean hasPurchased = orderItemRepository.existsByUserIdAndProductId(request.getUserId(), request.getProductId());
-//        if (!hasPurchased) {
-//            throw new IllegalStateException("상품 구매 내역이 없습니다.");
-//        }
+        boolean hasPurchased = orderItemRepository.existsByUserIdAndProductId(request.getUserId(), request.getProductId());
+        if (!hasPurchased) {
+            throw new IllegalStateException("상품 구매 내역이 없습니다.");
+        }
 
         Review review = Review.builder()
                 .title(request.getTitle())
