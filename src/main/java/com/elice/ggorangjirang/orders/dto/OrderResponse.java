@@ -13,6 +13,7 @@ public class OrderResponse {
   private final String orderStatus;
   private final String orderNumber;
   private final String deliveryStatus;
+  private final int totalAllPrice;
   private final List<OrderItemResponse> orderItems;
 
 
@@ -26,5 +27,6 @@ public class OrderResponse {
     this.orderDate = order.getOrderDate();
     this.orderStatus = order.getOrderStatus().name();
     this.orderNumber = order.getOrderNumber();
+    this.totalAllPrice = order.getTotalAllPrice();
   }
 }

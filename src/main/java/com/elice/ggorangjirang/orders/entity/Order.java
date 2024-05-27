@@ -58,6 +58,8 @@ public class Order {
   @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
   private List<OrderItem> orderItems = new ArrayList<>();
 
+  private int totalAllPrice;
+
   //양방향
   public void addOrderItem(OrderItem orderItem){
     orderItems.add(orderItem);
@@ -78,9 +80,13 @@ public class Order {
     order.setOrderNumber(order.generateOrderNumber());
     order.setDeliveries(delivery);
 
+    int total = 0;
+
     for(OrderItem orderItem : orderItems){
       order.addOrderItem(orderItem);
+      total += orderItem.getOrderPrice();
     }
+    order.setTotalAllPrice(total);
     order.setOrderStatus(OrderStatus.ORDER);
     order.setOrderDate(LocalDateTime.now());
 
