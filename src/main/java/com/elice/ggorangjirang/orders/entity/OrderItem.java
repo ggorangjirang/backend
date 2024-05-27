@@ -49,6 +49,9 @@ public class OrderItem {
     orderItem.setOrderPrice(orderPrice);
     orderItem.setQuantity(quantity);
 
+    product.updateStock(quantity);
+    product.addOrderCount(quantity);
+
     return orderItem;
   }
 
