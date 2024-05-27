@@ -67,7 +67,11 @@ public class ProductAdminController {
     }
 
     @PostMapping("/{id}/edit")
-    public String editProduct(@PathVariable("id") Long id, @ModelAttribute UpdateProductRequest request) {
+    public String editProduct(@PathVariable("id") Long id,
+                              @ModelAttribute UpdateProductRequest request,
+                              @RequestParam("imageFile") MultipartFile imageFile) throws IOException {
+        String imageUrl = s3Service.uploadFile(imageFile);
+        request.setImageUrl(imageUrl);
         Product updatedProduct = productService.updateProduct(id, request);
         return "redirect:/admin/products";
     }
