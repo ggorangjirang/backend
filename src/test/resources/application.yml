@@ -1,6 +1,9 @@
 spring:
   application:
     name: ggorangjirang
+  sql:
+    init:
+      mode: never
 
 jwt:
   secretKey: ${JWT_SECRET_KEY}
