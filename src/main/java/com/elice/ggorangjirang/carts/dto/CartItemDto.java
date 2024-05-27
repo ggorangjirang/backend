@@ -1,6 +1,6 @@
-package com.elice.ggorangjirang.cartitems.dto;
+package com.elice.ggorangjirang.carts.dto;
 
-import com.elice.ggorangjirang.cartitems.entity.CartItem;
+import com.elice.ggorangjirang.carts.entity.CartItem;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;

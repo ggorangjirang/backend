@@ -1,7 +1,6 @@
 package com.elice.ggorangjirang.carts.dto;
 
 import com.elice.ggorangjirang.carts.entity.Cart;
-import com.elice.ggorangjirang.cartitems.dto.CartItemDto;
 import lombok.Builder;
 import lombok.Data;
 
