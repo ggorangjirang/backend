@@ -46,7 +46,7 @@ public class SubcategoryAdminController {
     }
 
     @GetMapping("/{id}/edit")
-    public String showSubcategoryEditPage(@PathVariable Long id, Model model) {
+    public String showSubcategoryEditPage(@PathVariable("id") Long id, Model model) {
         List<Category> categories = categoryService.findCategories();
         model.addAttribute("categories", categories);
 
@@ -59,13 +59,13 @@ public class SubcategoryAdminController {
     }
 
     @PostMapping("/{id}/edit")
-    public String editSubcategory(@PathVariable Long id, @ModelAttribute UpdateSubcategoryRequest request) {
+    public String editSubcategory(@PathVariable("id") Long id, @ModelAttribute UpdateSubcategoryRequest request) {
         Subcategory updatedSubcategory = subcategoryService.updateSubcategory(id, request);
         return "redirect:/admin/subcategories";
     }
 
     @DeleteMapping("/{id}")
-    public String deleteSubcategory(@PathVariable Long id) {
+    public String deleteSubcategory(@PathVariable("id") Long id) {
         subcategoryService.deleteSubcategory(id);
         return "redirect:/admin/subcategories";
     }
