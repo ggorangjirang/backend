@@ -1,6 +1,6 @@
-package com.elice.ggorangjirang.cartitems.service;
+package com.elice.ggorangjirang.carts.service;
 
-import com.elice.ggorangjirang.cartitems.dto.CartItemDto;
+import com.elice.ggorangjirang.carts.dto.CartItemDto;
 
 import java.util.List;
 

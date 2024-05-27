@@ -1,8 +1,8 @@
-package com.elice.ggorangjirang.cartitems.controller;
+package com.elice.ggorangjirang.carts.controller;
 
-import com.elice.ggorangjirang.cartitems.dto.CartItemDto;
-import com.elice.ggorangjirang.cartitems.dto.CartItemRequestDto;
-import com.elice.ggorangjirang.cartitems.service.CartItemService;
+import com.elice.ggorangjirang.carts.dto.CartItemDto;
+import com.elice.ggorangjirang.carts.dto.CartItemRequestDto;
+import com.elice.ggorangjirang.carts.service.CartItemService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
