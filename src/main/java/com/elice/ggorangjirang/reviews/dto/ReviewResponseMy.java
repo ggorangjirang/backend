@@ -1,6 +1,5 @@
 package com.elice.ggorangjirang.reviews.dto;
 
-import com.elice.ggorangjirang.reviews.entity.Review;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -8,10 +7,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
-public class AddReviewRequest {
+public class ReviewResponseMy {
     private String title;
     private String content;
     private String imageUrl;
-    private Long productId;
-    private Long userId;
+    private String productName;
 }
