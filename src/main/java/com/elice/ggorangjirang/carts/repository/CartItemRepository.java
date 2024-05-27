@@ -1,6 +1,6 @@
-package com.elice.ggorangjirang.cartitems.repository;
+package com.elice.ggorangjirang.carts.repository;
 
-import com.elice.ggorangjirang.cartitems.entity.CartItem;
+import com.elice.ggorangjirang.carts.entity.CartItem;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

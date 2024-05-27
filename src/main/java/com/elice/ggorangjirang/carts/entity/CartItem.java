@@ -1,14 +1,9 @@
-package com.elice.ggorangjirang.cartitems.entity;
+package com.elice.ggorangjirang.carts.entity;
 
-import com.elice.ggorangjirang.carts.entity.Cart;
 import com.elice.ggorangjirang.products.entity.Product;
 import jakarta.persistence.*;
 import lombok.*;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
-
-import java.time.LocalDateTime;
 
 @Builder
 @Data
@@ -16,12 +11,12 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @EntityListeners(AuditingEntityListener.class)
-@Table(name = "cart_item")
+@Table(name = "cart_items")
 public class CartItem {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long cartItemId;
+    private Long id;
 
     @ManyToOne
     @JoinColumn(name = "cart_id", nullable = false)
@@ -33,12 +28,4 @@ public class CartItem {
 
     @Column(name = "quantity", nullable = false)
     private int quantity;
-
-    @CreatedDate
-    @Column(name = "created_at", updatable = false)
-    private LocalDateTime createdAt;
-
-    @LastModifiedDate
-    @Column(name = "updated_at")
-    private LocalDateTime updatedAt;
 }

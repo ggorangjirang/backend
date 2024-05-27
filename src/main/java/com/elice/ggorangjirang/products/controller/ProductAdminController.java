@@ -54,7 +54,7 @@ public class ProductAdminController {
     }
 
     @GetMapping("/{id}/edit")
-    public String showProductEditPage(@PathVariable Long id, Model model) {
+    public String showProductEditPage(@PathVariable("id") Long id, Model model) {
         List<Subcategory> subcategories = subcategoryService.findSubcategories();
         model.addAttribute("subcategories", subcategories);
 
@@ -67,13 +67,17 @@ public class ProductAdminController {
     }
 
     @PostMapping("/{id}/edit")
-    public String editProduct(@PathVariable Long id, @ModelAttribute UpdateProductRequest request) {
+    public String editProduct(@PathVariable("id") Long id,
+                              @ModelAttribute UpdateProductRequest request,
+                              @RequestParam("imageFile") MultipartFile imageFile) throws IOException {
+        String imageUrl = s3Service.uploadFile(imageFile);
+        request.setImageUrl(imageUrl);
         Product updatedProduct = productService.updateProduct(id, request);
         return "redirect:/admin/products";
     }
 
     @PostMapping("/{id}")
-    public String deleteProduct(@PathVariable Long id) {
+    public String deleteProduct(@PathVariable("id") Long id) {
         productService.deleteProduct(id);
         return "redirect:/admin/products";
     }

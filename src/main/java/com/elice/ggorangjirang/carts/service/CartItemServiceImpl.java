@@ -1,8 +1,8 @@
-package com.elice.ggorangjirang.cartitems.service;
+package com.elice.ggorangjirang.carts.service;
 
-import com.elice.ggorangjirang.cartitems.dto.CartItemDto;
-import com.elice.ggorangjirang.cartitems.entity.CartItem;
-import com.elice.ggorangjirang.cartitems.repository.CartItemRepository;
+import com.elice.ggorangjirang.carts.dto.CartItemDto;
+import com.elice.ggorangjirang.carts.entity.CartItem;
+import com.elice.ggorangjirang.carts.repository.CartItemRepository;
 import com.elice.ggorangjirang.carts.entity.Cart;
 import com.elice.ggorangjirang.carts.repository.CartRepository;
 import com.elice.ggorangjirang.products.entity.Product;
@@ -12,17 +12,17 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-public class CartItemService {
+public class CartItemServiceImpl implements CartItemService {
 
     private final CartItemRepository cartItemRepository;
     private final ProductRepository productRepository;
     private final CartRepository cartRepository;
 
+    @Override
     @Transactional
     public CartItemDto addCartItem(Long cartId, Long productId, int quantity) {
         Product product = productRepository.findById(productId)
@@ -37,17 +37,19 @@ public class CartItemService {
 
         CartItem savedCartItem = cartItemRepository.save(cartItem);
 
-        return CartItemDto.fromEntity(savedCartItem);
+        return CartItemDto.toDto(savedCartItem);
     }
 
+    @Override
     @Transactional(readOnly = true)
     public List<CartItemDto> getCartItems(Long cartId) {
         List<CartItem> cartItems = cartItemRepository.findByCartId(cartId);
         return cartItems.stream()
-            .map(CartItemDto::fromEntity)
+            .map(CartItemDto::toDto)
             .collect(Collectors.toList());
     }
 
+    @Override
     @Transactional
     public CartItemDto updateCartItem(Long cartItemId, int quantity) {
         CartItem cartItem = cartItemRepository.findById(cartItemId)
@@ -55,9 +57,10 @@ public class CartItemService {
 
         cartItem.setQuantity(quantity);
 
-        return CartItemDto.fromEntity(cartItem);
+        return CartItemDto.toDto(cartItem);
     }
 
+    @Override
     @Transactional
     public void deleteCartItem(Long cartItemId) {
         cartItemRepository.deleteById(cartItemId);

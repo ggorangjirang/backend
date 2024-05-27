@@ -1,6 +1,7 @@
 package com.elice.ggorangjirang.reviews.entity;
 
 import com.elice.ggorangjirang.products.entity.Product;
+import com.elice.ggorangjirang.users.entity.Users;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -41,16 +42,16 @@ public class Review {
     @JoinColumn(name = "product_id", nullable = false)
     private Product product;
 
-//    @ManyToOne
-//    @JoinColumn(name = "user_id", nullable = false)
-//    private User user;
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    private Users user;
 
     @Builder
-    public Review(String title, String content, String imageUrl, Product product/*, User user*/) {
+    public Review(String title, String content, String imageUrl, Product product, Users user) {
         this.title = title;
         this.content = content;
         this.imageUrl = imageUrl;
         this.product = product;
-        /* this.user = user; */
+        this.user = user;
     }
 }

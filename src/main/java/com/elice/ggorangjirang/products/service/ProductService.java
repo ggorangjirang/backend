@@ -1,6 +1,7 @@
 package com.elice.ggorangjirang.products.service;
 
 import com.elice.ggorangjirang.products.dto.AddProductRequest;
+import com.elice.ggorangjirang.products.dto.DetailProductResponse;
 import com.elice.ggorangjirang.products.dto.ListProductResponse;
 import com.elice.ggorangjirang.products.dto.UpdateProductRequest;
 import com.elice.ggorangjirang.products.entity.Product;
@@ -65,8 +66,12 @@ public class ProductService {
     }
 
     private ListProductResponse convertToListProductResponse(Product product) {
-        return new ListProductResponse(product.getName(), product.getDiscountRate(), product.getPrice(),
-                product.getImageUrl(), product.getStock());
+        return new ListProductResponse(
+                product.getName(),
+                product.getDiscountRate(),
+                product.getPrice(),
+                product.getImageUrl(),
+                product.getStock());
     }
 
     public List<ListProductResponse> getEightLimitedSaleProducts() {
@@ -127,5 +132,51 @@ public class ProductService {
         Pageable pageable = PageRequest.of(page, size);
         Page<Product> productPage = productRepository.findByViewCountDesc(pageable);
         return productPage.map(this::convertToListProductResponse);
+    }
+
+    public Page<ListProductResponse> getProductsByCategory(Long categoryId, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Product> productPage = productRepository.findByCategory(categoryId, pageable);
+        return productPage.map(this::convertToListProductResponse);
+    }
+
+    public Page<ListProductResponse> getProductsBySubcategory(Long subcategoryId, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Product> productPage = productRepository.findBySubcategory(subcategoryId, pageable);
+        return productPage.map(this::convertToListProductResponse);
+    }
+
+    public Page<ListProductResponse> getProductsByKeyword(String keyword, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Product> productPage = productRepository.findByKeyword(keyword, pageable);
+        return productPage.map(this::convertToListProductResponse);
+    }
+
+    public DetailProductResponse getProductDetail(Long id) {
+        Product product = productRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Product not found with id: " + id));
+
+        product.addViewCount();
+        productRepository.save(product);
+
+        String subcategoryName = product.getSubcategory() != null ?
+                product.getSubcategory().getSubcategoryName() :
+                null;
+
+        String categoryName = product.getSubcategory() != null && product.getSubcategory().getCategory() != null ?
+                product.getSubcategory().getCategory().getCategoryName() :
+                null;
+
+        return new DetailProductResponse(
+                product.getName(),
+                product.getDiscountRate(),
+                product.getPrice(),
+                product.getImageUrl(),
+                product.getStock(),
+                product.getExpirationDate(),
+                subcategoryName,
+                categoryName,
+                product.getDescription(),
+                product.isSoldOut());
     }
 }
