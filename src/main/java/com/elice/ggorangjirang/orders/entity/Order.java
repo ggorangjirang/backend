@@ -1,6 +1,8 @@
 package com.elice.ggorangjirang.orders.entity;
 
 import com.elice.ggorangjirang.deliveries.entity.Deliveries;
+import com.elice.ggorangjirang.users.entity.Users;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -11,12 +13,15 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -40,14 +45,20 @@ public class Order {
 
   private LocalDateTime orderDate;
 
+  @Column(nullable = false, unique = true)
+  private String orderNumber;
+
   @Enumerated(EnumType.STRING)
   private OrderStatus orderStatus;
 
-  // User 매핑
-  private Long userId;
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "user_id")
+  private Users users;
 
   @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
   private List<OrderItem> orderItems = new ArrayList<>();
+
+  private int totalAllPrice;
 
   //양방향
   public void addOrderItem(OrderItem orderItem){
@@ -63,19 +74,31 @@ public class Order {
   }
 
   // 주문 생성
-  public static Order createOrder(Long userId, Deliveries delivery, List<OrderItem> orderItems){
+  public static Order createOrder(Users users, Deliveries delivery, List<OrderItem> orderItems){
     Order order = new Order();
-    order.setUserId(userId);
-
+    order.setUsers(users);
+    order.setOrderNumber(order.generateOrderNumber());
     order.setDeliveries(delivery);
+
+    int total = 0;
 
     for(OrderItem orderItem : orderItems){
       order.addOrderItem(orderItem);
+      total += orderItem.getOrderPrice();
     }
+    order.setTotalAllPrice(total);
     order.setOrderStatus(OrderStatus.ORDER);
     order.setOrderDate(LocalDateTime.now());
 
     return order;
   }
 
+  private String generateOrderNumber(){
+    SecureRandom random = new SecureRandom();
+    long currentTimeMillis = System.currentTimeMillis();
+    int randomInt = random.nextInt(100000);
+    String timeHex = Long.toHexString(currentTimeMillis);
+    String randomHex = Integer.toHexString(randomInt);
+    return timeHex.substring(timeHex.length() - 4) + randomHex.substring(randomHex.length() - 4);
+  }
 }

@@ -53,7 +53,12 @@ public class Users {
     private String socialId;
 
     private String refreshToken;
-
+    public Users(String name, String email, String password){
+        this.name = name;
+        this.password = password;
+        this.email = email;
+        this.createdAt = LocalDateTime.now();
+    }
     // 유저 권한 설정 메소드
     public void authorizeUsers() {
         this.role = Role.USER;
