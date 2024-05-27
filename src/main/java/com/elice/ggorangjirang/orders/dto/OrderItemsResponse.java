@@ -4,7 +4,7 @@ import com.elice.ggorangjirang.orders.entity.OrderItem;
 import lombok.Getter;
 
 @Getter
-public class OrderItemResponse {
+public class OrderItemsResponse {
 
   private final int quantity;
   private final int orderPrice;
@@ -13,7 +13,7 @@ public class OrderItemResponse {
   private final String description;
   private final int totalPrice;
 
-  public OrderItemResponse(OrderItem orderItem){
+  public OrderItemsResponse(OrderItem orderItem){
     this.quantity = orderItem.getQuantity();
     this.orderPrice = orderItem.getOrderPrice();
     this.productName = orderItem.getProduct().getName();

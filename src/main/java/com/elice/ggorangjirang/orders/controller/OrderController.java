@@ -34,7 +34,7 @@ public class OrderController {
   @PostMapping("")
   public ResponseEntity<Void> saveOrder(@RequestBody OrderRequest request){
     // 추후에 유저 검증 서비스 생기면 변경 예정
-    Users uesrs = new Users("테스트","test@test.com","1234");
+    Users users = new Users("테스트","test@test.com","1234");
     Deliveries deliveries = deliveryService.getDeliveryById(request.getDeliveryId());
 
     List<OrderItem> orderItems = new ArrayList<>();
@@ -43,7 +43,7 @@ public class OrderController {
       orderItems.add(orderItemService.findById(orderItemId));
     }
 
-    Order order = orderService.create(uesrs, deliveries,orderItems);
+    Order order = orderService.create(users, deliveries,orderItems);
 
     return ResponseEntity.ok().build();
   }
