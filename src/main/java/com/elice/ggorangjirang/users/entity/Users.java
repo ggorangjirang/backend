@@ -1,5 +1,6 @@
 package com.elice.ggorangjirang.users.entity;
 
+import com.elice.ggorangjirang.reviews.entity.Review;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.context.annotation.Bean;
@@ -8,6 +9,8 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Table(name = "users")
 @Entity
