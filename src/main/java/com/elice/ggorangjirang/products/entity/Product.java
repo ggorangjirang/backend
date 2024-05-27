@@ -1,7 +1,6 @@
 package com.elice.ggorangjirang.products.entity;
 
-import com.elice.ggorangjirang.cartitems.entity.CartItem;
-import com.elice.ggorangjirang.categories.entity.Category;
+import com.elice.ggorangjirang.carts.entity.CartItem;
 import com.elice.ggorangjirang.orders.entity.OrderItem;
 import com.elice.ggorangjirang.reviews.entity.Review;
 import com.elice.ggorangjirang.subcategories.entity.Subcategory;

@@ -1,4 +1,4 @@
-package com.elice.ggorangjirang.cartitems.dto;
+package com.elice.ggorangjirang.carts.dto;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;

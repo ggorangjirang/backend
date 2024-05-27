@@ -1,9 +1,8 @@
-package com.elice.ggorangjirang.cartitems.service.impl;
+package com.elice.ggorangjirang.carts.service;
 
-import com.elice.ggorangjirang.cartitems.dto.CartItemDto;
-import com.elice.ggorangjirang.cartitems.entity.CartItem;
-import com.elice.ggorangjirang.cartitems.repository.CartItemRepository;
-import com.elice.ggorangjirang.cartitems.service.CartItemService;
+import com.elice.ggorangjirang.carts.dto.CartItemDto;
+import com.elice.ggorangjirang.carts.entity.CartItem;
+import com.elice.ggorangjirang.carts.repository.CartItemRepository;
 import com.elice.ggorangjirang.carts.entity.Cart;
 import com.elice.ggorangjirang.carts.repository.CartRepository;
 import com.elice.ggorangjirang.products.entity.Product;
