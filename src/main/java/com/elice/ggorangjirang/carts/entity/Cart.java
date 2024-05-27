@@ -1,6 +1,5 @@
 package com.elice.ggorangjirang.carts.entity;
 
-import com.elice.ggorangjirang.cartitems.entity.CartItem;
 //import com.elice.ggorangjirang.users.entity.Users;
 import jakarta.persistence.*;
 import lombok.*;

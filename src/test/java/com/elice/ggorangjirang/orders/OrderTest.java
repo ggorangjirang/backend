@@ -7,6 +7,7 @@ import com.elice.ggorangjirang.orders.entity.Order;
 import com.elice.ggorangjirang.orders.entity.OrderItem;
 import com.elice.ggorangjirang.orders.entity.OrderStatus;
 import com.elice.ggorangjirang.products.entity.Product;
+import com.elice.ggorangjirang.users.entity.Users;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -84,9 +85,9 @@ public class OrderTest {
   @DisplayName("주문 객체 생성 테스트")
   @Test
   public void addOrderTest() {
-    Long userId = 1L;
+    Users uesrs = new Users("테스트","test@test.com","1234");
     // when
-    Order order = Order.createOrder(userId, delivery, orderItems);
+    Order order = Order.createOrder(uesrs, delivery, orderItems);
 
     // then
     assertEquals(order.getDeliveries(), delivery);

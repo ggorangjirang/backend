@@ -20,15 +20,15 @@ spring:
       ddl-auto: update
     defer-datasource-initialization: true
 
-cloud:
-  aws:
-    credentials:
-      secret-key: ${AWS_S3_SECRET_KEY}
-      access-key: ${AWS_S3_ACCESS_KEY}
-    s3:
-      bucket: ggorangjirang-s3
-      upload-temp: images/upload/products/
-    region:
-      static: ap-northeast-2
-    stack:
-      auto: 'false'
+  cloud:
+    aws:
+      credentials:
+        secret-key: ${AWS_S3_SECRET_KEY}
+        access-key: ${AWS_S3_ACCESS_KEY}
+      s3:
+        bucket: ggorangjirang-s3
+        upload-temp: images/upload/products/
+      region:
+        static: ap-northeast-2
+      stack:
+        auto: 'false'

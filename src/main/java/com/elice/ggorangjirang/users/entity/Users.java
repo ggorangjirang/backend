@@ -1,6 +1,5 @@
 package com.elice.ggorangjirang.users.entity;
 
-import com.elice.ggorangjirang.reviews.entity.Review;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.context.annotation.Bean;
@@ -9,8 +8,6 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
 @Table(name = "users")
 @Entity
@@ -71,8 +68,8 @@ public class Users {
     public void authorizeUsers() {
         this.role = Role.USER;
     }
-
     // 비밀번호 암호화 메소드
+    @Bean
     public void passwordEncode(PasswordEncoder passwordEncoder) {
         this.password = passwordEncoder.encode(this.password);
     }
