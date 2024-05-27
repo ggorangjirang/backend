@@ -4,7 +4,8 @@ import com.elice.ggorangjirang.orders.repository.OrderItemRepository;
 import com.elice.ggorangjirang.products.entity.Product;
 import com.elice.ggorangjirang.products.repository.ProductRepository;
 import com.elice.ggorangjirang.reviews.dto.AddReviewRequest;
-import com.elice.ggorangjirang.reviews.dto.ReviewResponse;
+import com.elice.ggorangjirang.reviews.dto.ReviewResponseMy;
+import com.elice.ggorangjirang.reviews.dto.ReviewResponsePublic;
 import com.elice.ggorangjirang.reviews.entity.Review;
 import com.elice.ggorangjirang.reviews.repository.ReviewRepository;
 import com.elice.ggorangjirang.users.entity.Users;
@@ -31,27 +32,43 @@ public class ReviewService {
         return reviewRepository.findAll();
     }
 
-    private ReviewResponse convertToReviewResponse(Review review) {
-        return new ReviewResponse(
+    // 상품 상세 페이지 review GET 요청에 대한 DTO 맵핑
+    private ReviewResponsePublic convertToReviewResponsePublic(Review review) {
+        String userIdentifier = review.getUser().getEmail() != null ?
+                review.getUser().getEmail() :
+                review.getUser().getSocialId();
+
+        String emailResponse = userIdentifier.substring(0, 3) + "****";
+
+        return new ReviewResponsePublic(
                 review.getTitle(),
                 review.getContent(),
                 review.getImageUrl(),
-                review.getUser().getEmail(),
+                emailResponse,
                 review.getCreatedAt());
     }
 
-    // 특정 상품을 기준으로 리뷰 가져오기
-    public Page<ReviewResponse> getReviewsByProduct(Long productId, int page, int size) {
+    private ReviewResponseMy convertToReviewResponseMy(Review review) {
+        return new ReviewResponseMy(
+                review.getTitle(),
+                review.getContent(),
+                review.getImageUrl(),
+                review.getProduct().getName());
+    }
+
+    // 상품 상세 페이지 review GET 요청 전달하기
+    public Page<ReviewResponsePublic> getReviewsByProduct(Long productId, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
         Page<Review> reviewPage = reviewRepository.findByProduct(productId, pageable);
-        return reviewPage.map(this::convertToReviewResponse);
+        return reviewPage.map(this::convertToReviewResponsePublic);
     }
 
     // 특정 유저의 아이디를 기준으로 리뷰 가져오기
-//    public List<ReviewResponse> getAllReviewsByUserId() {
-//        List<Review> reviews = reviewRepository.findReviewsByUserId();
-//
-//    }
+    public Page<ReviewResponseMy> getReviewByUserId(Long userId, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Review> reviewPage = reviewRepository.findByUserId(userId, pageable);
+        return reviewPage.map(this::convertToReviewResponseMy);
+    }
 
     @Transactional
     public Review addReview(AddReviewRequest request) {

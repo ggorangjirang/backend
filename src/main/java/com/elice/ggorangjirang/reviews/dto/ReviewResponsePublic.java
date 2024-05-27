@@ -9,10 +9,10 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
-public class ReviewResponse {
+public class ReviewResponsePublic {
     private String title;
     private String content;
     private String imageUrl;
-    private String userEmail;
+    private String emailResponse;
     private LocalDateTime createdAt;
 }
