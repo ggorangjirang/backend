@@ -5,6 +5,10 @@ SET FOREIGN_KEY_CHECKS = 0;
 TRUNCATE TABLE products;
 TRUNCATE TABLE subcategories;
 TRUNCATE TABLE categories;
+TRUNCATE TABLE orders;
+TRUNCATE TABLE order_item;
+TRUNCATE TABLE deliveries;
+TRUNCATE TABLE users;
 
 -- 외래 키 제약 조건 활성화
 SET FOREIGN_KEY_CHECKS = 1;
@@ -372,3 +376,32 @@ VALUES ('고양이 사료 추가9', 2, 2, 27700, 40, '2024-12-31', 3, 80, false,
 
 INSERT INTO products (name, subcategory_id, pseudo_category_id, price, discount_rate, expiration_date, stock, order_count, is_sold_out, created_at, updated_at, view_count, is_deleted, image_url, description)
 VALUES ('고양이 사료 추가10', 2, 2, 25600, 40, '2024-12-31', 1, 180, false, NOW(), NOW(), 1600, false, 'url', '추가10');
+
+-- 주소
+INSERT INTO deliveries (zipcode, street_address, detail_address, status, request, arrival_date, phone_number, name)
+    VALUE('12345', '123 test St', 'May 101', 'Pending', 'Testing~', '2024-06-01', 1234567890, 'Test');
+
+INSERT INTO deliveries (zipcode, street_address, detail_address, status, request, arrival_date, phone_number, name)
+    VALUE('12345', '123 test St', 'May 102', 'Pending', 'Testing~', '2024-06-01', 1234567890, 'Test2');
+
+-- 유저
+INSERT INTO users (id, name, password, email) VALUES (1, 'testname','test1234','test@test.com');
+INSERT INTO users (id, name, password, social_id) VALUES (2, 'testname1', 'test1234', 'test_social');
+
+-- 주문
+INSERT INTO orders (deliveries_id, order_date, order_number, order_status, user_id, total_all_price)
+VALUES (1, '2024-05-01T10:00:00', 'abcd1234', 'ORDER', 1, 3000);
+
+INSERT INTO orders (deliveries_id, order_date, order_number, order_status, user_id, total_all_price)
+VALUES (2, '2024-05-01T10:00:00', 'fead2342', 'ORDER', 1, 4000);
+
+
+-- 주문 아이템
+INSERT INTO order_item (order_price, quantity, order_id, product_id)
+VALUES (100,10,1,8);
+
+INSERT INTO order_item (order_price, quantity, order_id, product_id)
+VALUES (40,10,1,9);
+
+INSERT INTO order_item (order_price, quantity, order_id, product_id)
+VALUES (500,10,2,3);
