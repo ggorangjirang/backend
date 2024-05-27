@@ -1,9 +1,10 @@
 spring:
   application:
     name: ggorangjirang
-  sql:
+  sql:  # 이거 지우시면 안 되여
     init:
       mode: never
+
 
 jwt:
   secretKey: ${JWT_SECRET_KEY}
