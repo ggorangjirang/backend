@@ -45,8 +45,8 @@ public class Order {
 
   private LocalDateTime orderDate;
 
-//  @Column(nullable = false)
-//  private String orderNumber;
+  @Column(nullable = false)
+  private String orderNumber;
 
   @Enumerated(EnumType.STRING)
   private OrderStatus orderStatus;
@@ -77,14 +77,14 @@ public class Order {
   public static Order createOrder(Users users, Deliveries delivery, List<OrderItem> orderItems){
     Order order = new Order();
     order.setUsers(users);
-//    order.setOrderNumber(UUID.randomUUID().toString());
+    order.setOrderNumber(order.generateOrderNumber());
     order.setDeliveries(delivery);
 
     int total = 0;
 
     for(OrderItem orderItem : orderItems){
       order.addOrderItem(orderItem);
-      total += orderItem.getOrderPrice();
+      total += orderItem.getOrderPrice() * orderItem.getQuantity();
     }
     order.setTotalAllPrice(total);
     order.setOrderStatus(OrderStatus.ORDER);
@@ -93,14 +93,14 @@ public class Order {
     return order;
   }
 
-//  private String generateOrderNumber(){
-//    SecureRandom random = new SecureRandom();
-//    long currentTimeMillis = System.currentTimeMillis();
-//    int randomInt = random.nextInt(100000);
-//    String timeHex = Long.toHexString(currentTimeMillis);
-//    String randomHex = Integer.toHexString(randomInt);
-//    return timeHex.substring(timeHex.length() - 4) + randomHex.substring(randomHex.length() - 4);
-//  }
+  private String generateOrderNumber(){
+    SecureRandom random = new SecureRandom();
+    long currentTimeMillis = System.currentTimeMillis();
+    int randomInt = random.nextInt(100000);
+    String timeHex = Long.toHexString(currentTimeMillis);
+    String randomHex = Integer.toHexString(randomInt);
+    return timeHex.substring(timeHex.length() - 4) + randomHex.substring(randomHex.length() - 4);
+  }
 
   public void cancel() {
     if (this.orderStatus == OrderStatus.DELIVERY) {
