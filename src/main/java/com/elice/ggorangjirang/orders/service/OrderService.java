@@ -42,4 +42,22 @@ public class OrderService {
     orderRepository.deleteById(id);
   }
 
+  // 모든 주문 조회
+  public List<Order> findAll(){
+    return orderRepository.findAll();
+  }
+
+  // 주문 상태 취소
+  @Transactional
+  public void cancel(Long id){
+    Order order = findById(id);
+
+    if (order == null) {
+      throw new IllegalStateException("취소할 주문이 존재하지 않습니다. Id: " + id);
+    }
+
+    order.cancel();
+  }
+
+
 }
