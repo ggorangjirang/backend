@@ -16,7 +16,7 @@ public class DetailProductResponse {
     private String name;
     private float discountRate;
     private int price;
-    private String imageUrl;
+    private String productImageUrl;
     private int stock;
     private LocalDate expirationDate;
     private String subcategoryName;
