@@ -51,7 +51,7 @@ build:
     - build
   rules:
     - if: $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "main"
-    - when: manual
+      when: manual
 
 deploy:
   stage: deploy
@@ -65,4 +65,4 @@ deploy:
     - deploy
   rules:
     - if: $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "main"
-    - when: manual
+      when: manual
