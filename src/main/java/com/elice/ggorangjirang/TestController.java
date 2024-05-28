@@ -8,6 +8,11 @@ public class TestController {
 
   @GetMapping("/api/v1/hello")
   public String Hello(String name) {
-    return "Hello " + name;
+    return "Get Hello " + name;
+  }
+
+  @PostMapping("/api/v1/hello")
+  public String Hello(String name) {
+    return "Post Hello " + name;
   }
 }
