@@ -386,17 +386,22 @@ VALUE('12345', '123 test St', 'May 101', 'Pending', 'Testing~', '2024-06-01', 12
 INSERT INTO deliveries (zipcode, street_address, detail_address, status, request, arrival_date, phone_number, name)
 VALUE('12345', '123 test St', 'May 102', 'Pending', 'Testing~', '2024-06-01', 1234567890, 'Test2');
 
+INSERT INTO deliveries (zipcode, street_address, detail_address, status, request, arrival_date, phone_number, name)
+    VALUE('12345', '123 test St', 'May 102', 'Pending', 'Testing~', '2024-06-01', 1234567890, 'Test3');
+
 
 -- 유저
 INSERT INTO users (name, password, email) VALUES ('test','1234','test@test.com');
 
 
 -- 주문
-INSERT INTO orders (deliveries_id, order_date,order_status, user_id, total_all_price)
-VALUES (1, '2024-05-01T10:00:00','ORDER', 1, 3000);
+INSERT INTO orders (deliveries_id, order_date,  order_status, order_number,user_id, total_all_price)
+VALUES (1, '2024-05-01T10:00:00','ORDER','adf123', 1, 3000);
 
-INSERT INTO orders (deliveries_id, order_date, order_status, user_id, total_all_price)
-VALUES (2, '2024-05-01T10:00:00','ORDER', 1, 4000);
+INSERT INTO orders (deliveries_id, order_date,  order_status,order_number, user_id, total_all_price)
+VALUES (2, '2024-05-01T10:00:00','ORDER','bef234', 1, 4000);
+
+
 
 
 -- 주문 아이템
