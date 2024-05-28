@@ -45,8 +45,8 @@ public class Order {
 
   private LocalDateTime orderDate;
 
-  @Column(nullable = false, unique = true)
-  private String orderNumber;
+//  @Column(nullable = false)
+//  private String orderNumber;
 
   @Enumerated(EnumType.STRING)
   private OrderStatus orderStatus;
@@ -77,7 +77,7 @@ public class Order {
   public static Order createOrder(Users users, Deliveries delivery, List<OrderItem> orderItems){
     Order order = new Order();
     order.setUsers(users);
-    order.setOrderNumber(order.generateOrderNumber());
+//    order.setOrderNumber(UUID.randomUUID().toString());
     order.setDeliveries(delivery);
 
     int total = 0;
@@ -93,12 +93,26 @@ public class Order {
     return order;
   }
 
-  private String generateOrderNumber(){
-    SecureRandom random = new SecureRandom();
-    long currentTimeMillis = System.currentTimeMillis();
-    int randomInt = random.nextInt(100000);
-    String timeHex = Long.toHexString(currentTimeMillis);
-    String randomHex = Integer.toHexString(randomInt);
-    return timeHex.substring(timeHex.length() - 4) + randomHex.substring(randomHex.length() - 4);
+//  private String generateOrderNumber(){
+//    SecureRandom random = new SecureRandom();
+//    long currentTimeMillis = System.currentTimeMillis();
+//    int randomInt = random.nextInt(100000);
+//    String timeHex = Long.toHexString(currentTimeMillis);
+//    String randomHex = Integer.toHexString(randomInt);
+//    return timeHex.substring(timeHex.length() - 4) + randomHex.substring(randomHex.length() - 4);
+//  }
+
+  public void cancel() {
+    if (this.orderStatus == OrderStatus.DELIVERY) {
+      throw new IllegalStateException("배송 중인 상품은 취소가 불가능합니다.");
+    }
+    if (this.orderStatus == OrderStatus.COMPLETE) {
+      throw new IllegalStateException("이미 배송이 완료된 상품은 취소가 불가능합니다.");
+    }
+    if (this.orderStatus == OrderStatus.CANCEL) {
+      throw new IllegalStateException("이미 취소된 상품입니다.");
+    }
+
+    this.setOrderStatus(OrderStatus.CANCEL);
   }
 }

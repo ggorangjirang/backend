@@ -392,11 +392,11 @@ INSERT INTO users (name, password, email) VALUES ('test','1234','test@test.com')
 
 
 -- 주문
-INSERT INTO orders (deliveries_id, order_date, order_number, order_status, user_id, total_all_price)
-VALUES (1, '2024-05-01T10:00:00', 'abcd1234', 'ORDER', 1, 3000);
+INSERT INTO orders (deliveries_id, order_date,order_status, user_id, total_all_price)
+VALUES (1, '2024-05-01T10:00:00','ORDER', 1, 3000);
 
-INSERT INTO orders (deliveries_id, order_date, order_number, order_status, user_id, total_all_price)
-VALUES (2, '2024-05-01T10:00:00', 'fead2342', 'ORDER', 1, 4000);
+INSERT INTO orders (deliveries_id, order_date, order_status, user_id, total_all_price)
+VALUES (2, '2024-05-01T10:00:00','ORDER', 1, 4000);
 
 
 -- 주문 아이템

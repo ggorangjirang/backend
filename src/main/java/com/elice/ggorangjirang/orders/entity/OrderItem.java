@@ -58,5 +58,4 @@ public class OrderItem {
   public int getTotalPrice(){
     return this.orderPrice * this.quantity;
   }
-
 }
