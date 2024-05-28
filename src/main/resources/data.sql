@@ -10,6 +10,7 @@ TRUNCATE TABLE order_item;
 TRUNCATE TABLE deliveries;
 TRUNCATE TABLE users;
 TRUNCATE TABLE reviews;
+-- ALTER TABLE orders DROP COLUMN order_number;
 
 -- 외래 키 제약 조건 활성화
 SET FOREIGN_KEY_CHECKS = 1;
@@ -386,6 +387,8 @@ VALUE('12345', '123 test St', 'May 101', 'Pending', 'Testing~', '2024-06-01', 12
 INSERT INTO deliveries (zipcode, street_address, detail_address, status, request, arrival_date, phone_number, name)
 VALUE('12345', '123 test St', 'May 102', 'Pending', 'Testing~', '2024-06-01', 1234567890, 'Test2');
 
+INSERT INTO deliveries (zipcode, street_address, detail_address, status, request, arrival_date, phone_number, name)
+    VALUE('12345', '123 test St', 'May 102', 'Pending', 'Testing~', '2024-06-01', 1234567890, 'Test3');
 
 -- 유저
 INSERT INTO users (name, password, email) VALUES ('test','1234','test@test.com');
