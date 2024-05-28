@@ -1,7 +1,9 @@
 package com.elice.ggorangjirang.reviews.controller;
 
+import com.elice.ggorangjirang.reviews.dto.AddReviewRequest;
 import com.elice.ggorangjirang.reviews.dto.ReviewResponseMy;
 import com.elice.ggorangjirang.reviews.dto.ReviewResponsePublic;
+import com.elice.ggorangjirang.reviews.entity.Review;
 import com.elice.ggorangjirang.reviews.service.ReviewService;
 import com.elice.ggorangjirang.users.entity.Users;
 import com.elice.ggorangjirang.users.service.UserService;
@@ -11,6 +13,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 
 @RestController
 @RequiredArgsConstructor
@@ -38,4 +43,13 @@ public class ReviewController {
 //        Page<ReviewResponseMy> reviews = reviewService.getReviewByUserId(user.getId(), page, size);
 //        return ResponseEntity.ok(reviews);
 //    }
+
+    @PostMapping("/users/my-reviews")
+    public ResponseEntity<Review> addReview(
+            @RequestPart("review") AddReviewRequest request,
+            @RequestPart(value = "imageFile", required = false) MultipartFile imageFile) throws IOException {
+
+        Review review = reviewService.addReview(request, imageFile);
+        return ResponseEntity.ok(review);
+    }
 }

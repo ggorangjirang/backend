@@ -4,11 +4,13 @@ import com.elice.ggorangjirang.global.config.EnvConfig;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.test.context.ActiveProfiles;
 
 @SpringBootTest
 @PropertySource(value = {
 		"classpath:env.yml",
 }, factory = EnvConfig.class)
+@ActiveProfiles("test")
 class GgorangjirangApplicationTests {
 
 	@Test
