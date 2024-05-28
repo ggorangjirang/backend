@@ -378,7 +378,6 @@ VALUES ('고양이 사료 추가9', 2, 2, 27700, 40, '2024-12-31', 3, 80, false,
 INSERT INTO products (name, subcategory_id, pseudo_category_id, price, discount_rate, expiration_date, stock, order_count, is_sold_out, created_at, updated_at, view_count, is_deleted, image_url, description)
 VALUES ('고양이 사료 추가10', 2, 2, 25600, 40, '2024-12-31', 1, 180, false, NOW(), NOW(), 1600, false, 'url', '추가10');
 
-<<<<<<< HEAD
 -- 주소
 INSERT INTO deliveries (zipcode, street_address, detail_address, status, request, arrival_date, phone_number, name)
     VALUE('12345', '123 test St', 'May 101', 'Pending', 'Testing~', '2024-06-01', 1234567890, 'Test');
@@ -389,7 +388,6 @@ INSERT INTO deliveries (zipcode, street_address, detail_address, status, request
 -- 유저
 INSERT INTO users (id, name, password, email) VALUES (1, 'testname','test1234','test@test.com');
 INSERT INTO users (id, name, password, social_id) VALUES (2, 'testname1', 'test1234', 'test_social');
-=======
 
 -- 주소
 INSERT INTO deliveries (zipcode, street_address, detail_address, status, request, arrival_date, phone_number, name)
