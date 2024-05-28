@@ -411,25 +411,20 @@ VALUES (2, '2024-05-01T10:00:00', 'fead2342', 'ORDER', 1, 4000);
 
 
 -- 주문 아이템
-<<<<<<< HEAD
-INSERT INTO order_item (order_price, quantity, order_id, product_id)
-VALUES (100,10,1,8);
-
-INSERT INTO order_item (order_price, quantity, order_id, product_id)
-VALUES (40,10,1,9);
-
-INSERT INTO order_item (order_price, quantity, order_id, product_id)
-VALUES (500,10,2,3);
-=======
 INSERT INTO order_item (order_price, quantity, order_id, product_id) VALUES (100,10,1,8);
 INSERT INTO order_item (order_price, quantity, order_id, product_id) VALUES (40,10,1,9);
 INSERT INTO order_item (order_price, quantity, order_id, product_id) VALUES (500,10,2,3);
 
 
+INSERT INTO order_item (order_price, quantity, order_id, product_id)
+VALUES (500,10,2,3);
+
+INSERT INTO order_item (order_price, quantity, order_id, product_id) VALUES (100,10,1,8);
+INSERT INTO order_item (order_price, quantity, order_id, product_id) VALUES (40,10,1,9);
+INSERT INTO order_item (order_price, quantity, order_id, product_id) VALUES (500,10,2,3);
 -- 리뷰
 INSERT INTO reviews (title, content, image_url, product_id, user_id, created_at)
 VALUES ('만족', '좋네요. 잘 쓸게요.', 'url', 1, 1, NOW());
 
 INSERT INTO reviews (title, content, image_url, product_id, user_id, created_at)
 VALUES ('흠', '좀 더 써보고 판단할게요.', 'url', 1, 1, NOW());
->>>>>>> dbf0b4378d12df7ea39d33f905b99fcc42bf417a
