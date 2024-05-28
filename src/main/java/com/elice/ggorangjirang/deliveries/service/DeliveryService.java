@@ -21,9 +21,7 @@ public class DeliveryService {
 
   @Transactional
   public void addDelivery(DeliveryDto deliveryDto) {
-    Order order = orderRepository.findById(deliveryDto.getOrderId())
-        .orElseThrow(() -> new IllegalArgumentException("Invalid order ID: " + deliveryDto.getOrderId()));
-    Deliveries delivery = deliveryMapper.toEntity(deliveryDto, order);
+    Deliveries delivery = deliveryMapper.toEntity(deliveryDto);
     deliveryRepository.save(delivery);
   }
 
