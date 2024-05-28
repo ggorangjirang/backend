@@ -42,4 +42,5 @@ public class UserService {
     public Users findById(Long id) {
         return userRepository.findById(id).orElseThrow(()-> new IllegalArgumentException("not found : " + id));
     }
+
 }

@@ -78,6 +78,7 @@ public class Order {
     Order order = new Order();
     order.setUsers(users);
     order.setOrderNumber(order.generateOrderNumber());
+
     order.setDeliveries(delivery);
 
     int total = 0;
