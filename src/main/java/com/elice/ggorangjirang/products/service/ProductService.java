@@ -67,6 +67,7 @@ public class ProductService {
 
     private ListProductResponse convertToListProductResponse(Product product) {
         return new ListProductResponse(
+                product.getId(),
                 product.getName(),
                 product.getDiscountRate(),
                 product.getPrice(),
@@ -168,6 +169,7 @@ public class ProductService {
                 null;
 
         return new DetailProductResponse(
+                product.getId(),
                 product.getName(),
                 product.getDiscountRate(),
                 product.getPrice(),
@@ -177,6 +179,7 @@ public class ProductService {
                 subcategoryName,
                 categoryName,
                 product.getDescription(),
+                product.getDescriptionImageUrl(),
                 product.isSoldOut());
     }
 }

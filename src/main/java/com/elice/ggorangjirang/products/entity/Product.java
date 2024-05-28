@@ -46,6 +46,9 @@ public class Product {
     @Column(name = "image_url")
     private String imageUrl;
 
+    @Column(name = "description_image_url")
+    private String descriptionImageUrl;
+
     // 상품 상세페이지 조회수
     @Column(name = "view_count")
     private int viewCount = 0;
