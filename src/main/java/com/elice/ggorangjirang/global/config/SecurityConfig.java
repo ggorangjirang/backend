@@ -20,6 +20,10 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.web.cors.CorsConfiguration;
+
+import java.util.Arrays;
+import java.util.Collections;
 
 @Configuration
 @EnableWebSecurity
@@ -34,20 +38,33 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-            .formLogin().disable()
-            .httpBasic().disable()
-            .csrf().disable()
-            .headers().disable()
+            .cors((cors) -> cors
+                .configurationSource(request -> {
 
-            .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                    CorsConfiguration config = new CorsConfiguration();
 
-            .and()
+                    config.setAllowedOrigins(Arrays.asList(
+                        "http://localhost:3000"
+                        ));
+                    config.setAllowedMethods(Collections.singletonList("*"));
+                    return config;
+                }));
 
-            .authorizeRequests(authorize -> authorize
+        http
+            .formLogin(config -> config.disable())
+            .httpBasic(config -> config.disable())
+            .csrf(config -> config.disable())
+            .headers(config -> config.disable())
+
+            .sessionManagement(config -> config.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+
+            .authorizeHttpRequests(authorize -> authorize
                     .requestMatchers("/h2-console/**",
                         "/swagger-ui/**",
                         "/swagger-resources/**",
-                        "/v3/api-docs/**").permitAll()
+                        "api/**",
+                        "/v3/api-docs/**",
+                        "/api/v1/hello").permitAll()
                     .anyRequest().authenticated()
             );
 
