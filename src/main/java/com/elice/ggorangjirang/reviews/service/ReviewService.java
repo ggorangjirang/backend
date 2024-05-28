@@ -45,6 +45,7 @@ public class ReviewService {
         String emailResponse = userIdentifier.substring(0, 3) + "****";
 
         return new ReviewResponsePublic(
+                review.getId(),
                 review.getTitle(),
                 review.getContent(),
                 review.getImageUrl(),
@@ -54,6 +55,7 @@ public class ReviewService {
 
     private ReviewResponseMy convertToReviewResponseMy(Review review) {
         return new ReviewResponseMy(
+                review.getId(),
                 review.getTitle(),
                 review.getContent(),
                 review.getImageUrl(),
