@@ -1,5 +1,6 @@
 package com.elice.ggorangjirang.reviews.service;
 
+import com.elice.ggorangjirang.amazonS3.service.S3Service;
 import com.elice.ggorangjirang.orders.repository.OrderItemRepository;
 import com.elice.ggorangjirang.products.entity.Product;
 import com.elice.ggorangjirang.products.repository.ProductRepository;
@@ -16,7 +17,9 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 @Service
@@ -27,6 +30,7 @@ public class ReviewService {
     private final ProductRepository productRepository;
     private final UserRepository userRepository;
     private final OrderItemRepository orderItemRepository;
+    private final S3Service s3Service;
 
     public List<Review> getAllReviews() {
         return reviewRepository.findAll();
@@ -71,7 +75,7 @@ public class ReviewService {
     }
 
     @Transactional
-    public Review addReview(AddReviewRequest request) {
+    public Review addReview(AddReviewRequest request, MultipartFile imageFile) throws IOException {
         Product product = productRepository.findById(request.getProductId())
                 .orElseThrow(() -> new IllegalArgumentException("not found: " + request.getProductId()));
 
@@ -83,10 +87,15 @@ public class ReviewService {
             throw new IllegalStateException("상품 구매 내역이 없습니다.");
         }
 
+        String imageUrl = null;
+        if(imageFile != null && !imageFile.isEmpty()) {
+            imageUrl = s3Service.uploadReviewImage(imageFile);
+        }
+
         Review review = Review.builder()
                 .title(request.getTitle())
                 .content(request.getContent())
-                .imageUrl(request.getImageUrl())
+                .imageUrl(imageUrl)
                 .product(product)
                 .user(user)
                 .build();

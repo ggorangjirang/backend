@@ -11,7 +11,6 @@ import lombok.NoArgsConstructor;
 public class AddReviewRequest {
     private String title;
     private String content;
-    private String imageUrl;
     private Long productId;
     private Long userId;
 }
