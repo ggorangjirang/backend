@@ -7,12 +7,12 @@ import org.springframework.web.bind.annotation.RestController;
 public class TestController {
 
   @GetMapping("/api/v1/hello")
-  public String Hello(String name) {
+  public String getHello(String name) {
     return "Get Hello " + name;
   }
 
   @PostMapping("/api/v1/hello")
-  public String Hello(String name) {
+  public String postHello(String name) {
     return "Post Hello " + name;
   }
 }
