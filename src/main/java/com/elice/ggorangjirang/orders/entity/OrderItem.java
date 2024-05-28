@@ -46,7 +46,11 @@ public class OrderItem {
   public static OrderItem createOrderItem(Product product, int orderPrice, int quantity) {
     OrderItem orderItem = new OrderItem();
     orderItem.setProduct(product);
-    orderItem.setOrderPrice(orderPrice);
+
+    float discountRate = product.getDiscountRate();
+    int discountPrice = (discountRate != 0) ? Math.round(orderPrice * (1 - discountRate / 100)) : orderPrice;
+
+    orderItem.setOrderPrice(discountPrice);
     orderItem.setQuantity(quantity);
 
     product.updateStock(quantity);
