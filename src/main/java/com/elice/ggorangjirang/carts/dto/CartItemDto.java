@@ -28,7 +28,7 @@ public class CartItemDto {
         dto.setQuantity(cartItem.getQuantity());
         dto.setPrice(cartItem.getProduct().getPrice());
         dto.setDiscountRate(cartItem.getProduct().getDiscountRate());
-        dto.setImageUrl(cartItem.getProduct().getImageUrl());
+        dto.setImageUrl(cartItem.getProduct().getProductImageUrl());
         return dto;
     }
 

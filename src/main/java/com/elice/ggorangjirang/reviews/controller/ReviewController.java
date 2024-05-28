@@ -44,7 +44,8 @@ public class ReviewController {
 //        return ResponseEntity.ok(reviews);
 //    }
 
-    @PostMapping("/users/my-reviews")
+
+    @PostMapping("/users/review")
     public ResponseEntity<Review> addReview(
             @RequestPart("review") AddReviewRequest request,
             @RequestPart(value = "imageFile", required = false) MultipartFile imageFile) throws IOException {

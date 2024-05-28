@@ -26,6 +26,9 @@ public class S3Service {
     @Value("${cloud.aws.s3.review-image-path}")
     private String reviewImagePath;
 
+    @Value("${cloud.aws.s3.description-image-path}")
+    private String descriptionImagePath;
+
     public String uploadFile(MultipartFile imageFile, String imagePath) throws IOException {
 
         String fileName = UUID.randomUUID().toString() + "-" + imageFile.getOriginalFilename();
@@ -52,5 +55,9 @@ public class S3Service {
 
     public String uploadReviewImage(MultipartFile imageFile) throws IOException {
         return uploadFile(imageFile, reviewImagePath);
+    }
+
+    public String uploadDescriptionImage(MultipartFile imageFile) throws IOException {
+        return uploadFile(imageFile, descriptionImagePath);
     }
 }

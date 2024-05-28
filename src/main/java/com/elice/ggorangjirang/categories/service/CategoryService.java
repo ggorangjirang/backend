@@ -53,10 +53,11 @@ public class CategoryService {
         categoryRepository.deleteById(category.getId());
     }
 
-    public List<CategoryResponse> getCategoryNames() {
+    public List<CategoryResponse> getCategories() {
         List<Category> categories = categoryRepository.findAll();
         return categories.stream()
                 .map(category -> new CategoryResponse(
+                        category.getId(),
                         category.getCategoryName()
                 ))
                 .collect(Collectors.toList());

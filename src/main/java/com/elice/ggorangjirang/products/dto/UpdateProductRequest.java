@@ -19,7 +19,8 @@ public class UpdateProductRequest {
     private int price;
     private LocalDate expirationDate;
     private float discountRate;
-    private String imageUrl;
+    private String productImageUrl;
+    private String descriptionImageUrl;
     private int stock;
     private Long subcategoryId;
 
@@ -30,7 +31,8 @@ public class UpdateProductRequest {
                 .price(price)
                 .expirationDate(expirationDate)
                 .discountRate(discountRate)
-                .imageUrl(imageUrl)
+                .productImageUrl(productImageUrl)
+                .descriptionImageUrl(descriptionImageUrl)
                 .stock(stock)
                 .subcategoryId(subcategoryId)
                 .build();

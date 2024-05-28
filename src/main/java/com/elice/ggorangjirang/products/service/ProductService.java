@@ -51,7 +51,7 @@ public class ProductService {
 
         product.update(
                 request.getName(), request.getDescription(), request.getPrice(), request.getExpirationDate(),
-                request.getDiscountRate(), request.getImageUrl(), request.getStock(), request.getSubcategoryId(),
+                request.getDiscountRate(), request.getProductImageUrl(), request.getDescriptionImageUrl(), request.getStock(), request.getSubcategoryId(),
                 subcategory);
 
         return product;
@@ -67,10 +67,11 @@ public class ProductService {
 
     private ListProductResponse convertToListProductResponse(Product product) {
         return new ListProductResponse(
+                product.getId(),
                 product.getName(),
                 product.getDiscountRate(),
                 product.getPrice(),
-                product.getImageUrl(),
+                product.getProductImageUrl(),
                 product.getStock());
     }
 
@@ -168,15 +169,17 @@ public class ProductService {
                 null;
 
         return new DetailProductResponse(
+                product.getId(),
                 product.getName(),
                 product.getDiscountRate(),
                 product.getPrice(),
-                product.getImageUrl(),
+                product.getProductImageUrl(),
                 product.getStock(),
                 product.getExpirationDate(),
                 subcategoryName,
                 categoryName,
                 product.getDescription(),
+                product.getDescriptionImageUrl(),
                 product.isSoldOut());
     }
 }

@@ -12,6 +12,7 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 public class DetailProductResponse {
+    private Long productId;
     private String name;
     private float discountRate;
     private int price;
@@ -21,5 +22,6 @@ public class DetailProductResponse {
     private String subcategoryName;
     private String categoryName;
     private String description;
+    private String descriptionImageUrl;
     private boolean isSoldOut;
 }

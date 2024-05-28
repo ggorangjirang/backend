@@ -57,11 +57,13 @@ public class SubcategoryService {
         subcategoryRepository.deleteById(subcategory.getId());
     }
 
-    public List<SubcategoryResponse> getSubcategoriesWithCategoryName() {
+    public List<SubcategoryResponse> getSubcategoriesWithCategory() {
         List<Subcategory> subcategories = subcategoryRepository.findAll();
         return subcategories.stream()
                 .map(subcategory -> new SubcategoryResponse(
+                        subcategory.getId(),
                         subcategory.getSubcategoryName(),
+                        subcategory.getCategory().getId(),
                         subcategory.getCategory().getCategoryName()
                 ))
                 .collect(Collectors.toList());
