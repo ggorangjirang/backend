@@ -10,9 +10,11 @@ import com.elice.ggorangjirang.orders.entity.OrderItem;
 import com.elice.ggorangjirang.orders.service.OrderItemService;
 import com.elice.ggorangjirang.orders.service.OrderService;
 import com.elice.ggorangjirang.users.entity.Users;
+import com.elice.ggorangjirang.users.service.UserService;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -29,12 +31,13 @@ public class OrderController {
   private final OrderService orderService;
   private final OrderItemService orderItemService;
   private final DeliveryService deliveryService;
+  private final UserService userService;
 
   // 주문 생성
   @PostMapping("")
-  public ResponseEntity<Void> saveOrder(@RequestBody OrderRequest request){
+  public ResponseEntity<Long> saveOrder(@RequestBody OrderRequest request){
     // 추후에 유저 검증 서비스 생기면 변경 예정
-    Users users = new Users("테스트","test@test.com","1234");
+    Users users = userService.findById(request.getUserId());
     Deliveries deliveries = deliveryService.getDeliveryById(request.getDeliveryId());
 
     List<OrderItem> orderItems = new ArrayList<>();
@@ -45,7 +48,7 @@ public class OrderController {
 
     Order order = orderService.create(users, deliveries,orderItems);
 
-    return ResponseEntity.ok().build();
+    return ResponseEntity.status(HttpStatus.CREATED).body(order.getId());
   }
 
   // 주문 목록 검색
