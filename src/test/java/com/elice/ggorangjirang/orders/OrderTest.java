@@ -36,7 +36,7 @@ public class OrderTest {
         .expirationDate(LocalDate.now())
         .discountRate(0.1f)
         .stock(100)
-        .imageUrl("img1.jpg")
+        .productImageUrl("img1.jpg")
         .build();
 
     Product product2 = Product.builder()
@@ -46,7 +46,7 @@ public class OrderTest {
         .expirationDate(LocalDate.now())
         .discountRate(0.2f)
         .stock(200)
-        .imageUrl("img2.jpg")
+        .productImageUrl("img2.jpg")
         .build();
 
     Product product3 = Product.builder()
@@ -56,7 +56,7 @@ public class OrderTest {
         .expirationDate(LocalDate.now())
         .discountRate(0.15f)
         .stock(300)
-        .imageUrl("img3.jpg")
+        .productImageUrl("img3.jpg")
         .build();
 
     // OrderItem 생성

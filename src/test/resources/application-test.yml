@@ -25,6 +25,7 @@ cloud:
       bucket: ggorangjirang-s3
       product-image-path: images/products/
       review-image-path: images/reviews/
+      description-image-path: images/descriptions/
     region:
       static: ap-northeast-2
     stack:

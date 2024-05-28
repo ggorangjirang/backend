@@ -44,7 +44,7 @@ public class Product {
     private float discountRate;
 
     @Column(name = "image_url")
-    private String imageUrl;
+    private String productImageUrl;
 
     @Column(name = "description_image_url")
     private String descriptionImageUrl;
@@ -93,13 +93,14 @@ public class Product {
 
     @Builder
     public Product(String name, String description, int price, LocalDate expirationDate, float discountRate,
-                   String imageUrl, int stock, Long subcategoryId) {
+                   String productImageUrl, String descriptionImageUrl, int stock, Long subcategoryId) {
         this.name = name;
         this.description = description;
         this.price = price;
         this.expirationDate = expirationDate;
         this.discountRate = discountRate;
-        this.imageUrl = imageUrl;
+        this.productImageUrl = productImageUrl;
+        this.descriptionImageUrl = descriptionImageUrl;
         this.stock = stock;
         this.subcategoryId = subcategoryId;
         this.subcategory = new Subcategory();
@@ -111,13 +112,14 @@ public class Product {
     }
 
     public void update(String name, String description, int price, LocalDate expirationDate, float discountRate,
-                       String imageUrl, int stock, Long subcategoryId, Subcategory subcategory) {
+                       String productImageUrl, String descriptionImageUrl, int stock, Long subcategoryId, Subcategory subcategory) {
         this.name = name;
         this.description = description;
         this.price = price;
         this.expirationDate = expirationDate;
         this.discountRate = discountRate;
-        this.imageUrl = imageUrl;
+        this.productImageUrl = productImageUrl;
+        this.descriptionImageUrl = descriptionImageUrl;
         this.stock = stock;
         this.subcategoryId = subcategoryId;
         this.subcategory = subcategory;

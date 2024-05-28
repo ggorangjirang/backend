@@ -46,9 +46,14 @@ public class ProductAdminController {
 
     @PostMapping("/add")
     public String createProduct(@ModelAttribute AddProductRequest request,
-                                @RequestParam("imageFile") MultipartFile imageFile) throws IOException {
-        String imageUrl = s3Service.uploadProductImage(imageFile);
-        request.setImageUrl(imageUrl);
+                                @RequestParam("productImageFile") MultipartFile productImageFile,
+                                @RequestParam("descriptionImageFile") MultipartFile descriptionImageFile) throws IOException {
+        String productImageUrl = s3Service.uploadProductImage(productImageFile);
+        request.setProductImageUrl(productImageUrl);
+
+        String descriptionImageUrl = s3Service.uploadDescriptionImage(descriptionImageFile);
+        request.setDescriptionImageUrl(descriptionImageUrl);
+
         productService.createProduct(request);
         return "redirect:/admin/products";
     }
@@ -69,9 +74,14 @@ public class ProductAdminController {
     @PostMapping("/{id}/edit")
     public String editProduct(@PathVariable("id") Long id,
                               @ModelAttribute UpdateProductRequest request,
-                              @RequestParam("imageFile") MultipartFile imageFile) throws IOException {
-        String imageUrl = s3Service.uploadProductImage(imageFile);
-        request.setImageUrl(imageUrl);
+                              @RequestParam("productImageFile") MultipartFile productImageFile,
+                              @RequestParam("descriptionImageFile") MultipartFile descriptionImageFile) throws IOException {
+        String productImageUrl = s3Service.uploadProductImage(productImageFile);
+        request.setProductImageUrl(productImageUrl);
+
+        String descriptionImageUrl = s3Service.uploadDescriptionImage(descriptionImageFile);
+        request.setDescriptionImageUrl(descriptionImageUrl);
+
         Product updatedProduct = productService.updateProduct(id, request);
         return "redirect:/admin/products";
     }
