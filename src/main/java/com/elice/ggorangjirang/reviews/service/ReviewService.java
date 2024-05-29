@@ -133,7 +133,7 @@ public class ReviewService {
         review.update(
                 request.getTitle(),
                 request.getContent(),
-                request.getImageUrl());
+                newImageUrl);
 
         reviewRepository.save(review);
 

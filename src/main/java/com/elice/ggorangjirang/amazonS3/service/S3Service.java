@@ -62,7 +62,10 @@ public class S3Service {
     }
 
     public void deleteFile(String imageUrl) {
-        String fileKey = imageUrl.substring(imageUrl.indexOf(bucket) + bucket.length() + 1);
+        String bucketPath = "https://"  + bucket + ".s3.amazonaws.com/";
+        String fileKey = imageUrl.replace(bucketPath, ""); // 버킷 경로 제거
+
+        // 파일 삭제
         client.deleteObject(bucket, fileKey);
     }
 }

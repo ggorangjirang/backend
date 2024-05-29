@@ -1,5 +1,6 @@
 package com.elice.ggorangjirang.products.service;
 
+import com.elice.ggorangjirang.amazonS3.service.S3Service;
 import com.elice.ggorangjirang.products.dto.AddProductRequest;
 import com.elice.ggorangjirang.products.dto.DetailProductResponse;
 import com.elice.ggorangjirang.products.dto.ListProductResponse;
@@ -14,7 +15,9 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -24,6 +27,7 @@ import java.util.stream.Collectors;
 public class ProductService {
     private final ProductRepository productRepository;
     private final SubcategoryRepository subcategoryRepository;
+    private final S3Service s3Service;
 
     public List<Product> findProducts() {
         return productRepository.findAll();
@@ -37,17 +41,59 @@ public class ProductService {
     }
 
     @Transactional
-    public Product createProduct(AddProductRequest request) {
+    public Product createProduct(
+            AddProductRequest request,
+            MultipartFile productImageFile,
+            MultipartFile descriptionImageFile) throws IOException {
+
+        String productImageUrl = null;
+        if(productImageFile != null && !productImageFile.isEmpty()) {
+            productImageUrl = s3Service.uploadProductImage(productImageFile);
+        }
+
+        String descriptionImageUrl = null;
+        if(descriptionImageFile != null && !descriptionImageFile.isEmpty()) {
+            descriptionImageUrl = s3Service.uploadDescriptionImage(descriptionImageFile);
+        }
+
+        request.setProductImageUrl(productImageUrl);
+        request.setDescriptionImageUrl(descriptionImageUrl);
+
         return productRepository.save(request.toEntity());
     }
 
     @Transactional
-    public Product updateProduct(Long id, UpdateProductRequest request) {
+    public Product updateProduct(Long id, UpdateProductRequest request,
+                                 MultipartFile productImageFile,
+                                 MultipartFile descriptionImageFile) throws IOException {
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("not found: " + id));
 
         Subcategory subcategory = subcategoryRepository.findById(request.getSubcategoryId())
                 .orElseThrow(() -> new IllegalArgumentException("not found: " + id));
+
+        String oldProductImageUrl = product.getProductImageUrl();
+        String newProductImageUrl = oldProductImageUrl;
+
+        if (productImageFile != null && !productImageFile.isEmpty()) {
+            newProductImageUrl = s3Service.uploadProductImage(productImageFile);
+            if (oldProductImageUrl != null) {
+                s3Service.deleteFile(oldProductImageUrl);
+            }
+        }
+
+        String oldDescriptionImageUrl = product.getDescriptionImageUrl();
+        String newDescriptionImageUrl = oldDescriptionImageUrl;
+
+        if (descriptionImageFile != null && !descriptionImageFile.isEmpty()) {
+            newDescriptionImageUrl = s3Service.uploadDescriptionImage(descriptionImageFile);
+            if (oldDescriptionImageUrl != null) {
+                s3Service.deleteFile(oldDescriptionImageUrl);
+            }
+        }
+
+        request.setProductImageUrl(newProductImageUrl);
+        request.setDescriptionImageUrl(newDescriptionImageUrl);
 
         product.update(
                 request.getName(), request.getDescription(), request.getPrice(), request.getExpirationDate(),

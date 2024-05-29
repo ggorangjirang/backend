@@ -46,15 +46,10 @@ public class ProductAdminController {
 
     @PostMapping("/add")
     public String createProduct(@ModelAttribute AddProductRequest request,
-                                @RequestParam("productImageFile") MultipartFile productImageFile,
-                                @RequestParam("descriptionImageFile") MultipartFile descriptionImageFile) throws IOException {
-        String productImageUrl = s3Service.uploadProductImage(productImageFile);
-        request.setProductImageUrl(productImageUrl);
+                                @RequestPart(value = "productImageFile", required = false) MultipartFile productImageFile,
+                                @RequestPart(value = "descriptionImageFile", required = false) MultipartFile descriptionImageFile) throws IOException {
 
-        String descriptionImageUrl = s3Service.uploadDescriptionImage(descriptionImageFile);
-        request.setDescriptionImageUrl(descriptionImageUrl);
-
-        productService.createProduct(request);
+        productService.createProduct(request, productImageFile, descriptionImageFile);
         return "redirect:/admin/products";
     }
 
@@ -74,15 +69,10 @@ public class ProductAdminController {
     @PostMapping("/{id}/edit")
     public String editProduct(@PathVariable("id") Long id,
                               @ModelAttribute UpdateProductRequest request,
-                              @RequestParam("productImageFile") MultipartFile productImageFile,
-                              @RequestParam("descriptionImageFile") MultipartFile descriptionImageFile) throws IOException {
-        String productImageUrl = s3Service.uploadProductImage(productImageFile);
-        request.setProductImageUrl(productImageUrl);
+                              @RequestPart(value = "productImageFile", required = false) MultipartFile productImageFile,
+                              @RequestPart(value = "descriptionImageFile", required = false) MultipartFile descriptionImageFile) throws IOException {
 
-        String descriptionImageUrl = s3Service.uploadDescriptionImage(descriptionImageFile);
-        request.setDescriptionImageUrl(descriptionImageUrl);
-
-        Product updatedProduct = productService.updateProduct(id, request);
+        Product updatedProduct = productService.updateProduct(id, request, productImageFile, descriptionImageFile);
         return "redirect:/admin/products";
     }
 
