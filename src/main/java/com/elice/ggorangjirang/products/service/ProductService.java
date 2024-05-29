@@ -65,12 +65,18 @@ public class ProductService {
         productRepository.delete(product);
     }
 
+    private int calculateDiscountedPrice(int price, float discountRate) {
+        int discountedPrice = Math.round(price * (1 - discountRate / 100));
+        return (discountedPrice + 5) / 10 * 10;
+    }
+
     private ListProductResponse convertToListProductResponse(Product product) {
         return new ListProductResponse(
                 product.getId(),
                 product.getName(),
                 product.getDiscountRate(),
                 product.getPrice(),
+                calculateDiscountedPrice(product.getPrice(), product.getDiscountRate()),
                 product.getProductImageUrl(),
                 product.getStock());
     }
@@ -173,6 +179,7 @@ public class ProductService {
                 product.getName(),
                 product.getDiscountRate(),
                 product.getPrice(),
+                calculateDiscountedPrice(product.getPrice(), product.getDiscountRate()),
                 product.getProductImageUrl(),
                 product.getStock(),
                 product.getExpirationDate(),

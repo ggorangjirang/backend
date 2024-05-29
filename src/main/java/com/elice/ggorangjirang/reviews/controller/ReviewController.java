@@ -1,8 +1,10 @@
 package com.elice.ggorangjirang.reviews.controller;
 
+import com.elice.ggorangjirang.amazonS3.service.S3Service;
 import com.elice.ggorangjirang.reviews.dto.AddReviewRequest;
 import com.elice.ggorangjirang.reviews.dto.ReviewResponseMy;
 import com.elice.ggorangjirang.reviews.dto.ReviewResponsePublic;
+import com.elice.ggorangjirang.reviews.dto.UpdateReviewRequest;
 import com.elice.ggorangjirang.reviews.entity.Review;
 import com.elice.ggorangjirang.reviews.service.ReviewService;
 import com.elice.ggorangjirang.users.entity.Users;
@@ -24,6 +26,7 @@ public class ReviewController {
 
     private final ReviewService reviewService;
     private final UserService userService;
+    private final S3Service s3Service;
 
     @GetMapping("/products/{productId}/reviews")
     public ResponseEntity<Page<ReviewResponsePublic>> getReviewsByProduct(
@@ -46,11 +49,22 @@ public class ReviewController {
 
 
     @PostMapping("/users/review")
-    public ResponseEntity<Review> addReview(
+    public ResponseEntity<ReviewResponseMy> addReview(
             @RequestPart("review") AddReviewRequest request,
             @RequestPart(value = "imageFile", required = false) MultipartFile imageFile) throws IOException {
 
-        Review review = reviewService.addReview(request, imageFile);
+        ReviewResponseMy review = reviewService.addReview(request, imageFile);
         return ResponseEntity.ok(review);
+    }
+
+
+    @PatchMapping("/users/review/{reviewId}")
+    public ResponseEntity<ReviewResponseMy> editReview(
+            @PathVariable("reviewId") Long id,
+            @RequestPart("review") UpdateReviewRequest request,
+            @RequestPart(value = "imageFile", required = false) MultipartFile imageFile) throws IOException {
+
+        ReviewResponseMy updatedReview = reviewService.updateReview(id, request, imageFile);
+        return ResponseEntity.ok(updatedReview);
     }
 }
