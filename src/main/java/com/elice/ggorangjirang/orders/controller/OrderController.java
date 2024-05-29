@@ -16,6 +16,7 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -68,6 +69,18 @@ public class OrderController {
   public ResponseEntity<OrderResponse> findOrder(@PathVariable(value = "id") Long id){
     Order order = orderService.findById(id);
     return ResponseEntity.ok().body(new OrderResponse(order));
+  }
+
+  @DeleteMapping("/{userId}/{orderId}")
+  public ResponseEntity<Void> deleteOrder(
+      @PathVariable Long userId,
+      @PathVariable Long orderId) {
+    try {
+      orderService.deleteByUserIdAndOrderId(userId, orderId);
+      return ResponseEntity.noContent().build();
+    } catch (IllegalArgumentException | IllegalStateException e) {
+      return ResponseEntity.badRequest().build();
+    }
   }
 
 
