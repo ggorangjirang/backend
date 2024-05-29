@@ -3,18 +3,14 @@ package com.elice.ggorangjirang.reviews.dto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import java.time.LocalDateTime;
+import lombok.Setter;
 
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
-public class ReviewResponseMy {
-    private Long reviewId;
+@Setter
+public class UpdateReviewRequest {
     private String title;
     private String content;
     private String imageUrl;
-    private String productName;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
 }

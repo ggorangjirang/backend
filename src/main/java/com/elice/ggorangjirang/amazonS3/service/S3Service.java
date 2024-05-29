@@ -60,4 +60,9 @@ public class S3Service {
     public String uploadDescriptionImage(MultipartFile imageFile) throws IOException {
         return uploadFile(imageFile, descriptionImagePath);
     }
+
+    public void deleteFile(String imageUrl) {
+        String fileKey = imageUrl.substring(imageUrl.indexOf(bucket) + bucket.length() + 1);
+        client.deleteObject(bucket, fileKey);
+    }
 }

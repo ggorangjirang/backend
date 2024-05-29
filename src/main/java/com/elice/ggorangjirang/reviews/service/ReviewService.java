@@ -7,6 +7,7 @@ import com.elice.ggorangjirang.products.repository.ProductRepository;
 import com.elice.ggorangjirang.reviews.dto.AddReviewRequest;
 import com.elice.ggorangjirang.reviews.dto.ReviewResponseMy;
 import com.elice.ggorangjirang.reviews.dto.ReviewResponsePublic;
+import com.elice.ggorangjirang.reviews.dto.UpdateReviewRequest;
 import com.elice.ggorangjirang.reviews.entity.Review;
 import com.elice.ggorangjirang.reviews.repository.ReviewRepository;
 import com.elice.ggorangjirang.users.entity.Users;
@@ -36,6 +37,12 @@ public class ReviewService {
         return reviewRepository.findAll();
     }
 
+    public Review getReviewById(Long id) {
+        Review review = reviewRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("not found: " + id));
+        return review;
+    }
+
     // 상품 상세 페이지 review GET 요청에 대한 DTO 맵핑
     private ReviewResponsePublic convertToReviewResponsePublic(Review review) {
         String userIdentifier = review.getUser().getEmail() != null ?
@@ -59,7 +66,9 @@ public class ReviewService {
                 review.getTitle(),
                 review.getContent(),
                 review.getImageUrl(),
-                review.getProduct().getName());
+                review.getProduct().getName(),
+                review.getCreatedAt(),
+                review.getUpdatedAt());
     }
 
     // 상품 상세 페이지 review GET 요청 전달하기
@@ -77,7 +86,7 @@ public class ReviewService {
     }
 
     @Transactional
-    public Review addReview(AddReviewRequest request, MultipartFile imageFile) throws IOException {
+    public ReviewResponseMy addReview(AddReviewRequest request, MultipartFile imageFile) throws IOException {
         Product product = productRepository.findById(request.getProductId())
                 .orElseThrow(() -> new IllegalArgumentException("not found: " + request.getProductId()));
 
@@ -102,7 +111,33 @@ public class ReviewService {
                 .user(user)
                 .build();
 
-        return reviewRepository.save(review);
+        reviewRepository.save(review);
+        return convertToReviewResponseMy(review);
+    }
+
+    @Transactional
+    public ReviewResponseMy updateReview(Long id, UpdateReviewRequest request, MultipartFile imageFile) throws IOException {
+        Review review = reviewRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("not found: " + id));
+
+        String oldImageUrl = review.getImageUrl();
+        String newImageUrl = oldImageUrl;
+
+        if (imageFile != null && !imageFile.isEmpty()) {
+            newImageUrl = s3Service.uploadReviewImage(imageFile);
+            if (oldImageUrl != null && !oldImageUrl.isEmpty()) {
+                s3Service.deleteFile(oldImageUrl);
+            }
+        }
+
+        review.update(
+                request.getTitle(),
+                request.getContent(),
+                request.getImageUrl());
+
+        reviewRepository.save(review);
+
+        return convertToReviewResponseMy(review);
     }
 
     @Transactional
