@@ -31,24 +31,24 @@ public class DeliveryController {
   }
 
   @GetMapping("/deliveries/{id}")
-  public ResponseEntity<Deliveries> viewDelivery(@PathVariable long id) {
+  public ResponseEntity<Deliveries> viewDelivery(@PathVariable("id")  long id) {
     Deliveries delivery = deliveryService.getDeliveryById(id);
     return ResponseEntity.ok(delivery);
   }
 
   @GetMapping("/admin/orders/{orderId}/deliveries")
-  public ResponseEntity<List<Deliveries>> viewDeliveryByOrderId(@PathVariable long orderId) {
+  public ResponseEntity<List<Deliveries>> viewDeliveryByOrderId(@PathVariable("orderId") long orderId) {
     List<Deliveries> deliveriesList = deliveryService.getDeliveriesByOrderId(orderId);
     return ResponseEntity.ok(deliveriesList);
   }
 
   @PatchMapping("/admin/deliveries/{id}/status")
-  public ResponseEntity<String> updateDeliveriesStatus(@PathVariable long id, @RequestBody DeliveryStatusDto statusDto) {
+  public ResponseEntity<String> updateDeliveriesStatus(@PathVariable("id") long id, @RequestBody DeliveryStatusDto statusDto) {
     deliveryService.updateDeliveryStatus(id, statusDto.getStatus());
     return ResponseEntity.ok("배송 상태 변경.");
   }
 
-   /* @PostMapping("/deliveries")
+  /* @PostMapping("/deliveries")
   public String addDelivery(@RequestBody DeliveryDto deliveryDto) {
     deliveryService.addDelivery(deliveryDto);
     return "/deliveries";
