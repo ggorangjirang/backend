@@ -1,7 +1,7 @@
 package com.elice.ggorangjirang.carts.controller;
 
 import com.elice.ggorangjirang.carts.dto.CartItemDto;
-import com.elice.ggorangjirang.carts.dto.CartItemRequestDto;
+import com.elice.ggorangjirang.carts.dto.CartItemRequest;
 import com.elice.ggorangjirang.carts.service.CartItemService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -17,9 +17,9 @@ public class CartItemController {
     private final CartItemService cartItemService;
 
     @PostMapping
-    public ResponseEntity<CartItemDto> addCartItem(@RequestBody CartItemRequestDto cartItemRequestDto) {
+    public ResponseEntity<CartItemDto> addCartItem(@RequestBody CartItemRequest cartItemRequestDto) {
         CartItemDto cartItemDto = cartItemService.addCartItem(
-            cartItemRequestDto.getCartId(),
+            cartItemRequestDto.getUserId(),
             cartItemRequestDto.getProductId(),
             cartItemRequestDto.getQuantity()
         );
@@ -27,8 +27,8 @@ public class CartItemController {
     }
 
     @GetMapping
-    public ResponseEntity<List<CartItemDto>> getCartItems(@RequestParam Long cartId) {
-        List<CartItemDto> cartItems = cartItemService.getCartItems(cartId);
+    public ResponseEntity<List<CartItemDto>> getCartItems(@RequestParam Long userId) {
+        List<CartItemDto> cartItems = cartItemService.getCartItems(userId);
         return ResponseEntity.ok(cartItems);
     }
 
