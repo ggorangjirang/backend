@@ -62,7 +62,11 @@ public class S3Service {
     }
 
     public void deleteFile(String imageUrl) {
-        String fileKey = imageUrl.substring(imageUrl.indexOf(bucket) + bucket.length() + 1);
+        // 이미지 URL에서 버킷의 경로와 파일 이름 추출
+        String bucketPath = "https://ggorangjirang-s3.s3.amazonaws.com/";
+        String fileKey = imageUrl.replace(bucketPath, ""); // 버킷 경로 제거
+
+        // 파일 삭제
         client.deleteObject(bucket, fileKey);
     }
 }
