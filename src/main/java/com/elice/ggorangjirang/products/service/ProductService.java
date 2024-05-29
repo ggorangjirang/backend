@@ -29,10 +29,13 @@ public class ProductService {
     private final SubcategoryRepository subcategoryRepository;
     private final S3Service s3Service;
 
+    // Spring MVC 방식 관리자 페이지용
     public List<Product> findProducts() {
         return productRepository.findAll();
     }
 
+
+    // Spring MVC 방식 관리자 페이지용
     public Product findProduct(Long id) {
         Product foundProduct = productRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("not found: " + id));
@@ -96,8 +99,15 @@ public class ProductService {
         request.setDescriptionImageUrl(newDescriptionImageUrl);
 
         product.update(
-                request.getName(), request.getDescription(), request.getPrice(), request.getExpirationDate(),
-                request.getDiscountRate(), request.getProductImageUrl(), request.getDescriptionImageUrl(), request.getStock(), request.getSubcategoryId(),
+                request.getName(),
+                request.getDescription(),
+                request.getPrice(),
+                request.getExpirationDate(),
+                request.getDiscountRate(),
+                request.getProductImageUrl(),
+                request.getDescriptionImageUrl(),
+                request.getStock(),
+                request.getSubcategoryId(),
                 subcategory);
 
         return product;
