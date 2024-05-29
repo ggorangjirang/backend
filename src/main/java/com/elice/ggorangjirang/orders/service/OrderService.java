@@ -38,11 +38,14 @@ public class OrderService {
   }
 
   // 주문 삭제
+  @Transactional
   public void deleteById(Long id){
     Order order = findById(id);
 
     if(order.getDeliveries().getStatus().equals("DELIVERING")){
       throw new IllegalStateException("배송중이라 취소가 불가능합니다.");
+    }else if(order.getDeliveries().getStatus().equals("DELIVERY_COMPLETE")){
+      throw new IllegalStateException("배송완료라 취소가 불가능합니다.");
     }
 
     for(OrderItem orderItem : order.getOrderItems()){
@@ -57,17 +60,6 @@ public class OrderService {
     return orderRepository.findAll();
   }
 
-  // 주문 상태 취소
-  @Transactional
-  public void cancel(Long id){
-    Order order = findById(id);
-
-    if (order == null) {
-      throw new IllegalStateException("취소할 주문이 존재하지 않습니다. Id: " + id);
-    }
-
-    order.cancel();
-  }
 
 
 }
