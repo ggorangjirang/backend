@@ -25,9 +25,9 @@ public class DeliveryController {
 
 
   @PostMapping("/deliveries")
-  public ResponseEntity<String> addDelivery(@RequestBody DeliveryDto deliveryDto) {
-    deliveryService.addDelivery(deliveryDto);
-    return ResponseEntity.ok("배송 정보가 추가되었습니다.");
+  public ResponseEntity<Long> addDelivery(@RequestBody DeliveryDto deliveryDto) {
+    Long deliveryId = deliveryService.addDelivery(deliveryDto);
+    return ResponseEntity.ok(deliveryId);
   }
 
   @GetMapping("/deliveries/{id}")
