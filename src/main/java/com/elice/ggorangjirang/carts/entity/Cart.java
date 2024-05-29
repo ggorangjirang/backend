@@ -3,7 +3,7 @@ package com.elice.ggorangjirang.carts.entity;
 import com.elice.ggorangjirang.users.entity.Users;
 import jakarta.persistence.*;
 import lombok.*;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
 import java.util.List;
 
 @Entity
@@ -13,7 +13,6 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@EntityListeners(AuditingEntityListener.class)
 public class Cart {
 
     @Id
