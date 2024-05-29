@@ -418,6 +418,3 @@ VALUES ('만족', '좋네요. 잘 쓸게요.', 'url', 1, 1, NOW());
 -- 이미지를 업로드하지 않은 리뷰
 INSERT INTO reviews (title, content, product_id, user_id, created_at)
 VALUES ('흠', '좀 더 써보고 판단할게요.', 1, 1, NOW());
-
--- 장바구니
-INSERT INTO carts (user_id) VALUES (1);
