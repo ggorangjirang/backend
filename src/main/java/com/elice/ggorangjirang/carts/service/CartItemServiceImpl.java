@@ -7,6 +7,8 @@ import com.elice.ggorangjirang.carts.repository.CartItemRepository;
 import com.elice.ggorangjirang.carts.repository.CartRepository;
 import com.elice.ggorangjirang.products.entity.Product;
 import com.elice.ggorangjirang.products.repository.ProductRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -26,14 +28,12 @@ public class CartItemServiceImpl implements CartItemService {
     }
 
     @Override
-    public CartItemDto addCartItem(Long userId, Long productId, int quantity) {
+    public CartItemDto addCartItem(Long cartId, Long productId, int quantity) {
         Product product = productRepository.findById(productId)
             .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 상품 ID입니다."));
 
-        Cart cart = cartRepository.findByUserId(userId);
-        if (cart == null) {
-            throw new IllegalArgumentException("유효하지 않은 사용자 ID입니다.");
-        }
+        Cart cart = cartRepository.findById(cartId)
+            .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 장바구니 ID입니다."));
 
         CartItem cartItem = CartItem.builder()
             .cart(cart)
@@ -47,15 +47,18 @@ public class CartItemServiceImpl implements CartItemService {
     }
 
     @Override
-    public List<CartItemDto> getCartItems(Long userId) {
-        Cart cart = cartRepository.findByUserId(userId);
-        if (cart == null) {
-            throw new IllegalArgumentException("유효하지 않은 사용자 ID입니다.");
-        }
+    public List<CartItemDto> getCartItems(Long cartId) {
+        List<CartItem> cartItems = cartItemRepository.findByCartId(cartId);
 
-        return cart.getCartItems().stream()
+        return cartItems.stream()
             .map(CartItemDto::toDto)
             .collect(Collectors.toList());
+    }
+
+    @Override
+    public Page<CartItemDto> getCartItemsByCartId(Long cartId, Pageable pageable) {
+        Page<CartItem> cartItemsPage = cartItemRepository.findByCartId(cartId, pageable);
+        return cartItemsPage.map(CartItemDto::toDto);
     }
 
     @Override

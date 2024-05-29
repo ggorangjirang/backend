@@ -4,6 +4,8 @@ import com.elice.ggorangjirang.carts.dto.CartItemDto;
 import com.elice.ggorangjirang.carts.dto.CartItemRequest;
 import com.elice.ggorangjirang.carts.service.CartItemService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,7 +21,7 @@ public class CartItemController {
     @PostMapping
     public ResponseEntity<CartItemDto> addCartItem(@RequestBody CartItemRequest cartItemRequestDto) {
         CartItemDto cartItemDto = cartItemService.addCartItem(
-            cartItemRequestDto.getUserId(),
+            cartItemRequestDto.getCartId(),
             cartItemRequestDto.getProductId(),
             cartItemRequestDto.getQuantity()
         );
@@ -27,8 +29,8 @@ public class CartItemController {
     }
 
     @GetMapping
-    public ResponseEntity<List<CartItemDto>> getCartItems(@RequestParam Long userId) {
-        List<CartItemDto> cartItems = cartItemService.getCartItems(userId);
+    public ResponseEntity<Page<CartItemDto>> getCartItems(@RequestParam Long cartId, Pageable pageable) {
+        Page<CartItemDto> cartItems = cartItemService.getCartItemsByCartId(cartId, pageable);
         return ResponseEntity.ok(cartItems);
     }
 
