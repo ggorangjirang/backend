@@ -58,6 +58,9 @@ public class OrderItem {
 
     return orderItem;
   }
+  public void delete(){
+    getProduct().addQuantity(quantity);
+  }
 
   public int getTotalPrice(){
     return this.orderPrice * this.quantity;
