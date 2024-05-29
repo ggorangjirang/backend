@@ -39,6 +39,16 @@ public class OrderService {
 
   // 주문 삭제
   public void deleteById(Long id){
+    Order order = findById(id);
+
+    if(order.getDeliveries().getStatus().equals("DELIVERING")){
+      throw new IllegalStateException("배송중이라 취소가 불가능합니다.");
+    }
+
+    for(OrderItem orderItem : order.getOrderItems()){
+      orderItem.delete();
+    }
+
     orderRepository.deleteById(id);
   }
 

@@ -147,4 +147,12 @@ public class Product {
             this.isSoldOut = false;
         }
     }
+
+    // 결제 취소시 수량 돌리기
+    public void addQuantity(int quantity){
+        if(quantity == 0){
+            throw new IllegalStateException("올바르지 않습니다");
+        }
+        this.stock += quantity;
+    }
 }
