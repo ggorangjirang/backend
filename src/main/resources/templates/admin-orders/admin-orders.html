@@ -152,6 +152,8 @@
 </body>
 <script>
     document.addEventListener('DOMContentLoaded', () => {
+        countOrders(); // 주문 개수 세기
+
         document.querySelectorAll('select[id^="deliveryStatusSelectBox-"]').forEach(
             selectBox => {
                 selectBox.addEventListener('change', event => {
@@ -168,6 +170,7 @@
                     .then(response => {
                         if (response.ok) {
                             alert('배송 상태가 업데이트되었습니다.');
+                            countOrders(); // 배송 상태 변경 시 주문 개수 업데이트
                         } else {
                             alert('배송 상태 업데이트에 실패했습니다.');
                         }
@@ -197,6 +200,31 @@
         document.getElementById('modalBackground').addEventListener('click', closeModal);
     });
 
+    function countOrders() {
+        const orders = document.querySelectorAll('.orders-item');
+        let totalOrders = 0;
+        let preparingCount = 0;
+        let deliveringCount = 0;
+        let completedCount = 0;
+
+        orders.forEach(order => {
+            totalOrders++;
+            const deliveryStatus = order.querySelector('select[id^="deliveryStatusSelectBox-"]').value;
+            if (deliveryStatus === 'DELIVERY_READY') {
+                preparingCount++;
+            } else if (deliveryStatus === 'DELIVERING') {
+                deliveringCount++;
+            } else if (deliveryStatus === 'DELIVERY_COMPLETE') {
+                completedCount++;
+            }
+        });
+
+        document.getElementById('ordersCount').textContent = totalOrders;
+        document.getElementById('prepareCount').textContent = preparingCount;
+        document.getElementById('deliveryCount').textContent = deliveringCount;
+        document.getElementById('completeCount').textContent = completedCount;
+    }
+
     function openModal(orderId) {
         document.getElementById('deleteCompleteButton').setAttribute('data-order-id', orderId);
         document.getElementById('modal').classList.add('is-active');
@@ -217,6 +245,7 @@
             if (response.ok) {
                 alert('주문이 취소되었습니다.');
                 removeOrderFromDOM(orderId);
+                countOrders(); // 주문 취소 시 주문 개수 업데이트
             } else {
                 return response.text().then(text => {
                     throw new Error(text);
