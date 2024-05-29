@@ -20,9 +20,10 @@ public class DeliveryService {
   private final OrderRepository orderRepository;
 
   @Transactional
-  public void addDelivery(DeliveryDto deliveryDto) {
+  public Long addDelivery(DeliveryDto deliveryDto) {
     Deliveries delivery = deliveryMapper.toEntity(deliveryDto);
-    deliveryRepository.save(delivery);
+    Deliveries savedDelivery = deliveryRepository.save(delivery);
+    return savedDelivery.getId();
   }
 
   @Transactional
@@ -38,10 +39,8 @@ public class DeliveryService {
     return deliveryRepository.save(delivery);
   }
 
-
   @Transactional
   public List<Deliveries> getDeliveriesByOrderId(long orderId) {
     return deliveryRepository.findByOrderId(orderId);
   }
-
 }
