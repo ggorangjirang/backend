@@ -67,4 +67,10 @@ public class ReviewController {
         ReviewResponseMy updatedReview = reviewService.updateReview(id, request, imageFile);
         return ResponseEntity.ok(updatedReview);
     }
+
+    @DeleteMapping("/users/review/{reviewId}")
+    public ResponseEntity<Void> deleteReview(@PathVariable("reviewId") Long id) {
+        reviewService.deleteReview(id);
+        return ResponseEntity.noContent().build();
+    }
 }

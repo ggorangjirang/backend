@@ -14,7 +14,9 @@ public class ReviewResponseMy {
     private String title;
     private String content;
     private String imageUrl;
+    private Long productId;
     private String productName;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    private Long userId;
 }
