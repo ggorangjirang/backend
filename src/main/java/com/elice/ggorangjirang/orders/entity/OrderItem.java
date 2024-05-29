@@ -48,7 +48,7 @@ public class OrderItem {
     orderItem.setProduct(product);
 
     float discountRate = product.getDiscountRate();
-    int discountPrice = (discountRate != 0) ? Math.round(orderPrice * (1 - discountRate / 100)) : orderPrice;
+    int discountPrice = (discountRate != 0) ? ((Math.round(orderPrice * (1 - discountRate / 100)) + 5) / 10 * 10) : orderPrice;
 
     orderItem.setOrderPrice(discountPrice);
     orderItem.setQuantity(quantity);

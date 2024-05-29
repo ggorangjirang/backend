@@ -14,6 +14,7 @@ public class ListProductResponse {
     private String name;
     private float discountRate;
     private int price;
+    private int discountedPrice;
     private String imageUrl;
     private int stock;
 }

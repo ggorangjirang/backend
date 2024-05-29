@@ -8,6 +8,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
@@ -35,6 +36,10 @@ public class Review {
     @CreatedDate
     private LocalDateTime createdAt;
 
+    @Column(name = "updated_at")
+    @LastModifiedDate
+    private LocalDateTime updatedAt;
+
     @Column(name = "image_url")
     private String imageUrl;
 
@@ -53,5 +58,11 @@ public class Review {
         this.imageUrl = imageUrl;
         this.product = product;
         this.user = user;
+    }
+
+    public void update(String title, String content, String imageUrl) {
+        this.title = title;
+        this.content = content;
+        this.imageUrl = imageUrl;
     }
 }
