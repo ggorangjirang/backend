@@ -66,9 +66,11 @@ public class ReviewService {
                 review.getTitle(),
                 review.getContent(),
                 review.getImageUrl(),
+                review.getProduct().getId(),
                 review.getProduct().getName(),
                 review.getCreatedAt(),
-                review.getUpdatedAt());
+                review.getUpdatedAt(),
+                review.getUser().getId());
     }
 
     // 상품 상세 페이지 review GET 요청 전달하기

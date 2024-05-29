@@ -12,5 +12,4 @@ import lombok.Setter;
 public class UpdateReviewRequest {
     private String title;
     private String content;
-    private String imageUrl;
 }
