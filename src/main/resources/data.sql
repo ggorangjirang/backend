@@ -415,7 +415,7 @@ INSERT INTO order_item (order_price, quantity, order_id, product_id) VALUES (500
 -- 리뷰
 -- 이미지를 업로드한 리뷰
 INSERT INTO reviews (title, content, image_url, product_id, user_id, created_at)
-VALUES ('만족', '좋네요. 잘 쓸게요.', 'url', 'url', 1, 1, NOW());
+VALUES ('만족', '좋네요. 잘 쓸게요.', 'url', 1, 1, NOW());
 
 -- 이미지를 업로드하지 않은 리뷰
 INSERT INTO reviews (title, content, product_id, user_id, created_at)
