@@ -6,6 +6,7 @@ import com.elice.ggorangjirang.products.dto.DetailProductResponse;
 import com.elice.ggorangjirang.products.dto.ListProductResponse;
 import com.elice.ggorangjirang.products.dto.UpdateProductRequest;
 import com.elice.ggorangjirang.products.entity.Product;
+import com.elice.ggorangjirang.products.exception.ProductNotFoundException;
 import com.elice.ggorangjirang.products.repository.ProductRepository;
 import com.elice.ggorangjirang.subcategories.entity.Subcategory;
 import com.elice.ggorangjirang.subcategories.repository.SubcategoryRepository;
@@ -38,7 +39,7 @@ public class ProductService {
     // Spring MVC 방식 관리자 페이지용
     public Product findProduct(Long id) {
         Product foundProduct = productRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("not found: " + id));
+                .orElseThrow(() -> new ProductNotFoundException("not found: " + id));
 
         return foundProduct;
     }
@@ -70,7 +71,7 @@ public class ProductService {
                                  MultipartFile productImageFile,
                                  MultipartFile descriptionImageFile) throws IOException {
         Product product = productRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("not found: " + id));
+                .orElseThrow(() -> new ProductNotFoundException("not found: " + id));
 
         Subcategory subcategory = subcategoryRepository.findById(request.getSubcategoryId())
                 .orElseThrow(() -> new IllegalArgumentException("not found: " + id));
@@ -116,7 +117,7 @@ public class ProductService {
     @Transactional
     public void deleteProduct(Long id) {
         Product product = productRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("not found: " + id));
+                .orElseThrow(() -> new ProductNotFoundException("not found: " + id));
 
         productRepository.delete(product);
     }
@@ -217,7 +218,7 @@ public class ProductService {
 
     public DetailProductResponse getProductDetail(Long id) {
         Product product = productRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Product not found with id: " + id));
+                .orElseThrow(() -> new ProductNotFoundException("Product not found with id: " + id));
 
         product.addViewCount();
         productRepository.save(product);
