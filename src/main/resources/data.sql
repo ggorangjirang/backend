@@ -34,10 +34,10 @@ INSERT INTO subcategories (subcategory_name, parent_category_id, category_id) VA
 
 -- 제품 데이터 삽입
 -- 강아지 사료 (Subcategory 1)
-INSERT INTO products (name, subcategory_id, pseudo_category_id, price, discount_rate, expiration_date, stock, order_count, is_sold_out, created_at, updated_at, view_count, is_deleted, image_url, description_image_url, description, description)
+INSERT INTO products (name, subcategory_id, pseudo_category_id, price, discount_rate, expiration_date, stock, order_count, is_sold_out, created_at, updated_at, view_count, is_deleted, image_url, description_image_url, description)
 VALUES ('프리미엄 강아지 사료', 1, 1, 45500, 20, '2024-12-31', 50, 120, false, NOW(), NOW(), 1500, false, 'https://ggorangjirang-s3.s3.ap-northeast-2.amazonaws.com/images/products/0b8820b2-31a0-4c08-b0b1-c084786e7bca-product-sample1.jpg', 'https://ggorangjirang-s3.s3.amazonaws.com/images/descriptions/0cd60135-65ea-4073-8a4c-87347ac20088-description-sample.jpg', '제품 상세 설명');
 
-INSERT INTO products (name, subcategory_id, pseudo_category_id, price, discount_rate, expiration_date, stock, order_count, is_sold_out, created_at, updated_at, view_count, is_deleted, image_url, description_image_url, description, description)
+INSERT INTO products (name, subcategory_id, pseudo_category_id, price, discount_rate, expiration_date, stock, order_count, is_sold_out, created_at, updated_at, view_count, is_deleted, image_url, description_image_url, description)
 VALUES ('오리 고기 강아지 사료', 1, 1, 32000, 30, '2024-12-31', 30, 85, false, NOW(), NOW(), 2300, false, 'https://ggorangjirang-s3.s3.ap-northeast-2.amazonaws.com/images/products/07ce63c5-d95b-431c-83c9-2bb106ec421f-product-sample2.jpg', 'https://ggorangjirang-s3.s3.ap-northeast-2.amazonaws.com/images/descriptions/2f7b3d18-312a-41ea-aa49-237aead06521-description-sample2.jpg', '제품 상세 설명');
 
 INSERT INTO products (name, subcategory_id, pseudo_category_id, price, discount_rate, expiration_date, stock, order_count, is_sold_out, created_at, updated_at, view_count, is_deleted, image_url, description_image_url, description)
