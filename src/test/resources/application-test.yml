@@ -6,6 +6,10 @@ spring:
       mode: never
   datasource:
     initialization-mode: never
+  servlet:
+    multipart:
+      max-file-size=10MB
+      max-request-size=10MB
 
 jwt:
   secretKey: ${JWT_SECRET_KEY}
