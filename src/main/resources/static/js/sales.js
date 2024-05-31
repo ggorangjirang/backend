@@ -59,6 +59,9 @@ $(document).ready(function () {
         var saleData = response.totalSales;
         var refundData = response.totalRefunds;
         var totalOrders = response.totalOrders;
+        if (refundData.length < saleData.length) {
+          refundData = [...refundData, ...Array(saleData.length - refundData.length).fill(0)];
+        }
         var netSaleData = saleData.map(
             (sales, index) => sales - refundData[index]);
 
@@ -87,6 +90,10 @@ $(document).ready(function () {
             var previousSaleData = prevResponse.totalSales;
             var previousRefundData = prevResponse.totalRefunds;
             var previousTotalOrders = prevResponse.totalOrders;
+            if (previousRefundData.length < previousSaleData.length) {
+              previousRefundData = [...previousRefundData, ...Array(previousSaleData.length - previousRefundData.length).fill(0)];
+            }
+
             var previousNetSaleData = previousSaleData.map(
                 (sales, index) => sales - previousRefundData[index]);
 
