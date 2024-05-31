@@ -24,9 +24,9 @@ public class SaleMapper {
         .map(tuple -> tuple.get(2, Long.class))
         .toArray(Long[]::new);
 
-    Long[] totalRefundsArray = refunds.stream()
-        .map(tuple -> tuple.get(1, Long.class))
-        .toArray(Long[]::new);
+    Integer[] totalRefundsArray = refunds.stream()
+        .map(tuple -> tuple.get(1, Integer.class))
+        .toArray(Integer[]::new);
 
     return new ResSale(dateTimeArray, totalSalesArray, totalOrdersArray, totalRefundsArray);
   }
@@ -43,9 +43,9 @@ public class SaleMapper {
         .map(array -> ((Number) array[2]).longValue())
         .toArray(Long[]::new);
 
-    Long[] totalRefundsArray = refunds.stream()
-        .map(array -> ((Number) array[1]).longValue())
-        .toArray(Long[]::new);
+    Integer[] totalRefundsArray = refunds.stream()
+        .map(array -> ((Number) array[1]).intValue())
+        .toArray(Integer[]::new);
 
     return new ResSale(dateTimeArray, totalSalesArray, totalOrdersArray, totalRefundsArray);
   }
