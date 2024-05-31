@@ -10,7 +10,6 @@ import org.springframework.test.context.ActiveProfiles;
 @PropertySource(value = {
 		"classpath:env.yml",
 }, factory = EnvConfig.class)
-@ActiveProfiles("test")
 class GgorangjirangApplicationTests {
 
 	@Test
