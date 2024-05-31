@@ -1,21 +1,3 @@
--- 외래 키 제약 조건 비활성화
-SET FOREIGN_KEY_CHECKS = 0;
-
--- 테이블 삭제
-TRUNCATE TABLE products;
-TRUNCATE TABLE subcategories;
-TRUNCATE TABLE categories;
-TRUNCATE TABLE orders;
-TRUNCATE TABLE order_item;
-TRUNCATE TABLE deliveries;
-TRUNCATE TABLE users;
-TRUNCATE TABLE reviews;
-TRUNCATE TABLE carts;
-TRUNCATE TABLE cart_items;
-
--- 외래 키 제약 조건 활성화
-SET FOREIGN_KEY_CHECKS = 1;
-
 -- 카테고리 데이터 삽입
 INSERT INTO categories (category_name) VALUES ('사료');
 INSERT INTO categories (category_name) VALUES ('간식');
