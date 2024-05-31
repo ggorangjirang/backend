@@ -117,7 +117,8 @@ $(document).ready(function () {
             var chart1 = new Highcharts.Chart({
               chart: {
                 renderTo: 'container',
-                type: 'line'
+                type: 'line',
+                color: Highcharts.getOptions().colors[0]
               },
               title: {
                 text: '순매출'
