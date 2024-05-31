@@ -27,8 +27,7 @@ public class Deliveries {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-  @Column(nullable = false)
-  private LocalDate arrivalDate;
+  private LocalDateTime arrivalDate;
 
   @Column(nullable = false)
   private String status;
@@ -62,7 +61,7 @@ public class Deliveries {
 //  }
 
   public static Deliveries createDelivery(String zipcode, String streetAddress, String detailAddress, String status, String request,
-      LocalDate arrivalDate, Integer phoneNumber, String name) {
+      LocalDateTime arrivalDate, Integer phoneNumber, String name) {
     Deliveries deliveries = new Deliveries();
     deliveries.setZipcode(zipcode);
     deliveries.setStreetAddress(streetAddress);
