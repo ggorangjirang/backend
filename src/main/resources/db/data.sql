@@ -1,37 +1,3 @@
--- 외래 키 제약 조건 비활성화
-SET FOREIGN_KEY_CHECKS = 0;
-
--- 테이블 삭제
-TRUNCATE TABLE products;
-TRUNCATE TABLE subcategories;
-TRUNCATE TABLE categories;
-TRUNCATE TABLE orders;
-TRUNCATE TABLE order_item;
-TRUNCATE TABLE deliveries;
-TRUNCATE TABLE users;
-TRUNCATE TABLE reviews;
-TRUNCATE TABLE carts;
-TRUNCATE TABLE cart_items;
-
--- 외래 키 제약 조건 활성화
-SET FOREIGN_KEY_CHECKS = 1;
-
--- 카테고리 데이터 삽입
-INSERT INTO categories (category_name) VALUES ('사료');
-INSERT INTO categories (category_name) VALUES ('간식');
-INSERT INTO categories (category_name) VALUES ('배변/위생');
-INSERT INTO categories (category_name) VALUES ('패션');
-
--- 서브카테고리 데이터 삽입
-INSERT INTO subcategories (subcategory_name, parent_category_id, category_id) VALUES ('강아지 사료', 1, 1);
-INSERT INTO subcategories (subcategory_name, parent_category_id, category_id) VALUES ('고양이 사료', 1, 1);
-INSERT INTO subcategories (subcategory_name, parent_category_id, category_id) VALUES ('강아지 간식', 2, 2);
-INSERT INTO subcategories (subcategory_name, parent_category_id, category_id) VALUES ('고양이 간식', 2, 2);
-INSERT INTO subcategories (subcategory_name, parent_category_id, category_id) VALUES ('배변패드', 3, 3);
-INSERT INTO subcategories (subcategory_name, parent_category_id, category_id) VALUES ('고양이 모래', 3, 3);
-INSERT INTO subcategories (subcategory_name, parent_category_id, category_id) VALUES ('의류', 4, 4);
-INSERT INTO subcategories (subcategory_name, parent_category_id, category_id) VALUES ('넥카라', 4, 4);
-
 -- 제품 데이터 삽입
 -- 강아지 사료 (Subcategory 1)
 INSERT INTO products (name, subcategory_id, pseudo_category_id, price, discount_rate, expiration_date, stock, order_count, is_sold_out, created_at, updated_at, view_count, is_deleted, image_url, description_image_url, description)
@@ -381,37 +347,6 @@ INSERT INTO products (name, subcategory_id, pseudo_category_id, price, discount_
 VALUES ('고양이 사료 추가10', 2, 2, 25600, 40, '2024-12-31', 1, 180, false, NOW(), NOW(), 1600, false, 'https://ggorangjirang-s3.s3.ap-northeast-2.amazonaws.com/images/products/65ad053a-bcf8-41ba-860e-ed6310e832e7-product-sample4.jpg', 'https://ggorangjirang-s3.s3.amazonaws.com/images/descriptions/0cd60135-65ea-4073-8a4c-87347ac20088-description-sample.jpg', '제품 상세 설명');
 
 
--- 주소
-INSERT INTO deliveries (zipcode, street_address, detail_address, status, request, arrival_date, phone_number, name)
-VALUE('12345', '123 test St', 'May 101', 'Pending', 'Testing~', '2024-06-01', 1234567890, 'Test');
-
-INSERT INTO deliveries (zipcode, street_address, detail_address, status, request, arrival_date, phone_number, name)
-VALUE('12345', '123 test St', 'May 102', 'Pending', 'Testing~', '2024-06-01', 1234567890, 'Test2');
-
-INSERT INTO deliveries (zipcode, street_address, detail_address, status, request, arrival_date, phone_number, name)
-    VALUE('12345', '123 test St', 'May 102', 'Pending', 'Testing~', '2024-06-01', 1234567890, 'Test3');
-
-
--- 유저
-INSERT INTO users (name, password, email) VALUES ('test','1234','test@test.com');
-
-
--- 주문
-INSERT INTO orders (deliveries_id, order_date,  order_status, order_number,user_id, total_all_price)
-VALUES (1, '2024-05-01T10:00:00','ORDER','adf123', 1, 3000);
-
-INSERT INTO orders (deliveries_id, order_date,  order_status,order_number, user_id, total_all_price)
-VALUES (2, '2024-05-01T10:00:00','ORDER','bef234', 1, 4000);
-
-
-
-
--- 주문 아이템
-INSERT INTO order_item (order_price, quantity, order_id, product_id) VALUES (100,10,1,8);
-INSERT INTO order_item (order_price, quantity, order_id, product_id) VALUES (40,10,1,9);
-INSERT INTO order_item (order_price, quantity, order_id, product_id) VALUES (500,10,2,3);
-
-
 -- 리뷰
 -- 이미지를 업로드한 리뷰
 INSERT INTO reviews (title, content, image_url, product_id, user_id, created_at)
@@ -420,10 +355,3 @@ VALUES ('만족', '좋네요. 잘 쓸게요.', 'url', 1, 1, NOW());
 -- 이미지를 업로드하지 않은 리뷰
 INSERT INTO reviews (title, content, product_id, user_id, created_at)
 VALUES ('흠', '좀 더 써보고 판단할게요.', 1, 1, NOW());
-
--- 카트 데이터 삽입
-INSERT INTO carts (user_id) VALUES (1);
-
--- 카트 아이템 데이터 삽입
-INSERT INTO cart_items (cart_id, product_id, quantity) VALUES (1, 1, 2);
-
