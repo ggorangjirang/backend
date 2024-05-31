@@ -50,6 +50,7 @@ public class SaleAggregationService {
   }
 
   private ChronoUnit validateTimeIntervals(String timeUnit, LocalDateTime start, LocalDateTime end) {
+
     if (Objects.isNull(timeUnit) || Objects.isNull(start) || Objects.isNull(end)){
 
       throw new InvalidParameterException(ErrorCode.INVALID_PARAMETER);
