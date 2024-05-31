@@ -1,5 +1,3 @@
-import { addCommas, createNavbar } from "./useful-functions.js";
-
 // 요소(element)들
 const ordersCount = document.querySelector("#ordersCount");
 const prepareCount = document.querySelector("#prepareCount");
