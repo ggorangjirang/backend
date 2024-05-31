@@ -9,6 +9,7 @@ import com.elice.ggorangjirang.orders.entity.OrderStatus;
 import com.elice.ggorangjirang.products.entity.Product;
 import com.elice.ggorangjirang.users.entity.Users;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
@@ -72,7 +73,7 @@ public class OrderTest {
     String detailAddress = "Apt 101";
     String status = "Pending";
     String request = "Please leave at the front door.";
-    LocalDate arrivalDate = LocalDate.now();
+    LocalDateTime arrivalDate = LocalDateTime.now();
     int phoneNumber = 1000000000;
     String name = "받는사람";
 

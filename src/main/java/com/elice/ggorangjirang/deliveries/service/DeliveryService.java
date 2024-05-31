@@ -6,6 +6,8 @@ import com.elice.ggorangjirang.deliveries.entity.Deliveries;
 import com.elice.ggorangjirang.deliveries.repository.DeliveryRepository;
 import com.elice.ggorangjirang.orders.entity.Order;
 import com.elice.ggorangjirang.orders.repository.OrderRepository;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -36,6 +38,10 @@ public class DeliveryService {
   public Deliveries updateDeliveryStatus(long id, String status) {
     Deliveries delivery = getDeliveryById(id);
     delivery.setStatus(status);
+    if ("DELIVERY_COMPLETE".equalsIgnoreCase(status)) {
+      LocalDateTime now = LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS);
+      delivery.setArrivalDate(now);
+    }
     return deliveryRepository.save(delivery);
   }
 

@@ -20,8 +20,6 @@ public class DeliveryMapper {
     delivery.setDetailAddress(deliveryDto.getDetailAddress());
     delivery.setRequest(deliveryDto.getRequest());
     delivery.setStatus("Pending");
-    delivery.setArrivalDate(LocalDate.now().plusDays(3)); // 예시로 3일 후 도착
-
 
     return delivery;
   }

@@ -19,6 +19,4 @@ public class DeliveryDto {
 
   private String request;
 
-  private LocalDate arrivalDate;
-
 }
