@@ -129,7 +129,6 @@ $(document).ready(function () {
                   labels: {
                     step: interval
                   },
-                  tickInterval: interval,
                   title: {
                     text: '선택한 기간',
                     style: {
@@ -142,7 +141,6 @@ $(document).ready(function () {
                   labels: {
                     step: interval2
                   },
-                  tickInterval: interval2,
                   title: {
                     text: '직전 기간',
                     style: {
@@ -190,7 +188,6 @@ $(document).ready(function () {
                   labels: {
                     step: interval
                   },
-                  tickInterval: interval,
                   title: {
                     text: '선택한 기간',
                     style: {
@@ -203,7 +200,6 @@ $(document).ready(function () {
                   labels: {
                     step: interval2
                   },
-                  tickInterval: interval2,
                   title: {
                     text: '직전 기간',
                     style: {
@@ -251,7 +247,6 @@ $(document).ready(function () {
                   labels: {
                     step: interval
                   },
-                  tickInterval: interval,
                   title: {
                     text: '선택한 기간',
                     style: {
@@ -264,7 +259,6 @@ $(document).ready(function () {
                   labels: {
                     step: interval2
                   },
-                  tickInterval: interval2,
                   title: {
                     text: '직전 기간',
                     style: {
@@ -307,4 +301,5 @@ $(document).ready(function () {
       }
     });
   }
+  fetchSalesData();
 });

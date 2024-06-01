@@ -19,8 +19,8 @@ public interface OrderRepository extends JpaRepository<Order, Long>, SaleAggrega
   @Query(value = "SELECT DATE_FORMAT(DATE_SUB(o.order_date, INTERVAL (DAYOFWEEK(o.order_date) - DAYOFWEEK(:start)) DAY), '%Y-%m-%d') AS week, " +
       "SUM(o.total_all_price) AS totalPrice, " +
       "COUNT(o.total_all_price) " +
-      "FROM order s " +
-      "WHERE o BETWEEN :start AND :end " +
+      "FROM orders o " +
+      "WHERE o.order_date BETWEEN :start AND :end " +
       "AND o.order_status = 'CANCEL' " +
       "GROUP BY week " +
       "ORDER BY week", nativeQuery = true)

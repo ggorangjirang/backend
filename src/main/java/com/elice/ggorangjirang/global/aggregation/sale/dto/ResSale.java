@@ -4,5 +4,5 @@ public record ResSale(
     String[] dateTime,
     Long[] totalSales,
     Long[] totalOrders,
-    Long[] totalRefunds
+    Integer[] totalRefunds
 ) {}
