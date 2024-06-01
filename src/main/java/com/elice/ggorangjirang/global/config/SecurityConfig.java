@@ -4,6 +4,9 @@ import com.elice.ggorangjirang.global.login.filter.CustomUsernamePasswordAuthent
 import com.elice.ggorangjirang.global.login.handler.LoginFailHandler;
 import com.elice.ggorangjirang.global.login.handler.LoginSuccessHandler;
 import com.elice.ggorangjirang.global.login.service.LoginService;
+import com.elice.ggorangjirang.global.oauth2.handler.OAuth2LoginFailHandler;
+import com.elice.ggorangjirang.global.oauth2.handler.OAuth2LoginSuccessHandler;
+import com.elice.ggorangjirang.global.oauth2.service.CustomOAuth2UserService;
 import com.elice.ggorangjirang.jwt.filter.JwtAuthenticationProcessingFilter;
 import com.elice.ggorangjirang.jwt.service.JwtService;
 import com.elice.ggorangjirang.users.repository.UserRepository;
@@ -11,6 +14,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -20,20 +24,28 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.logout.LogoutFilter;
 import org.springframework.web.cors.CorsConfiguration;
-
 import java.util.Arrays;
 import java.util.Collections;
 
+// 인증은 CustomUsernamePasswordAuthenticationFilter에서 authenticate()로 인증된 사용자로 처리
+// JwtAuthenticationProcessingFilter는 AccessToken, RefreshToken 재발급
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
 
+    @Lazy
     private final LoginService loginService;
     private final JwtService jwtService;
+    private final CustomOAuth2UserService customOAuth2UserService;
     private final UserRepository userRepository;
     private final ObjectMapper objectMapper;
+
+    private final OAuth2LoginSuccessHandler oAuth2LoginSuccessHandler;
+
+    private final OAuth2LoginFailHandler oAuth2LoginFailHandler;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -44,7 +56,8 @@ public class SecurityConfig {
                     CorsConfiguration config = new CorsConfiguration();
 
                     config.setAllowedOrigins(Arrays.asList(
-                        "http://localhost:3000"
+                        "http://localhost:3000",
+                        "https://ggorangjirang.duckdns.org"
                         ));
                     config.setAllowedMethods(Collections.singletonList("*"));
                     return config;
@@ -58,25 +71,27 @@ public class SecurityConfig {
 
             .sessionManagement(config -> config.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 
+            .oauth2Login(oauth2Login -> oauth2Login
+                    .successHandler(oAuth2LoginSuccessHandler)
+                    .failureHandler(oAuth2LoginFailHandler)
+                    .userInfoEndpoint(userInfoEndpoint -> userInfoEndpoint.userService(customOAuth2UserService))
+            )
+
             .authorizeHttpRequests(authorize -> authorize
                     .requestMatchers("/h2-console/**",
                         "/swagger-ui/**",
                         "/swagger-resources/**",
                         "api/**",
                         "/v3/api-docs/**",
-                        "/api/v1/hello").permitAll()
+                        "/api/v1/hello",
+                        "/admin/**").permitAll()
+                    .requestMatchers("/signup").permitAll()
                     .anyRequest().authenticated()
             );
 
-
-
-
-
-
-
-
-
-            // OAuth2.0 구현 후 추가 예정
+            http
+                .addFilterAfter(customUsernamePasswordAuthenticationFilter(), LogoutFilter.class)
+                .addFilterBefore(jwtAuthenticationProcessingFilter(), CustomUsernamePasswordAuthenticationFilter.class);
 
             return http.build();
     }
@@ -96,12 +111,12 @@ public class SecurityConfig {
 
     @Bean
     public LoginSuccessHandler loginSuccessHandler() {
-        return null; // 구현 예정
+        return new LoginSuccessHandler(jwtService, userRepository);
     }
 
     @Bean
     public LoginFailHandler loginFailHandler() {
-        return null; // 구현 예정
+        return new LoginFailHandler();
     }
 
     @Bean
@@ -109,6 +124,8 @@ public class SecurityConfig {
         CustomUsernamePasswordAuthenticationFilter filter
             = new CustomUsernamePasswordAuthenticationFilter(objectMapper);
         filter.setAuthenticationManager(authenticationManager());
+        filter.setAuthenticationSuccessHandler(loginSuccessHandler());
+        filter.setAuthenticationFailureHandler(loginFailHandler());
         return filter;
     }
 
