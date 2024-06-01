@@ -15,6 +15,7 @@ public enum ErrorCode {
   // Domain Custom Exception
   // SAMPLE
   REFRESH_NOT_VALID(HttpStatus.FORBIDDEN, "RE1", "The refresh token is invalid. redirect to /login"),
+  INVALID_PRODUCT_DATA(HttpStatus.BAD_REQUEST, "PROD1", "가격 또는 재고가 음수로 입력되었습니다.")
   ;
 
   private final HttpStatus status;

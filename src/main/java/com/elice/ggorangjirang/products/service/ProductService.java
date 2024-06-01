@@ -6,7 +6,9 @@ import com.elice.ggorangjirang.products.dto.DetailProductResponse;
 import com.elice.ggorangjirang.products.dto.ListProductResponse;
 import com.elice.ggorangjirang.products.dto.UpdateProductRequest;
 import com.elice.ggorangjirang.products.entity.Product;
+import com.elice.ggorangjirang.products.exception.InvalidProductDataException;
 import com.elice.ggorangjirang.products.exception.ProductNotFoundException;
+import com.elice.ggorangjirang.products.exception.SubcategoryNotFoundException;
 import com.elice.ggorangjirang.products.repository.ProductRepository;
 import com.elice.ggorangjirang.subcategories.entity.Subcategory;
 import com.elice.ggorangjirang.subcategories.repository.SubcategoryRepository;
@@ -50,6 +52,10 @@ public class ProductService {
             MultipartFile productImageFile,
             MultipartFile descriptionImageFile) throws IOException {
 
+        if (request.getPrice() < 0 || request.getStock() < 0) {
+            throw new InvalidProductDataException("가격과 재고는 음수가 될 수 없습니다.");
+        }
+
         String productImageUrl = null;
         if(productImageFile != null && !productImageFile.isEmpty()) {
             productImageUrl = s3Service.uploadProductImage(productImageFile);
@@ -71,13 +77,17 @@ public class ProductService {
                                  MultipartFile productImageFile,
                                  MultipartFile descriptionImageFile) throws IOException {
         Product product = productRepository.findById(id)
-                .orElseThrow(() -> new ProductNotFoundException("not found: " + id));
+                .orElseThrow(() -> new ProductNotFoundException("Product not found: " + id));
 
         Subcategory subcategory = subcategoryRepository.findById(request.getSubcategoryId())
-                .orElseThrow(() -> new IllegalArgumentException("not found: " + id));
+                .orElseThrow(() -> new SubcategoryNotFoundException("Subcategory not found: " + request.getSubcategoryId()));
 
         String oldProductImageUrl = product.getProductImageUrl();
         String newProductImageUrl = oldProductImageUrl;
+
+        if (request.getPrice() < 0 || request.getStock() < 0) {
+            throw new InvalidProductDataException("가격과 재고는 음수가 될 수 없습니다.");
+        }
 
         if (productImageFile != null && !productImageFile.isEmpty()) {
             newProductImageUrl = s3Service.uploadProductImage(productImageFile);
