@@ -30,7 +30,7 @@ public class UserService {
             .role(Role.USER)
             .build();
 
-        users.passwordEncoder(passwordEncoder);
+        users.passwordEncode(passwordEncoder);
         userRepository.save(users);
     }
 
