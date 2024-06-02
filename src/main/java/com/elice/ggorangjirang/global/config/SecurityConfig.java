@@ -12,9 +12,11 @@ import com.elice.ggorangjirang.jwt.service.JwtService;
 import com.elice.ggorangjirang.users.repository.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -36,7 +38,6 @@ import java.util.Collections;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    @Lazy
     private final LoginService loginService;
     private final JwtService jwtService;
     private final CustomOAuth2UserService customOAuth2UserService;
@@ -57,27 +58,15 @@ public class SecurityConfig {
 
                     config.setAllowedOrigins(Arrays.asList(
                         "http://localhost:3000",
+                        "http://localhost:8080",
                         "https://ggorangjirang.duckdns.org"
                         ));
                     config.setAllowedMethods(Collections.singletonList("*"));
                     return config;
                 }));
 
-        http
-            .formLogin(config -> config.disable())
-            .httpBasic(config -> config.disable())
-            .csrf(config -> config.disable())
-            .headers(config -> config.disable())
-
-            .sessionManagement(config -> config.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-
-            .oauth2Login(oauth2Login -> oauth2Login
-                    .successHandler(oAuth2LoginSuccessHandler)
-                    .failureHandler(oAuth2LoginFailHandler)
-                    .userInfoEndpoint(userInfoEndpoint -> userInfoEndpoint.userService(customOAuth2UserService))
-            )
-
-            .authorizeHttpRequests(authorize -> authorize
+            http
+                .authorizeHttpRequests(authorize -> authorize
                     .requestMatchers("/h2-console/**",
                         "/swagger-ui/**",
                         "/swagger-resources/**",
@@ -86,14 +75,30 @@ public class SecurityConfig {
                         "/api/v1/hello",
                         "/admin/**").permitAll()
                     .requestMatchers("/signup").permitAll()
+                    .requestMatchers(HttpMethod.POST, "/admin/**").hasRole("ADMIN")
                     .anyRequest().authenticated()
             );
 
-            http
-                .addFilterAfter(customUsernamePasswordAuthenticationFilter(), LogoutFilter.class)
-                .addFilterBefore(jwtAuthenticationProcessingFilter(), CustomUsernamePasswordAuthenticationFilter.class);
+        http
+            .formLogin(config -> config.disable())
+            .httpBasic(config -> config.disable())
+            .csrf(config -> config.disable())
+            .headers(config -> config.disable())
 
-            return http.build();
+            .sessionManagement(config -> config.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+
+        http
+            .oauth2Login(oauth2Login -> oauth2Login
+                .successHandler(oAuth2LoginSuccessHandler)
+                .failureHandler(oAuth2LoginFailHandler)
+                .userInfoEndpoint(userInfoEndpoint -> userInfoEndpoint.userService(customOAuth2UserService))
+            );
+
+        http
+            .addFilterAfter(customUsernamePasswordAuthenticationFilter(), LogoutFilter.class)
+            .addFilterBefore(jwtAuthenticationProcessingFilter(), CustomUsernamePasswordAuthenticationFilter.class);
+
+        return http.build();
     }
 
     @Bean
