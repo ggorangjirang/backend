@@ -9,6 +9,7 @@ TRUNCATE TABLE orders;
 TRUNCATE TABLE order_item;
 TRUNCATE TABLE deliveries;
 TRUNCATE TABLE users;
+TRUNCATE TABLE reviews;
 
 -- 외래 키 제약 조건 활성화
 SET FOREIGN_KEY_CHECKS = 1;
@@ -377,16 +378,18 @@ VALUES ('고양이 사료 추가9', 2, 2, 27700, 40, '2024-12-31', 3, 80, false,
 INSERT INTO products (name, subcategory_id, pseudo_category_id, price, discount_rate, expiration_date, stock, order_count, is_sold_out, created_at, updated_at, view_count, is_deleted, image_url, description)
 VALUES ('고양이 사료 추가10', 2, 2, 25600, 40, '2024-12-31', 1, 180, false, NOW(), NOW(), 1600, false, 'url', '추가10');
 
+
 -- 주소
 INSERT INTO deliveries (zipcode, street_address, detail_address, status, request, arrival_date, phone_number, name)
-    VALUE('12345', '123 test St', 'May 101', 'Pending', 'Testing~', '2024-06-01', 1234567890, 'Test');
+VALUE('12345', '123 test St', 'May 101', 'Pending', 'Testing~', '2024-06-01', 1234567890, 'Test');
 
 INSERT INTO deliveries (zipcode, street_address, detail_address, status, request, arrival_date, phone_number, name)
-    VALUE('12345', '123 test St', 'May 102', 'Pending', 'Testing~', '2024-06-01', 1234567890, 'Test2');
+VALUE('12345', '123 test St', 'May 102', 'Pending', 'Testing~', '2024-06-01', 1234567890, 'Test2');
+
 
 -- 유저
-INSERT INTO users (id, name, password, email) VALUES (1, 'testname','test1234','test@test.com');
-INSERT INTO users (id, name, password, social_id) VALUES (2, 'testname1', 'test1234', 'test_social');
+INSERT INTO users (name, password, email) VALUES ('test','1234','test@test.com');
+
 
 -- 주문
 INSERT INTO orders (deliveries_id, order_date, order_number, order_status, user_id, total_all_price)
@@ -397,11 +400,16 @@ VALUES (2, '2024-05-01T10:00:00', 'fead2342', 'ORDER', 1, 4000);
 
 
 -- 주문 아이템
-INSERT INTO order_item (order_price, quantity, order_id, product_id)
-VALUES (100,10,1,8);
+INSERT INTO order_item (order_price, quantity, order_id, product_id) VALUES (100,10,1,8);
+INSERT INTO order_item (order_price, quantity, order_id, product_id) VALUES (40,10,1,9);
+INSERT INTO order_item (order_price, quantity, order_id, product_id) VALUES (500,10,2,3);
 
-INSERT INTO order_item (order_price, quantity, order_id, product_id)
-VALUES (40,10,1,9);
 
-INSERT INTO order_item (order_price, quantity, order_id, product_id)
-VALUES (500,10,2,3);
+-- 리뷰
+-- 이미지를 업로드한 리뷰
+INSERT INTO reviews (title, content, image_url, product_id, user_id, created_at)
+VALUES ('만족', '좋네요. 잘 쓸게요.', 'url', 1, 1, NOW());
+
+-- 이미지를 업로드하지 않은 리뷰
+INSERT INTO reviews (title, content, product_id, user_id, created_at)
+VALUES ('흠', '좀 더 써보고 판단할게요.', 1, 1, NOW());
