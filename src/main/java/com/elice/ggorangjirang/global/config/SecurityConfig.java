@@ -44,8 +44,9 @@ public class SecurityConfig {
                     CorsConfiguration config = new CorsConfiguration();
 
                     config.setAllowedOrigins(Arrays.asList(
-                        "http://localhost:3000"
-                        ));
+                            "http://localhost:3000",
+                            "https://ggorangjirang.duckdns.org"
+                    ));
                     config.setAllowedMethods(Collections.singletonList("*"));
                     return config;
                 }));
