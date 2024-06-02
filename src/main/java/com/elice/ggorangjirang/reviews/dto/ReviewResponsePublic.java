@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Getter
 public class ReviewResponsePublic {
+    private Long reviewId;
     private String title;
     private String content;
     private String imageUrl;

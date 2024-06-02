@@ -45,7 +45,7 @@ public class Order {
 
   private LocalDateTime orderDate;
 
-  @Column(nullable = false, unique = true)
+  @Column(nullable = false)
   private String orderNumber;
 
   @Enumerated(EnumType.STRING)
@@ -78,13 +78,14 @@ public class Order {
     Order order = new Order();
     order.setUsers(users);
     order.setOrderNumber(order.generateOrderNumber());
+
     order.setDeliveries(delivery);
 
     int total = 0;
 
     for(OrderItem orderItem : orderItems){
       order.addOrderItem(orderItem);
-      total += orderItem.getOrderPrice();
+      total += orderItem.getOrderPrice() * orderItem.getQuantity();
     }
     order.setTotalAllPrice(total);
     order.setOrderStatus(OrderStatus.ORDER);
@@ -100,5 +101,19 @@ public class Order {
     String timeHex = Long.toHexString(currentTimeMillis);
     String randomHex = Integer.toHexString(randomInt);
     return timeHex.substring(timeHex.length() - 4) + randomHex.substring(randomHex.length() - 4);
+  }
+
+  public void cancel() {
+    if (this.orderStatus == OrderStatus.DELIVERY) {
+      throw new IllegalStateException("배송 중인 상품은 취소가 불가능합니다.");
+    }
+    if (this.orderStatus == OrderStatus.COMPLETE) {
+      throw new IllegalStateException("이미 배송이 완료된 상품은 취소가 불가능합니다.");
+    }
+    if (this.orderStatus == OrderStatus.CANCEL) {
+      throw new IllegalStateException("이미 취소된 상품입니다.");
+    }
+
+    this.setOrderStatus(OrderStatus.CANCEL);
   }
 }

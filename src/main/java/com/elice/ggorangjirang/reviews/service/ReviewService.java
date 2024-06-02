@@ -3,11 +3,14 @@ package com.elice.ggorangjirang.reviews.service;
 import com.elice.ggorangjirang.amazonS3.service.S3Service;
 import com.elice.ggorangjirang.orders.repository.OrderItemRepository;
 import com.elice.ggorangjirang.products.entity.Product;
+import com.elice.ggorangjirang.products.exception.ProductNotFoundException;
 import com.elice.ggorangjirang.products.repository.ProductRepository;
 import com.elice.ggorangjirang.reviews.dto.AddReviewRequest;
 import com.elice.ggorangjirang.reviews.dto.ReviewResponseMy;
 import com.elice.ggorangjirang.reviews.dto.ReviewResponsePublic;
+import com.elice.ggorangjirang.reviews.dto.UpdateReviewRequest;
 import com.elice.ggorangjirang.reviews.entity.Review;
+import com.elice.ggorangjirang.reviews.exception.ReviewNotFoundException;
 import com.elice.ggorangjirang.reviews.repository.ReviewRepository;
 import com.elice.ggorangjirang.users.entity.Users;
 import com.elice.ggorangjirang.users.repository.UserRepository;
@@ -36,6 +39,12 @@ public class ReviewService {
         return reviewRepository.findAll();
     }
 
+    public Review getReviewById(Long id) {
+        Review review = reviewRepository.findById(id)
+                .orElseThrow(() -> new ReviewNotFoundException("not found: " + id));
+        return review;
+    }
+
     // 상품 상세 페이지 review GET 요청에 대한 DTO 맵핑
     private ReviewResponsePublic convertToReviewResponsePublic(Review review) {
         String userIdentifier = review.getUser().getEmail() != null ?
@@ -45,6 +54,7 @@ public class ReviewService {
         String emailResponse = userIdentifier.substring(0, 3) + "****";
 
         return new ReviewResponsePublic(
+                review.getId(),
                 review.getTitle(),
                 review.getContent(),
                 review.getImageUrl(),
@@ -54,10 +64,15 @@ public class ReviewService {
 
     private ReviewResponseMy convertToReviewResponseMy(Review review) {
         return new ReviewResponseMy(
+                review.getId(),
                 review.getTitle(),
                 review.getContent(),
                 review.getImageUrl(),
-                review.getProduct().getName());
+                review.getProduct().getId(),
+                review.getProduct().getName(),
+                review.getCreatedAt(),
+                review.getUpdatedAt(),
+                review.getUser().getId());
     }
 
     // 상품 상세 페이지 review GET 요청 전달하기
@@ -75,9 +90,9 @@ public class ReviewService {
     }
 
     @Transactional
-    public Review addReview(AddReviewRequest request, MultipartFile imageFile) throws IOException {
+    public ReviewResponseMy addReview(AddReviewRequest request, MultipartFile imageFile) throws IOException {
         Product product = productRepository.findById(request.getProductId())
-                .orElseThrow(() -> new IllegalArgumentException("not found: " + request.getProductId()));
+                .orElseThrow(() -> new ProductNotFoundException("not found: " + request.getProductId()));
 
         Users user = userRepository.findById(request.getUserId())
                 .orElseThrow(() -> new IllegalArgumentException("not found: " + request.getUserId()));
@@ -100,13 +115,39 @@ public class ReviewService {
                 .user(user)
                 .build();
 
-        return reviewRepository.save(review);
+        reviewRepository.save(review);
+        return convertToReviewResponseMy(review);
+    }
+
+    @Transactional
+    public ReviewResponseMy updateReview(Long id, UpdateReviewRequest request, MultipartFile imageFile) throws IOException {
+        Review review = reviewRepository.findById(id)
+                .orElseThrow(() -> new ReviewNotFoundException("not found: " + id));
+
+        String oldImageUrl = review.getImageUrl();
+        String newImageUrl = oldImageUrl;
+
+        if (imageFile != null && !imageFile.isEmpty()) {
+            newImageUrl = s3Service.uploadReviewImage(imageFile);
+            if (oldImageUrl != null && !oldImageUrl.isEmpty()) {
+                s3Service.deleteFile(oldImageUrl);
+            }
+        }
+
+        review.update(
+                request.getTitle(),
+                request.getContent(),
+                newImageUrl);
+
+        reviewRepository.save(review);
+
+        return convertToReviewResponseMy(review);
     }
 
     @Transactional
     public void deleteReview(Long id) {
         Review review = reviewRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("not found: " + id));
+                .orElseThrow(() -> new ReviewNotFoundException("not found: " + id));
 
         reviewRepository.delete(review);
     }

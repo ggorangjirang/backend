@@ -6,14 +6,14 @@
     <title>꼬랑지랑 - 주문관리</title>
     <!-- bulma css -->
     <link
-            rel="stylesheet"
-            href="https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.min.css"
+        rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.min.css"
     />
     <!-- 폰트 어썸: 아이콘 -->
     <script
-            defer
-            src="https://kit.fontawesome.com/9daa42bcef.js"
-            crossorigin="anonymous"
+        defer
+        src="https://kit.fontawesome.com/9daa42bcef.js"
+        crossorigin="anonymous"
     ></script>
     <!-- 커스텀 css, js -->
     <link rel="stylesheet" href="/css/admin-orders.css" />
@@ -29,11 +29,11 @@
             </a>
 
             <a
-                    role="button"
-                    class="navbar-burger"
-                    aria-label="menu"
-                    aria-expanded="false"
-                    data-target="navbarBasicExample"
+                role="button"
+                class="navbar-burger"
+                aria-label="menu"
+                aria-expanded="false"
+                data-target="navbarBasicExample"
             >
                 <span aria-hidden="true"></span>
                 <span aria-hidden="true"></span>
@@ -81,37 +81,34 @@
 
         <div class="container orders-container" id="ordersContainer">
             <div
-                    class="columns notification is-info is-light is-mobile orders-top"
+                class="columns is-variable is-1 notification is-info is-light is-mobile orders-top"
             >
                 <div class="column is-2">날짜</div>
-                <div class="column is-4">주문정보</div>
+                <div class="column is-3">주문정보</div>
                 <div class="column is-2">주문총액</div>
-                <div class="column is-2">상태관리</div>
-                <div class="column is-2">취소</div>
+                <div class="column is-2">주문상태</div>
+                <div class="column is-2">배송상태</div>
+                <div class="column is-1">취소</div>
             </div>
 
             <!-- 주문 데이터 반복 처리 -->
-            <div class="columns orders-item" th:each="order : ${orders}">
-                <div class="column is-2" th:text="${order.createdAt}">-</div>
-                <div class="column is-4" th:text="${order.orderItems[0].product.name}">-</div>
-                <div class="column is-2" th:text="${order.totalPrice}">-</div>
+            <div class="columns is-variable is-1 orders-item" th:each="order : ${orders}">
+                <div class="column is-2" th:text="${order.orderDate}">-</div>
+                <div class="column is-3" th:if="${order.orderItems.size() > 0}" th:text="${order.orderItems[0].productName}">-</div>
+                <div class="column is-2" th:text="${order.totalAllPrice}">-</div>
+                <div class="column is-2">
+                    <span th:text="${order.orderStatus == 'ORDER' ? '주문 완료' : '주문 취소'}"></span>
+                </div>
                 <div class="column is-2">
                     <div class="select">
-                        <select th:id="'statusSelectBox-' + ${order.id}">
-                            <option th:selected="${order.orderStatus == 'ORDER_COMPLETE'}"
-                                    value="ORDER_COMPLETE">주문 완료</option>
-                            <option th:selected="${order.orderStatus == 'CANCEL'}"
-                                    value="CANCEL">주문 취소</option>
-                            <option th:selected="${order.orderStatus == 'DELIVERY_READY'}"
-                                    value="DELIVERY_READY">상품 준비중</option>
-                            <option th:selected="${order.orderStatus == 'DELIVERING'}"
-                                    value="DELIVERING">상품 배송중</option>
-                            <option th:selected="${order.orderStatus == 'DELIVERY_COMPLETE'}"
-                                    value="DELIVERY_COMPLETE">배송완료</option>
+                        <select th:id="'deliveryStatusSelectBox-' + ${order.id}">
+                            <option th:selected="${order.deliveryStatus == 'DELIVERY_READY'}" value="DELIVERY_READY">상품 준비중</option>
+                            <option th:selected="${order.deliveryStatus == 'DELIVERING'}" value="DELIVERING">상품 배송중</option>
+                            <option th:selected="${order.deliveryStatus == 'DELIVERY_COMPLETE'}" value="DELIVERY_COMPLETE">배송완료</option>
                         </select>
                     </div>
                 </div>
-                <div class="column is-2">
+                <div class="column is-1">
                     <button class="button" th:id="'deleteButton-' + ${order.id}">주문 취소</button>
                 </div>
             </div>
@@ -129,16 +126,16 @@
 
             <div class="buttons">
                 <button
-                        class="button mt-5"
-                        id="deleteCompleteButton"
-                        aria-label="close"
+                    class="button mt-5"
+                    id="deleteCompleteButton"
+                    aria-label="close"
                 >
                     네
                 </button>
                 <button
-                        class="button is-primary mt-5"
-                        id="deleteCancelButton"
-                        aria-label="close"
+                    class="button is-primary mt-5"
+                    id="deleteCancelButton"
+                    aria-label="close"
                 >
                     아니오
                 </button>
@@ -147,10 +144,125 @@
     </div>
 
     <button
-            class="modal-close is-large"
-            id="modalCloseButton"
-            aria-label="close"
+        class="modal-close is-large"
+        id="modalCloseButton"
+        aria-label="close"
     ></button>
 </div>
 </body>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        countOrders(); // 주문 개수 세기
+
+        document.querySelectorAll('select[id^="deliveryStatusSelectBox-"]').forEach(
+            selectBox => {
+                selectBox.addEventListener('change', event => {
+                    const deliveryId = event.target.id.split('-')[1];
+                    const newStatus = event.target.value;
+
+                    fetch(`/admin/deliveries/${deliveryId}/status`, {
+                        method: 'PATCH',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({status: newStatus})
+                    })
+                    .then(response => {
+                        if (response.ok) {
+                            alert('배송 상태가 업데이트되었습니다.');
+                            countOrders(); // 배송 상태 변경 시 주문 개수 업데이트
+                        } else {
+                            alert('배송 상태 업데이트에 실패했습니다.');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('배송 상태 업데이트 중 오류가 발생했습니다.');
+                    });
+                });
+            });
+
+        // 주문 취소 버튼 클릭 이벤트 리스너 추가
+        document.querySelectorAll('button[id^="deleteButton-"]').forEach(button => {
+            button.addEventListener('click', event => {
+                const orderId = event.target.id.split('-')[1];
+                openModal(orderId);
+            });
+        });
+
+        document.getElementById('deleteCompleteButton').addEventListener('click', () => {
+            const orderId = document.getElementById('deleteCompleteButton').getAttribute('data-order-id');
+            deleteOrder(orderId);
+        });
+
+        document.getElementById('deleteCancelButton').addEventListener('click', closeModal);
+        document.getElementById('modalCloseButton').addEventListener('click', closeModal);
+        document.getElementById('modalBackground').addEventListener('click', closeModal);
+    });
+
+    function countOrders() {
+        const orders = document.querySelectorAll('.orders-item');
+        let totalOrders = 0;
+        let preparingCount = 0;
+        let deliveringCount = 0;
+        let completedCount = 0;
+
+        orders.forEach(order => {
+            totalOrders++;
+            const deliveryStatus = order.querySelector('select[id^="deliveryStatusSelectBox-"]').value;
+            if (deliveryStatus === 'DELIVERY_READY') {
+                preparingCount++;
+            } else if (deliveryStatus === 'DELIVERING') {
+                deliveringCount++;
+            } else if (deliveryStatus === 'DELIVERY_COMPLETE') {
+                completedCount++;
+            }
+        });
+
+        document.getElementById('ordersCount').textContent = totalOrders;
+        document.getElementById('prepareCount').textContent = preparingCount;
+        document.getElementById('deliveryCount').textContent = deliveringCount;
+        document.getElementById('completeCount').textContent = completedCount;
+    }
+
+    function openModal(orderId) {
+        document.getElementById('deleteCompleteButton').setAttribute('data-order-id', orderId);
+        document.getElementById('modal').classList.add('is-active');
+    }
+
+    function closeModal() {
+        document.getElementById('modal').classList.remove('is-active');
+    }
+
+    function deleteOrder(orderId) {
+        fetch(`/admin/order/${orderId}`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => {
+            if (response.ok) {
+                alert('주문이 취소되었습니다.');
+                removeOrderFromDOM(orderId);
+                countOrders(); // 주문 취소 시 주문 개수 업데이트
+            } else {
+                return response.text().then(text => {
+                    throw new Error(text);
+                });
+            }
+        })
+        .catch(error => {
+            alert(`주문 취소에 실패했습니다: ${error.message}`);
+        })
+        .finally(() => {
+            closeModal();
+        });
+    }
+
+    function removeOrderFromDOM(orderId) {
+        const orderElement = document.getElementById(`deleteButton-${orderId}`).closest('.orders-item');
+        orderElement.remove();
+    }
+</script>
 </html>

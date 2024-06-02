@@ -5,6 +5,8 @@ import com.elice.ggorangjirang.carts.entity.Cart;
 import com.elice.ggorangjirang.carts.repository.CartRepository;
 //import com.elice.ggorangjirang.users.entity.Users;
 //import com.elice.ggorangjirang.users.repository.UsersRepository;
+import com.elice.ggorangjirang.users.entity.Users;
+import com.elice.ggorangjirang.users.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,20 +18,20 @@ import java.util.Optional;
 public class CartService {
 
     private final CartRepository cartRepository;
-//    private final UsersRepository usersRepository;
+    private final UserRepository userRepository;
 
-//    @Transactional
-//    public CartDto createCart(Long userId) {
-//        Users user = usersRepository.findById(userId)
-//            .orElseThrow(() -> new IllegalArgumentException("해당 사용자를 찾을 수 없습니다."));
-//
-//        Cart cart = Cart.builder()
-//            .user(user)
-//            .build();
-//
-//        Cart savedCart = cartRepository.save(cart);
-//        return CartDto.toDto(savedCart);
-//    }
+    @Transactional
+    public CartDto createCart(Long userId) {
+        Users user = userRepository.findById(userId)
+            .orElseThrow(() -> new IllegalArgumentException("해당 사용자를 찾을 수 없습니다."));
+
+        Cart cart = Cart.builder()
+            .user(user)
+            .build();
+
+        Cart savedCart = cartRepository.save(cart);
+        return CartDto.toDto(savedCart);
+    }
 
     @Transactional(readOnly = true)
     public CartDto getCartById(Long id) {

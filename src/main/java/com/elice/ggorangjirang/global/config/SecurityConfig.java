@@ -58,10 +58,9 @@ public class SecurityConfig {
                     CorsConfiguration config = new CorsConfiguration();
 
                     config.setAllowedOrigins(Arrays.asList(
-                        "http://localhost:3000",
-                        "http://localhost:8080",
-                        "https://ggorangjirang.duckdns.org"
-                        ));
+                            "http://localhost:3000",
+                            "https://ggorangjirang.duckdns.org"
+                    ));
                     config.setAllowedMethods(Collections.singletonList("*"));
                     return config;
                 }));
@@ -71,12 +70,11 @@ public class SecurityConfig {
                     .requestMatchers("/h2-console/**",
                         "/swagger-ui/**",
                         "/swagger-resources/**",
-                        "api/**",
+                        "/api/**",
                         "/v3/api-docs/**",
-                        "/api/v1/hello",
-                        "/admin/**").permitAll()
-                    .requestMatchers("/signup").permitAll()
-                    .requestMatchers(HttpMethod.POST, "/admin/**").hasRole("ADMIN")
+                        "/admin/**",
+                        "/js/**",
+                        "/css/**").permitAll()
                     .anyRequest().authenticated()
             );
 

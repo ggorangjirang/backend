@@ -6,6 +6,8 @@ import com.elice.ggorangjirang.deliveries.entity.Deliveries;
 import com.elice.ggorangjirang.deliveries.repository.DeliveryRepository;
 import com.elice.ggorangjirang.orders.entity.Order;
 import com.elice.ggorangjirang.orders.repository.OrderRepository;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -20,11 +22,10 @@ public class DeliveryService {
   private final OrderRepository orderRepository;
 
   @Transactional
-  public void addDelivery(DeliveryDto deliveryDto) {
-    Order order = orderRepository.findById(deliveryDto.getOrderId())
-        .orElseThrow(() -> new IllegalArgumentException("Invalid order ID: " + deliveryDto.getOrderId()));
-    Deliveries delivery = deliveryMapper.toEntity(deliveryDto, order);
-    deliveryRepository.save(delivery);
+  public Long addDelivery(DeliveryDto deliveryDto) {
+    Deliveries delivery = deliveryMapper.toEntity(deliveryDto);
+    Deliveries savedDelivery = deliveryRepository.save(delivery);
+    return savedDelivery.getId();
   }
 
   @Transactional
@@ -37,13 +38,15 @@ public class DeliveryService {
   public Deliveries updateDeliveryStatus(long id, String status) {
     Deliveries delivery = getDeliveryById(id);
     delivery.setStatus(status);
+    if ("DELIVERY_COMPLETE".equalsIgnoreCase(status)) {
+      LocalDateTime now = LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS);
+      delivery.setArrivalDate(now);
+    }
     return deliveryRepository.save(delivery);
   }
-
 
   @Transactional
   public List<Deliveries> getDeliveriesByOrderId(long orderId) {
     return deliveryRepository.findByOrderId(orderId);
   }
-
 }

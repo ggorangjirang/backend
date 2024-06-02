@@ -11,7 +11,7 @@ public class DeliveryMapper {
 
 
 
-  public Deliveries toEntity(DeliveryDto deliveryDto, Order order) {
+  public Deliveries toEntity(DeliveryDto deliveryDto) {
     Deliveries delivery = new Deliveries();
     delivery.setName(deliveryDto.getName());
     delivery.setPhoneNumber(deliveryDto.getPhoneNumber());
@@ -20,9 +20,6 @@ public class DeliveryMapper {
     delivery.setDetailAddress(deliveryDto.getDetailAddress());
     delivery.setRequest(deliveryDto.getRequest());
     delivery.setStatus("Pending");
-    delivery.setArrivalDate(LocalDate.now().plusDays(3)); // 예시로 3일 후 도착
-
-    delivery.setOrder(order);
 
     return delivery;
   }

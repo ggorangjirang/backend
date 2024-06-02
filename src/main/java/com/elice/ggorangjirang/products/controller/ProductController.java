@@ -61,13 +61,23 @@ public class ProductController {
         return ResponseEntity.ok(products);
     }
 
-    @GetMapping("/by-price-asc")
+    @GetMapping("/by-price")
     public ResponseEntity<Page<ListProductResponse>> getProductsByPriceAsc(
             @RequestParam(name = "page", defaultValue = "0") int page,
-            @RequestParam(name = "size", defaultValue = "16") int size) {
-        Page<ListProductResponse> products = productService.getProductsByPriceAsc(page, size);
-        return ResponseEntity.ok(products);
+            @RequestParam(name = "size", defaultValue = "16") int size,
+            @RequestParam(name = "sort", defaultValue = "asc") String sort) {
+
+        if (sort.equals("desc")) {
+            Page<ListProductResponse> products = productService.getProductsByPriceDesc(page, size);
+            return ResponseEntity.ok(products);
+        } else if (sort.equals("asc")) {
+            Page<ListProductResponse> products = productService.getProductsByPriceAsc(page, size);
+            return ResponseEntity.ok(products);
+        } else {
+            return ResponseEntity.badRequest().build();
+        }
     }
+
 
     @GetMapping("/by-price-desc")
     public ResponseEntity<Page<ListProductResponse>> getProductsByPriceDesc(

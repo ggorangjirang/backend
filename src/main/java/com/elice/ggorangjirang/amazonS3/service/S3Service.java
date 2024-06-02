@@ -1,6 +1,6 @@
 package com.elice.ggorangjirang.amazonS3.service;
 
-import com.amazonaws.services.s3.AmazonS3Client;
+import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
@@ -15,7 +15,7 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 public class S3Service {
-    private final AmazonS3Client client;
+    private final AmazonS3 client;
 
     @Value("${cloud.aws.s3.bucket}")
     private String bucket;
@@ -25,6 +25,9 @@ public class S3Service {
 
     @Value("${cloud.aws.s3.review-image-path}")
     private String reviewImagePath;
+
+    @Value("${cloud.aws.s3.description-image-path}")
+    private String descriptionImagePath;
 
     public String uploadFile(MultipartFile imageFile, String imagePath) throws IOException {
 
@@ -52,5 +55,18 @@ public class S3Service {
 
     public String uploadReviewImage(MultipartFile imageFile) throws IOException {
         return uploadFile(imageFile, reviewImagePath);
+    }
+
+    public String uploadDescriptionImage(MultipartFile imageFile) throws IOException {
+        return uploadFile(imageFile, descriptionImagePath);
+    }
+
+    public void deleteFile(String imageUrl) {
+        // 이미지 URL에서 버킷의 경로와 파일 이름 추출
+        String bucketPath = "https://ggorangjirang-s3.s3.amazonaws.com/";
+        String fileKey = imageUrl.replace(bucketPath, ""); // 버킷 경로 제거
+
+        // 파일 삭제
+        client.deleteObject(bucket, fileKey);
     }
 }

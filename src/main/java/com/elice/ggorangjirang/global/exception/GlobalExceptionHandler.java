@@ -1,5 +1,11 @@
 package com.elice.ggorangjirang.global.exception;
 
+import com.elice.ggorangjirang.global.exception.hierachy.CustomBusinessException;
+import com.elice.ggorangjirang.products.exception.InvalidProductDataException;
+import com.elice.ggorangjirang.products.exception.ProductNotFoundException;
+import com.elice.ggorangjirang.products.exception.SubcategoryNotFoundException;
+import com.elice.ggorangjirang.reviews.exception.ReviewNotFoundException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -7,11 +13,53 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 
 @ControllerAdvice
+@Slf4j
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<String> handleIllegalArgumentException(IllegalArgumentException ex, WebRequest request) {
-        String errorMessage = ex.getMessage();
-        return new ResponseEntity<>(errorMessage, HttpStatus.BAD_REQUEST);
-    }
+  @ExceptionHandler({CustomBusinessException.class})
+  public ResponseEntity<ErrorResponse> handle(CustomBusinessException e) {
+
+    return new ResponseEntity<>(new ErrorResponse(e.getErrorCode()), e.getErrorCode().getStatus());
+  }
+
+  @ExceptionHandler(ProductNotFoundException.class)
+  public ResponseEntity<ErrorResponse> handleProductNotFoundException(ProductNotFoundException e) {
+    log.error("error: {}", e);
+    return new ResponseEntity<>(
+            new ErrorResponse(ErrorCode.INVALID_PARAMETER),
+            ErrorCode.INVALID_PARAMETER.getStatus());
+  }
+
+  @ExceptionHandler(ReviewNotFoundException.class)
+  public ResponseEntity<ErrorResponse> handleReviewNotFoundException(ReviewNotFoundException e) {
+    log.error("error: {}", e);
+    return new ResponseEntity<>(
+            new ErrorResponse(ErrorCode.INVALID_PARAMETER),
+            ErrorCode.INVALID_PARAMETER.getStatus());
+  }
+
+  @ExceptionHandler(InvalidProductDataException.class)
+  public ResponseEntity<ErrorResponse> handleInvalidProductDataException(InvalidProductDataException e) {
+    log.error("error: {}", e);
+    return new ResponseEntity<>(
+            new ErrorResponse(ErrorCode.INVALID_PRODUCT_DATA),
+            ErrorCode.INVALID_PRODUCT_DATA.getStatus());
+  }
+
+  @ExceptionHandler(SubcategoryNotFoundException.class)
+  public ResponseEntity<ErrorResponse> handleSubcategoryNotFoundException(SubcategoryNotFoundException e) {
+    log.error("error: {}", e);
+    return new ResponseEntity<>(
+            new ErrorResponse(ErrorCode.INVALID_PARAMETER),
+            ErrorCode.INVALID_PARAMETER.getStatus());
+  }
+
+  @ExceptionHandler(Exception.class)
+  public ResponseEntity<ErrorResponse> handle(Exception e) {
+    log.error("error: {}", e);
+
+    return new ResponseEntity<>(
+        new ErrorResponse(ErrorCode.INTERNAL_SERVER_ERROR),
+        ErrorCode.INTERNAL_SERVER_ERROR.getStatus());
+  }
 }

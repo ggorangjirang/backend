@@ -12,14 +12,17 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 public class DetailProductResponse {
+    private Long productId;
     private String name;
     private float discountRate;
     private int price;
-    private String imageUrl;
+    private int discountedPrice;
+    private String productImageUrl;
     private int stock;
     private LocalDate expirationDate;
     private String subcategoryName;
     private String categoryName;
     private String description;
+    private String descriptionImageUrl;
     private boolean isSoldOut;
 }

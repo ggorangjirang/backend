@@ -1,31 +1,14 @@
 spring:
-  application:
-    name: ggorangjirang
-  sql:  # 이거 지우시면 안 되여
-    init:
-      mode: never
   datasource:
-    initialization-mode: never
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://${DB_DEV_HOST}:${DB_DEV_PORT}/${DB_DEV_NAME}
+    username: ${DB_DEV_USER}
+    password: ${DB_DEV_PW}
 
-jwt:
-  secretKey: ${JWT_SECRET_KEY}
-  access:
-    expiration: 3600000 # 1시간
-    header: Authorization
-  refresh:
-    expiration: 1209600000 # 2주
-    header: Refresh-Token
-
-cloud:
-  aws:
-    credentials:
-      secret-key: ${AWS_S3_SECRET_KEY}
-      access-key: ${AWS_S3_ACCESS_KEY}
-    s3:
-      bucket: ggorangjirang-s3
-      product-image-path: images/products/
-      review-image-path: images/reviews/
-    region:
-      static: ap-northeast-2
-    stack:
-      auto: 'false'
+  jpa:
+    properties:
+      hibernate:
+        show_sql: true
+        format_sql: true
+    hibernate:
+      ddl-auto: none

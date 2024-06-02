@@ -1,9 +1,11 @@
 package com.elice.ggorangjirang.carts.controller;
 
 import com.elice.ggorangjirang.carts.dto.CartItemDto;
-import com.elice.ggorangjirang.carts.dto.CartItemRequestDto;
+import com.elice.ggorangjirang.carts.dto.CartItemRequest;
 import com.elice.ggorangjirang.carts.service.CartItemService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,7 +19,7 @@ public class CartItemController {
     private final CartItemService cartItemService;
 
     @PostMapping
-    public ResponseEntity<CartItemDto> addCartItem(@RequestBody CartItemRequestDto cartItemRequestDto) {
+    public ResponseEntity<CartItemDto> addCartItem(@RequestBody CartItemRequest cartItemRequestDto) {
         CartItemDto cartItemDto = cartItemService.addCartItem(
             cartItemRequestDto.getCartId(),
             cartItemRequestDto.getProductId(),
@@ -27,8 +29,8 @@ public class CartItemController {
     }
 
     @GetMapping
-    public ResponseEntity<List<CartItemDto>> getCartItems(@RequestParam Long cartId) {
-        List<CartItemDto> cartItems = cartItemService.getCartItems(cartId);
+    public ResponseEntity<Page<CartItemDto>> getCartItems(@RequestParam Long cartId, Pageable pageable) {
+        Page<CartItemDto> cartItems = cartItemService.getCartItemsByCartId(cartId, pageable);
         return ResponseEntity.ok(cartItems);
     }
 

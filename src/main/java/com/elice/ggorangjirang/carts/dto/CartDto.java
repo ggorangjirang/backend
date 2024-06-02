@@ -1,6 +1,7 @@
 package com.elice.ggorangjirang.carts.dto;
 
 import com.elice.ggorangjirang.carts.entity.Cart;
+import com.elice.ggorangjirang.users.entity.Users;
 import lombok.Builder;
 import lombok.Data;
 
@@ -16,8 +17,12 @@ public class CartDto {
 
     // DTO를 엔티티로 변환
     public static Cart toEntity(CartDto cartDto) {
+        // Users 객체를 추가하여 userId를 설정합니다.
+        Users user = Users.builder().id(cartDto.getUserId()).build();
+
         return Cart.builder()
             .id(cartDto.getCartId())
+            .user(user)
             .build();
     }
 
@@ -25,7 +30,7 @@ public class CartDto {
     public static CartDto toDto(Cart cart) {
         return CartDto.builder()
             .cartId(cart.getId())
-//            .userId(cart.getUser().getId())
+            .userId(cart.getUser().getId())
             .cartItems(cart.getCartItems().stream()
                 .map(CartItemDto::toDto)
                 .collect(Collectors.toList()))

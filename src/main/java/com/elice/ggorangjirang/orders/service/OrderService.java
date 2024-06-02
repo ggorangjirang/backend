@@ -37,9 +37,48 @@ public class OrderService {
     return orderRepository.findAllByUsers_Id(userId);
   }
 
+  @Transactional
+  public void deleteByUserIdAndOrderId(Long userId, Long orderId) {
+    Order order = orderRepository.findByIdAndUsers_Id(orderId, userId)
+        .orElseThrow(() -> new IllegalArgumentException("해당 주문이 존재하지 않습니다. Order ID: " + orderId + ", User ID: " + userId));
+
+    if(order.getDeliveries().getStatus().equals("DELIVERING")) {
+      throw new IllegalStateException("배송 중이라 취소가 불가능합니다.");
+    } else if(order.getDeliveries().getStatus().equals("DELIVERY_COMPLETE")) {
+      throw new IllegalStateException("배송 완료라 취소가 불가능합니다.");
+    }
+
+    for(OrderItem orderItem : order.getOrderItems()) {
+      orderItem.delete();
+    }
+
+    orderRepository.deleteById(orderId);
+  }
+
+
   // 주문 삭제
+  @Transactional
   public void deleteById(Long id){
+    Order order = findById(id);
+
+    if(order.getDeliveries().getStatus().equals("DELIVERING")){
+      throw new IllegalStateException("배송중이라 취소가 불가능합니다.");
+    }else if(order.getDeliveries().getStatus().equals("DELIVERY_COMPLETE")){
+      throw new IllegalStateException("배송완료라 취소가 불가능합니다.");
+    }
+
+    for(OrderItem orderItem : order.getOrderItems()){
+      orderItem.delete();
+    }
+
     orderRepository.deleteById(id);
   }
+
+  // 모든 주문 조회
+  public List<Order> findAll(){
+    return orderRepository.findAll();
+  }
+
+
 
 }

@@ -17,7 +17,7 @@ public class OrderItemsResponse {
     this.quantity = orderItem.getQuantity();
     this.orderPrice = orderItem.getOrderPrice();
     this.productName = orderItem.getProduct().getName();
-    this.imageUrl = orderItem.getProduct().getImageUrl();
+    this.imageUrl = orderItem.getProduct().getProductImageUrl();
     this.description = orderItem.getProduct().getDescription();
     this.totalPrice = orderItem.getTotalPrice();
   }
