@@ -11,6 +11,8 @@ import java.util.UUID;
 
 @Getter
 public class OAuthAttributes {
+
+    private static final String EMAIL_DOMAIN = "@socialUser.com";
     private String nameAttributeKey; // OAuth2 로그인 진행 시 키가 되는 필드 값
     private OAuth2UserInfo oAuth2UserInfo;
 
@@ -30,7 +32,7 @@ public class OAuthAttributes {
     public Users toEntity(OAuth2UserInfo oAuth2UserInfo) {
         return Users.builder()
             .socialId(oAuth2UserInfo.getId())
-            .email(UUID.randomUUID() + "@socialUser.com")
+            .email(UUID.randomUUID() + EMAIL_DOMAIN)
             .name(oAuth2UserInfo.getName())
             .role(Role.GUEST)
             .build();
