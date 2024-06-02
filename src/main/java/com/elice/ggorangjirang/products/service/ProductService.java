@@ -31,6 +31,9 @@ public class ProductService {
     private final ProductRepository productRepository;
     private final SubcategoryRepository subcategoryRepository;
     private final S3Service s3Service;
+    private static final String PRODUCT_NOT_FOUND_MESSAGE = "Product not found with id: ";
+    private static final String INVALID_PRODUCT_MESSAGE = "가격과 재고는 음수가 될 수 없습니다.";
+    private static final String SUBCATEGORY_NOT_FOUND_MESSAGE = "Subcategory not found with id: ";
 
     // Spring MVC 방식 관리자 페이지용
     public List<Product> findProducts() {
@@ -41,7 +44,7 @@ public class ProductService {
     // Spring MVC 방식 관리자 페이지용
     public Product findProduct(Long id) {
         Product foundProduct = productRepository.findById(id)
-                .orElseThrow(() -> new ProductNotFoundException("not found: " + id));
+                .orElseThrow(() -> new ProductNotFoundException(PRODUCT_NOT_FOUND_MESSAGE + id));
 
         return foundProduct;
     }
@@ -53,7 +56,7 @@ public class ProductService {
             MultipartFile descriptionImageFile) throws IOException {
 
         if (request.getPrice() < 0 || request.getStock() < 0) {
-            throw new InvalidProductDataException("가격과 재고는 음수가 될 수 없습니다.");
+            throw new InvalidProductDataException(INVALID_PRODUCT_MESSAGE);
         }
 
         String productImageUrl = null;
@@ -77,16 +80,16 @@ public class ProductService {
                                  MultipartFile productImageFile,
                                  MultipartFile descriptionImageFile) throws IOException {
         Product product = productRepository.findById(id)
-                .orElseThrow(() -> new ProductNotFoundException("Product not found: " + id));
+                .orElseThrow(() -> new ProductNotFoundException(PRODUCT_NOT_FOUND_MESSAGE + id));
 
         Subcategory subcategory = subcategoryRepository.findById(request.getSubcategoryId())
-                .orElseThrow(() -> new SubcategoryNotFoundException("Subcategory not found: " + request.getSubcategoryId()));
+                .orElseThrow(() -> new SubcategoryNotFoundException(SUBCATEGORY_NOT_FOUND_MESSAGE + request.getSubcategoryId()));
 
         String oldProductImageUrl = product.getProductImageUrl();
         String newProductImageUrl = oldProductImageUrl;
 
         if (request.getPrice() < 0 || request.getStock() < 0) {
-            throw new InvalidProductDataException("가격과 재고는 음수가 될 수 없습니다.");
+            throw new InvalidProductDataException(INVALID_PRODUCT_MESSAGE);
         }
 
         if (productImageFile != null && !productImageFile.isEmpty()) {
@@ -124,12 +127,18 @@ public class ProductService {
         return product;
     }
 
+    // product 데이터를 실제로 DB 상에서 삭제(관리자 페이지에서만 사용)
     @Transactional
     public void deleteProduct(Long id) {
         Product product = productRepository.findById(id)
-                .orElseThrow(() -> new ProductNotFoundException("not found: " + id));
+                .orElseThrow(() -> new ProductNotFoundException(PRODUCT_NOT_FOUND_MESSAGE + id));
 
+        // DB 상에서 product 데이터 삭제
         productRepository.delete(product);
+
+        // S3 버킷 상에서 상품과 설명 이미지 파일 삭제
+        s3Service.deleteFile(product.getProductImageUrl());
+        s3Service.deleteFile(product.getDescriptionImageUrl());
     }
 
     private int calculateDiscountedPrice(int price, float discountRate) {
@@ -228,7 +237,7 @@ public class ProductService {
 
     public DetailProductResponse getProductDetail(Long id) {
         Product product = productRepository.findById(id)
-                .orElseThrow(() -> new ProductNotFoundException("Product not found with id: " + id));
+                .orElseThrow(() -> new ProductNotFoundException(PRODUCT_NOT_FOUND_MESSAGE + id));
 
         product.addViewCount();
         productRepository.save(product);

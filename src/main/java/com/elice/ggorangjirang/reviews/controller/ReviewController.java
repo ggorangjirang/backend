@@ -37,15 +37,15 @@ public class ReviewController {
         return ResponseEntity.ok(reviews);
     }
 
-    @GetMapping("/users/my-reviews")
-    public ResponseEntity<Page<ReviewResponseMy>> getReviewByUserId(
-            @AuthenticationPrincipal UserDetails userDetails,
-            @RequestParam(name = "page", defaultValue = "0") int page,
-            @RequestParam(name = "size", defaultValue = "3") int size) {
-        Users user = userService.findByUsername(userDetails.getUsername());
-        Page<ReviewResponseMy> reviews = reviewService.getReviewByUserId(user.getId(), page, size);
-        return ResponseEntity.ok(reviews);
-    }
+//    @GetMapping("/users/my-reviews")
+//    public ResponseEntity<Page<ReviewResponseMy>> getReviewByUserId(
+//            @AuthenticationPrincipal UserDetails userDetails,
+//            @RequestParam(name = "page", defaultValue = "0") int page,
+//            @RequestParam(name = "size", defaultValue = "3") int size) {
+//        Users user = userService.findByUsername(userDetails.getUsername());
+//        Page<ReviewResponseMy> reviews = reviewService.getReviewByUserId(user.getId(), page, size);
+//        return ResponseEntity.ok(reviews);
+//    }
 
 
     @PostMapping("/users/review")
