@@ -19,6 +19,7 @@ public class SaleAggregationScheduler {
   private final SaleMapper saleStatisticMapper;
   private final SaleRepository saleRepository;
 
+  // 매 정시에 (하루 + 1시간) ~ (하루) 전 주문을 찾아 결제 대기 중(PENDING) 상태를 EXPIRED로 변경한다.
   @Scheduled(cron = "0 0 * * * *")
   public void confirmPendingOrder() {
     LocalDateTime now = LocalDateTime.now();
@@ -28,6 +29,7 @@ public class SaleAggregationScheduler {
     orderRepository.cancelPendingOrders(start, end);
   }
 
+  // 매 정시에 (하루 + 1시간) ~ (하루) 전 주문을 찾아 결제가 완료되었다면 매출로 잡는다.
   @Scheduled(cron = "0 0 * * * *")
   public void calculateHourlySale() {
     LocalDateTime now = LocalDateTime.now();
