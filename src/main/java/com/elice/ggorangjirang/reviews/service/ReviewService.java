@@ -45,6 +45,27 @@ public class ReviewService {
 
     private static final String HAS_PURCHASED_MESSAGE = "There is no purchase history for this product.";
 
+
+    // 인증된 사용자 정보 추출 메서드
+    // TODO: UserDetails 인터페이스를 구현하는 CustomUserDetails 클래스 구현 이후 추가 작업 예정
+    // Users 에 UserDetails 인터페이스를 구현하는 것도 고려해볼 것
+//    private Users getAuthenticatedUser() {
+//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+//        if (authentication == null || authentication instanceof AnonymousAuthenticationToken) {
+//            throw new IllegalStateException("로그인이 필요합니다.");
+//        }
+//
+//        if (!(authentication.getPrincipal() instanceof CustomUserDetails)) {
+//            throw new IllegalStateException("잘못된 사용자 정보입니다.");
+//        }
+//
+//        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+//        Long userId = userDetails.getId();
+//
+//        return userRepository.findById(userId)
+//                .orElseThrow(() -> new IllegalStateException("사용자 정보를 찾을 수 없습니다."));
+//    }
+
     public List<Review> getAllReviews() {
         return reviewRepository.findAll();
     }
@@ -92,88 +113,85 @@ public class ReviewService {
         return reviewPage.map(this::convertToReviewResponsePublic);
     }
 
-//    private Long extractUserIdFromAuthentication(Authentication authentication) {
-//        Object principal = authentication.getPrincipal();
-//        if (principal instanceof UserDetails) {
-//            return (CustomUserDetails) principal.getId();
-//        } else {
-//            throw new IllegalStateException("사용자 정보를 찾을 수 없습니다.");
-//        }
-//    }
-
     // 특정 유저의 아이디를 기준으로 리뷰 가져오기
+    // TODO: UserDetails 구현 완료 후 주석 해제
 //    public Page<ReviewResponseMy> getReviewByUserId(int page, int size) {
-//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-//        if(authentication == null || authentication instanceof AnonymousAuthenticationToken) {
-//            throw new IllegalStateException("로그인이 필요한 페이지입니다.");
-//        }
-//
-//        Long userId = extractUserIdFromAuthentication(authentication);
+//        Users user = getAuthenticatedUser();
 //        Pageable pageable = PageRequest.of(page, size);
-//        Page<Review> reviewPage = reviewRepository.findByUserId(userId, pageable);
+//
+//        Page<Review> reviewPage = reviewRepository.findByUserId(user.getId(), pageable);
 //        return reviewPage.map(this::convertToReviewResponseMy);
 //    }
 
-    @Transactional
-    public ReviewResponseMy addReview(AddReviewRequest request, MultipartFile imageFile) throws IOException {
-        Product product = productRepository.findById(request.getProductId())
-                .orElseThrow(() -> new ProductNotFoundException(PRODUCT_NOT_FOUND_MESSAGE + request.getProductId()));
+    // TODO: UserDetails 구현 완료 후 주석 해제
+//    @Transactional
+//    public ReviewResponseMy addReview(AddReviewRequest request, MultipartFile imageFile) throws IOException {
+//        Users user = getAuthenticatedUser();
+//        Product product = productRepository.findById(request.getProductId())
+//                .orElseThrow(() -> new ProductNotFoundException(PRODUCT_NOT_FOUND_MESSAGE + request.getProductId()));
+//
+//        boolean hasPurchased = orderItemRepository.existsByUserIdAndProductId(request.getUserId(), request.getProductId());
+//        if (!hasPurchased) {
+//            throw new IllegalStateException(HAS_PURCHASED_MESSAGE);
+//        }
+//
+//        String imageUrl = null;
+//        if(imageFile != null && !imageFile.isEmpty()) {
+//            imageUrl = s3Service.uploadReviewImage(imageFile);
+//        }
+//
+//        Review review = Review.builder()
+//                .title(request.getTitle())
+//                .content(request.getContent())
+//                .imageUrl(imageUrl)
+//                .product(product)
+//                .user(user)
+//                .build();
+//
+//        reviewRepository.save(review);
+//        return convertToReviewResponseMy(review);
+//    }
 
-        Users user = userRepository.findById(request.getUserId())
-                .orElseThrow(() -> new IllegalArgumentException("not found: " + request.getUserId()));
+    // TODO: UserDetails 구현 완료 후 주석 해제
+//    @Transactional
+//    public ReviewResponseMy updateReview(Long id, UpdateReviewRequest request, MultipartFile imageFile) throws IOException {
+//        Users user = getAuthenticatedUser();
+//        Review review = reviewRepository.findById(id)
+//                .orElseThrow(() -> new ReviewNotFoundException(REVIEW_NOT_FOUND_MESSAGE + id));
+//
+//        if (!review.getUser().getId().equals(user.getId())) {
+//            throw new IllegalStateException("리뷰 수정 권한이 없습니다.");
+//        }
+//
+//        String oldImageUrl = review.getImageUrl();
+//        String newImageUrl = oldImageUrl;
+//
+//        if (imageFile != null && !imageFile.isEmpty()) {
+//            newImageUrl = s3Service.uploadReviewImage(imageFile);
+//            if (oldImageUrl != null && !oldImageUrl.isEmpty()) {
+//                s3Service.deleteFile(oldImageUrl);
+//            }
+//        }
+//
+//        review.update(
+//                request.getTitle(),
+//                request.getContent(),
+//                newImageUrl);
+//
+//        reviewRepository.save(review);
+//        return convertToReviewResponseMy(review);
+//    }
 
-        boolean hasPurchased = orderItemRepository.existsByUserIdAndProductId(request.getUserId(), request.getProductId());
-        if (!hasPurchased) {
-            throw new IllegalStateException(HAS_PURCHASED_MESSAGE);
-        }
-
-        String imageUrl = null;
-        if(imageFile != null && !imageFile.isEmpty()) {
-            imageUrl = s3Service.uploadReviewImage(imageFile);
-        }
-
-        Review review = Review.builder()
-                .title(request.getTitle())
-                .content(request.getContent())
-                .imageUrl(imageUrl)
-                .product(product)
-                .user(user)
-                .build();
-
-        reviewRepository.save(review);
-        return convertToReviewResponseMy(review);
-    }
-
-    @Transactional
-    public ReviewResponseMy updateReview(Long id, UpdateReviewRequest request, MultipartFile imageFile) throws IOException {
-        Review review = reviewRepository.findById(id)
-                .orElseThrow(() -> new ReviewNotFoundException(REVIEW_NOT_FOUND_MESSAGE + id));
-
-        String oldImageUrl = review.getImageUrl();
-        String newImageUrl = oldImageUrl;
-
-        if (imageFile != null && !imageFile.isEmpty()) {
-            newImageUrl = s3Service.uploadReviewImage(imageFile);
-            if (oldImageUrl != null && !oldImageUrl.isEmpty()) {
-                s3Service.deleteFile(oldImageUrl);
-            }
-        }
-
-        review.update(
-                request.getTitle(),
-                request.getContent(),
-                newImageUrl);
-
-        reviewRepository.save(review);
-
-        return convertToReviewResponseMy(review);
-    }
-
-    @Transactional
-    public void deleteReview(Long id) {
-        Review review = reviewRepository.findById(id)
-                .orElseThrow(() -> new ReviewNotFoundException(REVIEW_NOT_FOUND_MESSAGE + id));
-
-        reviewRepository.delete(review);
-    }
+    // TODO: UserDetails 구현 완료 후 주석 해제
+//    @Transactional
+//    public void deleteReview(Long id) {
+//        Users user = getAuthenticatedUser();
+//        Review review = reviewRepository.findById(id)
+//                .orElseThrow(() -> new ReviewNotFoundException(REVIEW_NOT_FOUND_MESSAGE + id));
+//
+//        if(!review.getUser().getId().equals(user.getId())) {
+//            throw new IllegalStateException("리뷰 삭제 권한이 없습니다.");
+//        }
+//        reviewRepository.delete(review);
+//    }
 }
