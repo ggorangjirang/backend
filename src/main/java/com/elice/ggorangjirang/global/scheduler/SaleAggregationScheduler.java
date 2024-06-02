@@ -2,7 +2,7 @@ package com.elice.ggorangjirang.global.scheduler;
 
 import com.elice.ggorangjirang.global.aggregation.sale.Sale;
 import com.elice.ggorangjirang.global.aggregation.sale.SaleRepository;
-import com.elice.ggorangjirang.global.aggregation.sale.dto.ResCreateSale;
+import com.elice.ggorangjirang.global.aggregation.sale.dto.CreatedSaleResponse;
 import com.elice.ggorangjirang.global.aggregation.sale.dto.SaleMapper;
 import com.elice.ggorangjirang.orders.repository.OrderRepository;
 import com.querydsl.core.Tuple;
@@ -34,11 +34,11 @@ public class SaleAggregationScheduler {
     LocalDateTime start = now.minusDays(1).minusHours(1);
     LocalDateTime end = now.minusDays(1);
 
-    Tuple tupleSale = orderRepository.getSaleByOrders(start, end);
+    Tuple tupleSale = orderRepository.findSaleByOrders(start, end);
 
-    ResCreateSale resCreateSale = saleStatisticMapper.toResCreateSale(tupleSale);
+    CreatedSaleResponse CreatedSaleResponse = saleStatisticMapper.toResCreateSale(tupleSale);
 
-    Sale sale = new Sale(now, resCreateSale.totalSales(), resCreateSale.totalOrders());
+    Sale sale = new Sale(now, CreatedSaleResponse.totalSales(), CreatedSaleResponse.totalOrders());
     saleRepository.save(sale);
   }
 }

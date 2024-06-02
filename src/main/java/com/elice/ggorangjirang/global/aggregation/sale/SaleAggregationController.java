@@ -1,6 +1,6 @@
 package com.elice.ggorangjirang.global.aggregation.sale;
 
-import com.elice.ggorangjirang.global.aggregation.sale.dto.ResSale;
+import com.elice.ggorangjirang.global.aggregation.sale.dto.SaleViewResponse;
 import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -19,8 +19,8 @@ public class SaleAggregationController {
 
   @GetMapping("/api/v1/sales")
   @ResponseBody
-  public ResponseEntity<ResSale> getSales(@RequestParam String timeUnit, @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm") LocalDateTime start, @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm") LocalDateTime end) {
-    ResSale sales = saleAggregationService.getSales(timeUnit, start, end);
+  public ResponseEntity<SaleViewResponse> getSales(@RequestParam String timeUnit, @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm") LocalDateTime start, @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm") LocalDateTime end) {
+    SaleViewResponse sales = saleAggregationService.getSales(timeUnit, start, end);
 
     return new ResponseEntity<>(sales, HttpStatus.OK);
   }
