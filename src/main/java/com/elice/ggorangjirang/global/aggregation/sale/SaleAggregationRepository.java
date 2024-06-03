@@ -9,7 +9,7 @@ public interface SaleAggregationRepository {
 
   void cancelPendingOrders(LocalDateTime start, LocalDateTime end);
 
-  Tuple getSaleByOrders(LocalDateTime start, LocalDateTime end);
+  Tuple findSaleByOrders(LocalDateTime start, LocalDateTime end);
 
   List<Tuple> findSalesByTimeUnit(ChronoUnit chronoUnit, LocalDateTime start, LocalDateTime end);
 
