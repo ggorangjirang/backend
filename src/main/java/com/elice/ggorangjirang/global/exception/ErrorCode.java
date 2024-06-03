@@ -20,11 +20,7 @@ public enum ErrorCode {
 
   private final HttpStatus status;
   private final String code;
-  private String msg;
-
-  public void setCustomMessage(String message) {
-    this.msg = message;
-  }
+  private final String msg;
 
   ErrorCode(HttpStatus status, String code, String msg) {
     this.status = status;

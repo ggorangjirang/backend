@@ -16,10 +16,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
 
 @SpringBootTest
-@ActiveProfiles("test")
 public class OrderTest {
 
   private List<OrderItem> orderItems;
@@ -78,7 +76,7 @@ public class OrderTest {
     String name = "받는사람";
 
     // Delivery 객체 생성
-    Deliveries delivery = Deliveries.createDelivery(zipcode, streetAddress, detailAddress, status, request, arrivalDate, phoneNumber, name);
+    delivery = Deliveries.createDelivery(zipcode, streetAddress, detailAddress, status, request, arrivalDate, phoneNumber, name);
 
     // 출력 확인
     System.out.println(delivery);
