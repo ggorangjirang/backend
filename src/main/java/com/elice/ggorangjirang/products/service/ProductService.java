@@ -37,7 +37,7 @@ public class ProductService {
     private final DiscordWebhook discordWebhook;
 
     private static final String PRODUCT_NOT_FOUND_MESSAGE = "Product not found with id: ";
-    private static final String INVALID_PRODUCT_MESSAGE = "가격과 재고는 음수가 될 수 없습니다.";
+    private static final String INVALID_PRODUCT_MESSAGE = "Price or Stock cannot be minus value.";
     private static final String SUBCATEGORY_NOT_FOUND_MESSAGE = "Subcategory not found with id: ";
     private static final String NEW_PRODUCT_NOTICE = "New Product has created: ";
     private static final String PRODUCT_CHANGED_NOTICE = "Product has changed. Check the details in logs: ";
