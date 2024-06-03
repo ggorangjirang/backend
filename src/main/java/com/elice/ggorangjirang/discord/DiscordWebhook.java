@@ -20,6 +20,11 @@ public class DiscordWebhook {
   private static final String JSON_PAYLOAD_TEMPLATE = "{\"content\": \"%s\"}";
 
   public void sendErrorMessage(String message) {
+    if (webhookUrl == null || webhookUrl.isEmpty()) {
+      System.err.println("Webhook URL is not configured.");
+      return;
+    }
+
     try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
       HttpPost request = new HttpPost(webhookUrl);
       request.addHeader(CONTENT_TYPE_HEADER, CONTENT_TYPE_JSON);
