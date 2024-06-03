@@ -16,7 +16,7 @@ public class SubcategoryController {
 
     @GetMapping("/api/subcategories")
     public ResponseEntity<List<SubcategoryResponse>> getAllSubcategoriesWithCategoryName() {
-        List<SubcategoryResponse> subcategories = subcategoryService.getSubcategoriesWithCategoryName();
+        List<SubcategoryResponse> subcategories = subcategoryService.getSubcategoriesWithCategory();
         return ResponseEntity.ok(subcategories);
     }
 }

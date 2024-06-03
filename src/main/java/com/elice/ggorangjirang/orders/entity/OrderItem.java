@@ -46,7 +46,11 @@ public class OrderItem {
   public static OrderItem createOrderItem(Product product, int orderPrice, int quantity) {
     OrderItem orderItem = new OrderItem();
     orderItem.setProduct(product);
-    orderItem.setOrderPrice(orderPrice);
+
+    float discountRate = product.getDiscountRate();
+    int discountPrice = (discountRate != 0) ? ((Math.round(orderPrice * (1 - discountRate / 100)) + 5) / 10 * 10) : orderPrice;
+
+    orderItem.setOrderPrice(discountPrice);
     orderItem.setQuantity(quantity);
 
     product.updateStock(quantity);
@@ -54,9 +58,11 @@ public class OrderItem {
 
     return orderItem;
   }
+  public void delete(){
+    getProduct().addQuantity(quantity);
+  }
 
   public int getTotalPrice(){
     return this.orderPrice * this.quantity;
   }
-
 }

@@ -7,8 +7,6 @@ import lombok.Data;
 @Data
 public class DeliveryDto {
 
-  private Long orderId;
-
   private String name;
 
   private int phoneNumber;
@@ -20,7 +18,5 @@ public class DeliveryDto {
   private String detailAddress;
 
   private String request;
-
-  private LocalDate arrivalDate;
 
 }

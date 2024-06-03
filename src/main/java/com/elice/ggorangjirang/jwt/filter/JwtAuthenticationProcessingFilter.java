@@ -1,6 +1,7 @@
 package com.elice.ggorangjirang.jwt.filter;
 
 import com.elice.ggorangjirang.jwt.service.JwtService;
+import com.elice.ggorangjirang.jwt.util.PasswordUtil;
 import com.elice.ggorangjirang.users.entity.Users;
 import com.elice.ggorangjirang.users.repository.UserRepository;
 import jakarta.servlet.FilterChain;
@@ -16,6 +17,8 @@ import org.springframework.security.core.authority.mapping.NullAuthoritiesMapper
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
@@ -54,6 +57,8 @@ public class JwtAuthenticationProcessingFilter extends OncePerRequestFilter {
         if (refreshToken == null) {
             checkAccessTokenAndAuthentication(request, response, filterChain);
         }
+
+
     }
 
     // Refresh Token으로 유저 정보 찾기 + 토큰 재발급 메소드
@@ -68,7 +73,7 @@ public class JwtAuthenticationProcessingFilter extends OncePerRequestFilter {
 
     // Access Token 체크 + 인증 처리 메소드
     public void checkAccessTokenAndAuthentication(HttpServletRequest request, HttpServletResponse response,
-                                                 FilterChain filterChain) throws ServletException, IOException {
+                                                  FilterChain filterChain) throws ServletException, IOException {
         log.info("checkAccessTokenAndAuthentication() 호출");
         jwtService.extractAccessToken(request)
             .filter(jwtService::isTokenValid)
@@ -90,8 +95,9 @@ public class JwtAuthenticationProcessingFilter extends OncePerRequestFilter {
     public void saveAuthentication(Users myUser) {
         String password = myUser.getPassword();
 
+        // OAuth2 로그인시 유저의 비밀번호 임의로 설정하여 OAuth2 유저도 인증되도록 설정
         if(password == null) {
-            // 소셜 로그인시
+            password = PasswordUtil.generateRandomPassword();
         }
 
         UserDetails userDetails = org.springframework.security.core.userdetails.User.builder()
@@ -107,3 +113,4 @@ public class JwtAuthenticationProcessingFilter extends OncePerRequestFilter {
         SecurityContextHolder.getContext().setAuthentication(authentication);
     }
 }
+

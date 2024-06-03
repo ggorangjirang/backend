@@ -51,6 +51,8 @@ build:
     - build
   rules:
     - if: $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "main"
+    - if: $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "dev"
+      when: manual
 
 deploy:
   stage: deploy
@@ -59,9 +61,11 @@ deploy:
     - mkdir -p ~/.ssh
     - ssh-keyscan -H 34.64.229.17 >> ~/.ssh/known_hosts
   script:
-    - ssh -i $SSH_KEY elice@34.64.229.17 "echo $DOCKER_REGISTRY_PASS | docker login --username $DOCKER_REGISTRY_USER --password-stdin && docker rm app -f || true && docker rmi $IMAGE_NAME:$IMAGE_TAG || true && docker pull $IMAGE_NAME:$IMAGE_TAG && docker run -d -p 8080:8080 --name app $IMAGE_NAME:$IMAGE_TAG"
+    - ssh -i $SSH_KEY elice@34.64.229.17 "echo $DOCKER_REGISTRY_PASS | docker login --username $DOCKER_REGISTRY_USER --password-stdin && docker rm app -f || true && docker pull $IMAGE_NAME:$IMAGE_TAG && docker run -d -p 8080:8080 --name app --network elice $IMAGE_NAME:$IMAGE_TAG"
   tags:
     - deploy
   rules:
     - if: $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "main"
+    - if: $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "dev"
+      when: manual
 

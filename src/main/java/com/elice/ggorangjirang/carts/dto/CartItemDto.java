@@ -1,6 +1,7 @@
 package com.elice.ggorangjirang.carts.dto;
 
 import com.elice.ggorangjirang.carts.entity.CartItem;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -8,34 +9,26 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
+@AllArgsConstructor
 public class CartItemDto {
     private Long id;
-    private Long cartId;
     private Long productId;
     private String productName;
-    private int quantity;
+    private String productImageUrl;
     private int price;
     private float discountRate;
-    private String imageUrl;
+    private int quantity;
 
     // 엔티티를 DTO로 변환하는 메서드
     public static CartItemDto toDto(CartItem cartItem) {
         CartItemDto dto = new CartItemDto();
         dto.setId(cartItem.getId());
-        dto.setCartId(cartItem.getCart().getId());
         dto.setProductId(cartItem.getProduct().getId());
         dto.setProductName(cartItem.getProduct().getName());
-        dto.setQuantity(cartItem.getQuantity());
+        dto.setProductImageUrl(cartItem.getProduct().getProductImageUrl());
         dto.setPrice(cartItem.getProduct().getPrice());
         dto.setDiscountRate(cartItem.getProduct().getDiscountRate());
-        dto.setImageUrl(cartItem.getProduct().getImageUrl());
+        dto.setQuantity(cartItem.getQuantity());
         return dto;
-    }
-
-    // DTO를 엔티티로 변환하는 메서드
-    public CartItem toEntity() {
-        return CartItem.builder()
-            .quantity(this.quantity)
-            .build();
     }
 }

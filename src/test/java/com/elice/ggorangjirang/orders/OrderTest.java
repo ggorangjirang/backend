@@ -9,6 +9,7 @@ import com.elice.ggorangjirang.orders.entity.OrderStatus;
 import com.elice.ggorangjirang.products.entity.Product;
 import com.elice.ggorangjirang.users.entity.Users;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
@@ -36,7 +37,7 @@ public class OrderTest {
         .expirationDate(LocalDate.now())
         .discountRate(0.1f)
         .stock(100)
-        .imageUrl("img1.jpg")
+        .productImageUrl("img1.jpg")
         .build();
 
     Product product2 = Product.builder()
@@ -46,7 +47,7 @@ public class OrderTest {
         .expirationDate(LocalDate.now())
         .discountRate(0.2f)
         .stock(200)
-        .imageUrl("img2.jpg")
+        .productImageUrl("img2.jpg")
         .build();
 
     Product product3 = Product.builder()
@@ -56,7 +57,7 @@ public class OrderTest {
         .expirationDate(LocalDate.now())
         .discountRate(0.15f)
         .stock(300)
-        .imageUrl("img3.jpg")
+        .productImageUrl("img3.jpg")
         .build();
 
     // OrderItem 생성
@@ -72,7 +73,7 @@ public class OrderTest {
     String detailAddress = "Apt 101";
     String status = "Pending";
     String request = "Please leave at the front door.";
-    LocalDate arrivalDate = LocalDate.now();
+    LocalDateTime arrivalDate = LocalDateTime.now();
     int phoneNumber = 1000000000;
     String name = "받는사람";
 

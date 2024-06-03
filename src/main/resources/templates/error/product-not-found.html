@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>꼬랑지랑 - 상품을 찾을 수 없습니다.</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .error-container {
+            text-align: center;
+            padding: 50px;
+        }
+        .error-logo {
+            width: 150px;
+            margin-bottom: 30px;
+        }
+    </style>
+</head>
+<body>
+<div class="container error-container">
+    <h1 class="display-7">죄송합니다. 요청하신 상품을 찾을 수 없습니다.</h1>
+    <hr class="my-4">
+    <button class="btn btn-primary btn-lg" onclick="goBack()">이전 페이지로</button>
+</div>
+<!-- Bootstrap JS and dependencies -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+<script>
+    function goBack() {
+      window.history.back();
+    }
+</script>
+</body>
+</html>

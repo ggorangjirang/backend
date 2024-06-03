@@ -1,10 +1,14 @@
 package com.elice.ggorangjirang.products.service;
 
+import com.elice.ggorangjirang.amazonS3.service.S3Service;
 import com.elice.ggorangjirang.products.dto.AddProductRequest;
 import com.elice.ggorangjirang.products.dto.DetailProductResponse;
 import com.elice.ggorangjirang.products.dto.ListProductResponse;
 import com.elice.ggorangjirang.products.dto.UpdateProductRequest;
 import com.elice.ggorangjirang.products.entity.Product;
+import com.elice.ggorangjirang.products.exception.InvalidProductDataException;
+import com.elice.ggorangjirang.products.exception.ProductNotFoundException;
+import com.elice.ggorangjirang.products.exception.SubcategoryNotFoundException;
 import com.elice.ggorangjirang.products.repository.ProductRepository;
 import com.elice.ggorangjirang.subcategories.entity.Subcategory;
 import com.elice.ggorangjirang.subcategories.repository.SubcategoryRepository;
@@ -14,7 +18,9 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -24,34 +30,95 @@ import java.util.stream.Collectors;
 public class ProductService {
     private final ProductRepository productRepository;
     private final SubcategoryRepository subcategoryRepository;
+    private final S3Service s3Service;
 
+    // Spring MVC 방식 관리자 페이지용
     public List<Product> findProducts() {
         return productRepository.findAll();
     }
 
+
+    // Spring MVC 방식 관리자 페이지용
     public Product findProduct(Long id) {
         Product foundProduct = productRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("not found: " + id));
+                .orElseThrow(() -> new ProductNotFoundException("not found: " + id));
 
         return foundProduct;
     }
 
     @Transactional
-    public Product createProduct(AddProductRequest request) {
+    public Product createProduct(
+            AddProductRequest request,
+            MultipartFile productImageFile,
+            MultipartFile descriptionImageFile) throws IOException {
+
+        if (request.getPrice() < 0 || request.getStock() < 0) {
+            throw new InvalidProductDataException("가격과 재고는 음수가 될 수 없습니다.");
+        }
+
+        String productImageUrl = null;
+        if(productImageFile != null && !productImageFile.isEmpty()) {
+            productImageUrl = s3Service.uploadProductImage(productImageFile);
+        }
+
+        String descriptionImageUrl = null;
+        if(descriptionImageFile != null && !descriptionImageFile.isEmpty()) {
+            descriptionImageUrl = s3Service.uploadDescriptionImage(descriptionImageFile);
+        }
+
+        request.setProductImageUrl(productImageUrl);
+        request.setDescriptionImageUrl(descriptionImageUrl);
+
         return productRepository.save(request.toEntity());
     }
 
     @Transactional
-    public Product updateProduct(Long id, UpdateProductRequest request) {
+    public Product updateProduct(Long id, UpdateProductRequest request,
+                                 MultipartFile productImageFile,
+                                 MultipartFile descriptionImageFile) throws IOException {
         Product product = productRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("not found: " + id));
+                .orElseThrow(() -> new ProductNotFoundException("Product not found: " + id));
 
         Subcategory subcategory = subcategoryRepository.findById(request.getSubcategoryId())
-                .orElseThrow(() -> new IllegalArgumentException("not found: " + id));
+                .orElseThrow(() -> new SubcategoryNotFoundException("Subcategory not found: " + request.getSubcategoryId()));
+
+        String oldProductImageUrl = product.getProductImageUrl();
+        String newProductImageUrl = oldProductImageUrl;
+
+        if (request.getPrice() < 0 || request.getStock() < 0) {
+            throw new InvalidProductDataException("가격과 재고는 음수가 될 수 없습니다.");
+        }
+
+        if (productImageFile != null && !productImageFile.isEmpty()) {
+            newProductImageUrl = s3Service.uploadProductImage(productImageFile);
+            if (oldProductImageUrl != null) {
+                s3Service.deleteFile(oldProductImageUrl);
+            }
+        }
+
+        String oldDescriptionImageUrl = product.getDescriptionImageUrl();
+        String newDescriptionImageUrl = oldDescriptionImageUrl;
+
+        if (descriptionImageFile != null && !descriptionImageFile.isEmpty()) {
+            newDescriptionImageUrl = s3Service.uploadDescriptionImage(descriptionImageFile);
+            if (oldDescriptionImageUrl != null) {
+                s3Service.deleteFile(oldDescriptionImageUrl);
+            }
+        }
+
+        request.setProductImageUrl(newProductImageUrl);
+        request.setDescriptionImageUrl(newDescriptionImageUrl);
 
         product.update(
-                request.getName(), request.getDescription(), request.getPrice(), request.getExpirationDate(),
-                request.getDiscountRate(), request.getImageUrl(), request.getStock(), request.getSubcategoryId(),
+                request.getName(),
+                request.getDescription(),
+                request.getPrice(),
+                request.getExpirationDate(),
+                request.getDiscountRate(),
+                request.getProductImageUrl(),
+                request.getDescriptionImageUrl(),
+                request.getStock(),
+                request.getSubcategoryId(),
                 subcategory);
 
         return product;
@@ -60,17 +127,24 @@ public class ProductService {
     @Transactional
     public void deleteProduct(Long id) {
         Product product = productRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("not found: " + id));
+                .orElseThrow(() -> new ProductNotFoundException("not found: " + id));
 
         productRepository.delete(product);
     }
 
+    private int calculateDiscountedPrice(int price, float discountRate) {
+        int discountedPrice = Math.round(price * (1 - discountRate / 100));
+        return (discountedPrice + 5) / 10 * 10;
+    }
+
     private ListProductResponse convertToListProductResponse(Product product) {
         return new ListProductResponse(
+                product.getId(),
                 product.getName(),
                 product.getDiscountRate(),
                 product.getPrice(),
-                product.getImageUrl(),
+                calculateDiscountedPrice(product.getPrice(), product.getDiscountRate()),
+                product.getProductImageUrl(),
                 product.getStock());
     }
 
@@ -154,7 +228,7 @@ public class ProductService {
 
     public DetailProductResponse getProductDetail(Long id) {
         Product product = productRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Product not found with id: " + id));
+                .orElseThrow(() -> new ProductNotFoundException("Product not found with id: " + id));
 
         product.addViewCount();
         productRepository.save(product);
@@ -168,15 +242,18 @@ public class ProductService {
                 null;
 
         return new DetailProductResponse(
+                product.getId(),
                 product.getName(),
                 product.getDiscountRate(),
                 product.getPrice(),
-                product.getImageUrl(),
+                calculateDiscountedPrice(product.getPrice(), product.getDiscountRate()),
+                product.getProductImageUrl(),
                 product.getStock(),
                 product.getExpirationDate(),
                 subcategoryName,
                 categoryName,
                 product.getDescription(),
+                product.getDescriptionImageUrl(),
                 product.isSoldOut());
     }
 }
