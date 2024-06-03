@@ -22,7 +22,6 @@ public class GlobalExceptionHandler {
   private final DiscordWebhook discordWebhook;
   @ExceptionHandler({CustomBusinessException.class})
   public ResponseEntity<ErrorResponse> handle(CustomBusinessException e) {
-
     String errorMessage = "Exception occurred: " + e.getMessage();
     discordWebhook.sendErrorMessage(errorMessage);
 
