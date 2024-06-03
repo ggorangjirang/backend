@@ -8,7 +8,7 @@ spring:
         registration:
           kakao:
             client-id: ${CLIENT_ID}
-            client-secret: ${CLIENT-SECRET}
+            client-secret: ${CLIENT_SECRET}
             redirect-uri: https://ggorangjirang.duckdns.org/api/login/oauth2/code/kakao
             client-authentication-method: POST
             authorization-grant-type: authorization_code
