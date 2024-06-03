@@ -7,6 +7,7 @@ import com.elice.ggorangjirang.orders.entity.Order;
 import com.elice.ggorangjirang.orders.entity.OrderItem;
 import com.elice.ggorangjirang.orders.repository.OrderRepository;
 import com.elice.ggorangjirang.users.entity.Users;
+import com.elice.ggorangjirang.users.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +18,7 @@ import org.springframework.stereotype.Service;
 public class OrderService {
   private final OrderRepository orderRepository;
   private final DeliveryRepository deliveryRepository;
+  private final UserRepository userRepository;
 
   // User 엔티티 생성후 변경
   @Transactional
@@ -38,7 +40,11 @@ public class OrderService {
   }
 
   @Transactional
-  public void deleteByUserIdAndOrderId(Long userId, Long orderId) {
+  public void deleteByUserIdAndOrderId(String email, Long orderId) {
+
+    Users user = userRepository.findByEmail(email).orElseThrow(()-> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+    Long userId = user.getId();
+
     Order order = orderRepository.findByIdAndUsers_Id(orderId, userId)
         .orElseThrow(() -> new IllegalArgumentException("해당 주문이 존재하지 않습니다. Order ID: " + orderId + ", User ID: " + userId));
 

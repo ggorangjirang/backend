@@ -1,6 +1,6 @@
 package com.elice.ggorangjirang.global.aggregation.sale;
 
-import com.elice.ggorangjirang.global.aggregation.sale.dto.ResSale;
+import com.elice.ggorangjirang.global.aggregation.sale.dto.SaleViewResponse;
 import com.elice.ggorangjirang.global.aggregation.sale.dto.SaleMapper;
 import com.elice.ggorangjirang.global.exception.ErrorCode;
 import com.elice.ggorangjirang.global.exception.hierachy.common.InvalidParameterException;
@@ -32,7 +32,7 @@ public class SaleAggregationService {
   }
 
   // 주간 집계 쿼리를 Querydsl 변환하지 못해서 NativeQuery 사용(주간 집계일 때 분기문 처리)
-  public ResSale getSales(String timeUnit, LocalDateTime start, LocalDateTime end){
+  public SaleViewResponse getSales(String timeUnit, LocalDateTime start, LocalDateTime end){
 
     ChronoUnit chronoUnit = validateTimeIntervals(timeUnit, start, end);
 

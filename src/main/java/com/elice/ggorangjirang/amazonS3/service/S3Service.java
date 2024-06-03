@@ -29,6 +29,8 @@ public class S3Service {
     @Value("${cloud.aws.s3.description-image-path}")
     private String descriptionImagePath;
 
+    private static final String BUCKET_PATH = "https://ggorangjirang-s3.s3.amazonaws.com/";
+
     public String uploadFile(MultipartFile imageFile, String imagePath) throws IOException {
 
         String fileName = UUID.randomUUID().toString() + "-" + imageFile.getOriginalFilename();
@@ -62,11 +64,12 @@ public class S3Service {
     }
 
     public void deleteFile(String imageUrl) {
-        // 이미지 URL에서 버킷의 경로와 파일 이름 추출
-        String bucketPath = "https://ggorangjirang-s3.s3.amazonaws.com/";
-        String fileKey = imageUrl.replace(bucketPath, ""); // 버킷 경로 제거
+        if(imageUrl != null) {
+            // 이미지 URL에서 버킷의 경로와 파일 이름 추출 및 버킷 경로 제거
+            String fileKey = imageUrl.replace(BUCKET_PATH, "");
 
-        // 파일 삭제
-        client.deleteObject(bucket, fileKey);
+            // 파일 삭제
+            client.deleteObject(bucket, fileKey);
+        }
     }
 }

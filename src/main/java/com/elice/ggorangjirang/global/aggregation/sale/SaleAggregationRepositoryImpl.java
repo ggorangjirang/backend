@@ -70,7 +70,7 @@ public class SaleAggregationRepositoryImpl implements SaleAggregationRepository 
   }
 
   @Override
-  public Tuple getSaleByOrders(LocalDateTime start, LocalDateTime end) {
+  public Tuple findSaleByOrders(LocalDateTime start, LocalDateTime end) {
 
     BooleanExpression dateRangeCondition = order.orderDate.between(start, end);
     BooleanExpression conFirmedOrderStatus = order.orderStatus.in(OrderStatus.ORDER, OrderStatus.DELIVERY, OrderStatus.COMPLETE);
