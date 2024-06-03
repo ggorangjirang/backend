@@ -30,6 +30,7 @@ import org.springframework.security.web.authentication.logout.LogoutFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 
 // 인증은 CustomUsernamePasswordAuthenticationFilter에서 authenticate()로 인증된 사용자로 처리
 // JwtAuthenticationProcessingFilter는 AccessToken, RefreshToken 재발급
@@ -57,25 +58,24 @@ public class SecurityConfig {
 
                     CorsConfiguration config = new CorsConfiguration();
 
-                    config.setAllowedOrigins(Arrays.asList(
-                            "http://localhost:3000",
-                            "https://ggorangjirang.duckdns.org"
+                    config.setAllowedOrigins(List.of(
+                        "http://localhost:3000"
                     ));
                     config.setAllowedMethods(Collections.singletonList("*"));
                     return config;
                 }));
 
-            http
-                .authorizeHttpRequests(authorize -> authorize
-                    .requestMatchers("/h2-console/**",
-                        "/swagger-ui/**",
-                        "/swagger-resources/**",
-                        "/api/**",
-                        "/v3/api-docs/**",
-                        "/admin/**",
-                        "/js/**",
-                        "/css/**").permitAll()
-                    .anyRequest().authenticated()
+        http
+            .authorizeHttpRequests(authorize -> authorize
+                .requestMatchers("/h2-console/**",
+                    "/swagger-ui/**",
+                    "/swagger-resources/**",
+                    "/api/**",
+                    "/v3/api-docs/**",
+                    "/admin/**",
+                    "/js/**",
+                    "/css/**").permitAll()
+                .anyRequest().authenticated()
             );
 
         http
@@ -135,3 +135,4 @@ public class SecurityConfig {
     }
 
 }
+
