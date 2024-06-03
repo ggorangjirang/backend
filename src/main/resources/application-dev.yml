@@ -15,3 +15,7 @@ spring:
         format_sql: true
     hibernate:
       ddl-auto: none
+
+discord:
+  webhook:
+    url: https://discord.com/api/webhooks/1246005463598895205/j6A3ojRelQCMVcmLYMvCZsI1yhpUImWG9iX8kSplBwMC96Vdzz94iVMpmn2gdhXi6cBp
