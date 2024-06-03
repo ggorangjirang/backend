@@ -54,3 +54,7 @@ cloud:
 
     stack:
       auto: 'false'
+
+discord:
+  webhook:
+    url: ${DISCORD_URL}
