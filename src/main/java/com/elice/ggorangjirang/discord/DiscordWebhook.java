@@ -6,18 +6,31 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
+@Component
 public class DiscordWebhook {
 
-  private static final String WEBHOOK_URL = "https://discord.com/api/webhooks/1246005463598895205/j6A3ojRelQCMVcmLYMvCZsI1yhpUImWG9iX8kSplBwMC96Vdzz94iVMpmn2gdhXi6cBp";
+  @Value("${discord.webhook.url}")
+  private String webhookUrl;
 
-  public static void sendErrorMessage(String message) {
+  private static final String CONTENT_TYPE_HEADER = "Content-Type";
+  private static final String CONTENT_TYPE_JSON = "application/json";
+  private static final String JSON_PAYLOAD_TEMPLATE = "{\"content\": \"%s\"}";
+
+  public void sendErrorMessage(String message) {
+    if (webhookUrl == null || webhookUrl.isEmpty()) {
+      System.err.println("Webhook URL is not configured.");
+      return;
+    }
+
     try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
-      HttpPost request = new HttpPost(WEBHOOK_URL);
-      request.addHeader("Content-Type", "application/json");
+      HttpPost request = new HttpPost(webhookUrl);
+      request.addHeader(CONTENT_TYPE_HEADER, CONTENT_TYPE_JSON);
 
       // JSON Payload 생성 및 UTF-8 인코딩 설정
-      String jsonPayload = String.format("{\"content\": \"%s\"}", message);
+      String jsonPayload = String.format(JSON_PAYLOAD_TEMPLATE, message);
       StringEntity entity = new StringEntity(jsonPayload, StandardCharsets.UTF_8);
       request.setEntity(entity);
 
@@ -27,4 +40,3 @@ public class DiscordWebhook {
     }
   }
 }
-
