@@ -26,16 +26,16 @@ public class OrderItemController {
     private final ProductService productService;
     private final OrderItemService orderItemService;
 
+//    @PostMapping("/single")
+//    public ResponseEntity<Long> createOrderItem(@RequestBody OrderItemRequest request) {
+//      Product product = productService.findProduct(request.getProductId());
+//
+//      OrderItem createdOrderItem = orderItemService.createOrderItem(product, product.getPrice(), request.getQuantity());
+//
+//      return ResponseEntity.status(HttpStatus.CREATED).body(createdOrderItem.getId());
+//    }
+
     @PostMapping("")
-    public ResponseEntity<Long> createOrderItem(@RequestBody OrderItemRequest request) {
-      Product product = productService.findProduct(request.getProductId());
-
-      OrderItem createdOrderItem = orderItemService.createOrderItem(product, product.getPrice(), request.getQuantity());
-
-      return ResponseEntity.status(HttpStatus.CREATED).body(createdOrderItem.getId());
-    }
-
-    @PostMapping("/list")
     public ResponseEntity<List<Long>> createOrderItems(@RequestBody List<OrderItemRequest> request){
 
       List<Long> orderItemIds = new ArrayList<>();
