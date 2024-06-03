@@ -39,9 +39,9 @@ public class ProductService {
     private static final String PRODUCT_NOT_FOUND_MESSAGE = "Product not found with id: ";
     private static final String INVALID_PRODUCT_MESSAGE = "가격과 재고는 음수가 될 수 없습니다.";
     private static final String SUBCATEGORY_NOT_FOUND_MESSAGE = "Subcategory not found with id: ";
-    private static final String NEW_PRODUCT_NOTICE = "New Product create: ";
-    private static final String PRODUCT_CHANGED_NOTICE = "Product changed. Check details in logs: ";
-    private static final String PRODUCT_DELETED_NOTICE = "Product deleted: ";
+    private static final String NEW_PRODUCT_NOTICE = "New Product has created: ";
+    private static final String PRODUCT_CHANGED_NOTICE = "Product has changed. Check the details in logs: ";
+    private static final String PRODUCT_DELETED_NOTICE = "Product has deleted: ";
 
     // Spring MVC 방식 관리자 페이지용
     public List<Product> findProducts() {
