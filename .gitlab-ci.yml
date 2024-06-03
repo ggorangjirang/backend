@@ -53,6 +53,7 @@ build:
     - if: $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "main"
     - if: $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "dev"
       when: manual
+      allow_failure: true
 
 deploy:
   stage: deploy
@@ -68,4 +69,5 @@ deploy:
     - if: $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "main"
     - if: $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "dev"
       when: manual
+      allow_failure: true
 

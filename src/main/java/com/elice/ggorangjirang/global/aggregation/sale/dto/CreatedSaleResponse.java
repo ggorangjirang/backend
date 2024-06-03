@@ -1,6 +1,6 @@
 package com.elice.ggorangjirang.global.aggregation.sale.dto;
 
-public record ResCreateSale(
+public record CreatedSaleResponse(
     Long totalSales,
     Long totalOrders
 ) {}
