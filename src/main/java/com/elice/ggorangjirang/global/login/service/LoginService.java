@@ -1,5 +1,6 @@
 package com.elice.ggorangjirang.global.login.service;
 
+import com.elice.ggorangjirang.jwt.util.CustomUserDetails;
 import com.elice.ggorangjirang.users.dto.UserLoginDto;
 import com.elice.ggorangjirang.users.entity.Users;
 import com.elice.ggorangjirang.users.repository.UserRepository;
@@ -22,11 +23,7 @@ public class LoginService implements UserDetailsService {
         Users users = userRepository.findByEmail(email)
             .orElseThrow(() -> new UsernameNotFoundException("해당 이메일이 존재하지 않습니다."));
 
-        return org.springframework.security.core.userdetails.User.builder()
-            .username(users.getName())
-            .password(users.getPassword())
-            .roles(users.getRole().name())
-            .build();
+        return new CustomUserDetails(users);
     }
 
     public boolean login(UserLoginDto userLoginDto) {
@@ -36,3 +33,4 @@ public class LoginService implements UserDetailsService {
     }
 
 }
+
