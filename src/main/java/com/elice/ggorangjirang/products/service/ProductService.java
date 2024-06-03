@@ -1,6 +1,7 @@
 package com.elice.ggorangjirang.products.service;
 
 import com.elice.ggorangjirang.amazonS3.service.S3Service;
+import com.elice.ggorangjirang.discord.DiscordWebhook;
 import com.elice.ggorangjirang.products.dto.AddProductRequest;
 import com.elice.ggorangjirang.products.dto.DetailProductResponse;
 import com.elice.ggorangjirang.products.dto.ListProductResponse;
@@ -13,6 +14,7 @@ import com.elice.ggorangjirang.products.repository.ProductRepository;
 import com.elice.ggorangjirang.subcategories.entity.Subcategory;
 import com.elice.ggorangjirang.subcategories.repository.SubcategoryRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -25,15 +27,21 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ProductService {
     private final ProductRepository productRepository;
     private final SubcategoryRepository subcategoryRepository;
     private final S3Service s3Service;
+    private final DiscordWebhook discordWebhook;
+
     private static final String PRODUCT_NOT_FOUND_MESSAGE = "Product not found with id: ";
     private static final String INVALID_PRODUCT_MESSAGE = "가격과 재고는 음수가 될 수 없습니다.";
     private static final String SUBCATEGORY_NOT_FOUND_MESSAGE = "Subcategory not found with id: ";
+    private static final String NEW_PRODUCT_NOTICE = "New Product create: ";
+    private static final String PRODUCT_CHANGED_NOTICE = "Product changed. Check details in logs: ";
+    private static final String PRODUCT_DELETED_NOTICE = "Product deleted: ";
 
     // Spring MVC 방식 관리자 페이지용
     public List<Product> findProducts() {
@@ -72,31 +80,68 @@ public class ProductService {
         request.setProductImageUrl(productImageUrl);
         request.setDescriptionImageUrl(descriptionImageUrl);
 
-        return productRepository.save(request.toEntity());
+        Product newProduct = productRepository.save(request.toEntity());
+
+        discordWebhook.sendInfoMessage(NEW_PRODUCT_NOTICE + newProduct.getName() + " (ID: " + newProduct.getId() + ")");
+        return newProduct;
     }
 
     @Transactional
     public Product updateProduct(Long id, UpdateProductRequest request,
                                  MultipartFile productImageFile,
                                  MultipartFile descriptionImageFile) throws IOException {
+        log.info("Starting updateProduct for product ID: {}", id);
+
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new ProductNotFoundException(PRODUCT_NOT_FOUND_MESSAGE + id));
 
         Subcategory subcategory = subcategoryRepository.findById(request.getSubcategoryId())
                 .orElseThrow(() -> new SubcategoryNotFoundException(SUBCATEGORY_NOT_FOUND_MESSAGE + request.getSubcategoryId()));
 
-        String oldProductImageUrl = product.getProductImageUrl();
-        String newProductImageUrl = oldProductImageUrl;
-
         if (request.getPrice() < 0 || request.getStock() < 0) {
             throw new InvalidProductDataException(INVALID_PRODUCT_MESSAGE);
         }
+
+        StringBuilder changes = new StringBuilder();
+        changes.append("상품이 수정되었습니다: ").append(product.getName()).append(" (ID: ").append(product.getId()).append(")\n");
+
+        if (!product.getName().equals(request.getName())) {
+            changes.append("이름: ").append(product.getName()).append(" -> ").append(request.getName()).append("\n");
+        }
+
+        if (!product.getDescription().equals(request.getDescription())) {
+            changes.append("설명: ").append(product.getDescription()).append(" -> ").append(request.getDescription()).append("\n");
+        }
+
+        if (product.getPrice() != request.getPrice()) {
+            changes.append("가격: ").append(product.getPrice()).append(" -> ").append(request.getPrice()).append("\n");
+        }
+
+        if (!product.getExpirationDate().equals(request.getExpirationDate())) {
+            changes.append("유효기간: ").append(product.getExpirationDate()).append(" -> ").append(request.getExpirationDate()).append("\n");
+        }
+
+        if (product.getDiscountRate() != request.getDiscountRate()) {
+            changes.append("할인율: ").append(product.getDiscountRate()).append(" -> ").append(request.getDiscountRate()).append("\n");
+        }
+
+        if (product.getStock() != request.getStock()) {
+            changes.append("재고: ").append(product.getStock()).append(" -> ").append(request.getStock()).append("\n");
+        }
+
+        if (!product.getSubcategory().getId().equals(request.getSubcategoryId())) {
+            changes.append("하위 카테고리: ").append(product.getSubcategory().getSubcategoryName()).append(" -> ").append(subcategory.getSubcategoryName()).append("\n");
+        }
+
+        String oldProductImageUrl = product.getProductImageUrl();
+        String newProductImageUrl = oldProductImageUrl;
 
         if (productImageFile != null && !productImageFile.isEmpty()) {
             newProductImageUrl = s3Service.uploadProductImage(productImageFile);
             if (oldProductImageUrl != null) {
                 s3Service.deleteFile(oldProductImageUrl);
             }
+            changes.append("상품 이미지 URL: ").append(oldProductImageUrl).append(" -> ").append(newProductImageUrl).append("\n");
         }
 
         String oldDescriptionImageUrl = product.getDescriptionImageUrl();
@@ -107,6 +152,7 @@ public class ProductService {
             if (oldDescriptionImageUrl != null) {
                 s3Service.deleteFile(oldDescriptionImageUrl);
             }
+            changes.append("설명 이미지 URL: ").append(oldDescriptionImageUrl).append(" -> ").append(newDescriptionImageUrl).append("\n");
         }
 
         request.setProductImageUrl(newProductImageUrl);
@@ -124,6 +170,9 @@ public class ProductService {
                 request.getSubcategoryId(),
                 subcategory);
 
+        String chagesString = changes.toString();
+        log.info("Changes detected: {}", chagesString);
+        discordWebhook.sendInfoMessage(PRODUCT_CHANGED_NOTICE + product.getName() + " (ID: " + product.getId() + ")");
         return product;
     }
 
@@ -133,12 +182,14 @@ public class ProductService {
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new ProductNotFoundException(PRODUCT_NOT_FOUND_MESSAGE + id));
 
-        // DB 상에서 product 데이터 삭제
-        productRepository.delete(product);
-
         // S3 버킷 상에서 상품과 설명 이미지 파일 삭제
         s3Service.deleteFile(product.getProductImageUrl());
         s3Service.deleteFile(product.getDescriptionImageUrl());
+
+        // DB 상에서 product 데이터 삭제
+        productRepository.delete(product);
+
+        discordWebhook.sendWarningMessage(PRODUCT_DELETED_NOTICE + product.getName() + " (ID: " + product.getId() + ")");
     }
 
     private int calculateDiscountedPrice(int price, float discountRate) {
