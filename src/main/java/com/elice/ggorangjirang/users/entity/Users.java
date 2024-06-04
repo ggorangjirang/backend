@@ -1,5 +1,6 @@
 package com.elice.ggorangjirang.users.entity;
 
+import com.elice.ggorangjirang.carts.entity.Cart;
 import com.elice.ggorangjirang.reviews.entity.Review;
 import jakarta.persistence.*;
 import lombok.*;
@@ -56,6 +57,9 @@ public class Users {
     private String socialId;
 
     private String refreshToken;
+
+    @OneToOne(mappedBy = "user")
+    private Cart cart;
 
     @OneToMany(mappedBy = "user")
     private List<Review> reviews = new ArrayList<>();
