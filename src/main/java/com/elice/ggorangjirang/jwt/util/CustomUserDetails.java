@@ -59,4 +59,8 @@ public class CustomUserDetails implements UserDetails {
     public boolean isEnabled() {
         return users.getDeletedAt() == null;
     }
+
+    public Users getUsers(){
+        return users;
+    }
 }
