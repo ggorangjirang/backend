@@ -23,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -117,8 +118,11 @@ public class ProductService {
             changes.append("가격: ").append(product.getPrice()).append(" -> ").append(request.getPrice()).append("\n");
         }
 
-        if (!product.getExpirationDate().equals(request.getExpirationDate())) {
-            changes.append("유효기간: ").append(product.getExpirationDate()).append(" -> ").append(request.getExpirationDate()).append("\n");
+        if (request.getExpirationDate() != null) {
+            if ((product.getExpirationDate() == null) ||
+                    (product.getExpirationDate() != null && !product.getExpirationDate().equals(request.getExpirationDate()))) {
+                changes.append("유효기간: ").append(product.getExpirationDate()).append(" -> ").append(request.getExpirationDate()).append("\n");
+            }
         }
 
         if (product.getDiscountRate() != request.getDiscountRate()) {
@@ -158,11 +162,13 @@ public class ProductService {
         request.setProductImageUrl(newProductImageUrl);
         request.setDescriptionImageUrl(newDescriptionImageUrl);
 
+        LocalDate newExpirationDate = (request.getExpirationDate() != null) ? request.getExpirationDate() : product.getExpirationDate();
+
         product.update(
                 request.getName(),
                 request.getDescription(),
                 request.getPrice(),
-                request.getExpirationDate(),
+                newExpirationDate,
                 request.getDiscountRate(),
                 request.getProductImageUrl(),
                 request.getDescriptionImageUrl(),
