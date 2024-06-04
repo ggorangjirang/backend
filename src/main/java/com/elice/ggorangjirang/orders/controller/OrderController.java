@@ -4,6 +4,7 @@ package com.elice.ggorangjirang.orders.controller;
 import com.elice.ggorangjirang.deliveries.entity.Deliveries;
 import com.elice.ggorangjirang.deliveries.service.DeliveryService;
 import com.elice.ggorangjirang.jwt.service.JwtService;
+import com.elice.ggorangjirang.jwt.util.CustomUserDetails;
 import com.elice.ggorangjirang.orders.dto.OrderRequest;
 import com.elice.ggorangjirang.orders.dto.OrderResponse;
 import com.elice.ggorangjirang.orders.entity.Order;
@@ -18,6 +19,8 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -42,7 +45,13 @@ public class OrderController {
   @PostMapping("")
   public ResponseEntity<Long> addOrder(@RequestBody OrderRequest request){
 
-    Users users = userService.findById(request.getUserId());
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+    Users users = userDetails.getUsers();
+
+    if(users == null){
+      throw new IllegalStateException("유저 없음");
+    }
     Deliveries deliveries = deliveryService.getDeliveryById(request.getDeliveryId());
 
     List<OrderItem> orderItems = new ArrayList<>();
