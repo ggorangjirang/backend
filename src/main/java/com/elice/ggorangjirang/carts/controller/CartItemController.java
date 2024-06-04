@@ -6,6 +6,7 @@ import com.elice.ggorangjirang.carts.service.CartItemService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -27,7 +28,8 @@ public class CartItemController {
     }
 
     @GetMapping
-    public ResponseEntity<Page<CartItemResponse>> getCartItems(@RequestParam Long cartId, Pageable pageable) {
+    public ResponseEntity<Page<CartItemResponse>> getCartItems(@RequestParam Long cartId,
+        @PageableDefault(size = 16) Pageable pageable) {
         Page<CartItemResponse> cartItems = cartItemService.getCartItemsByCartId(cartId, pageable);
         return ResponseEntity.ok(cartItems);
     }

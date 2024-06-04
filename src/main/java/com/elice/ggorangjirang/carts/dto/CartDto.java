@@ -3,25 +3,20 @@ package com.elice.ggorangjirang.carts.dto;
 import com.elice.ggorangjirang.carts.entity.Cart;
 import lombok.Builder;
 import lombok.Data;
-
-import java.util.List;
-import java.util.stream.Collectors;
+import org.springframework.data.domain.Page;
 
 @Data
 @Builder
 public class CartDto {
     private Long cartId;
     private Long userId;
-    private List<CartItemResponse> cartItems;
+    private Page<CartItemResponse> cartItems;
 
-    // 엔티티를 DTO로 변환
-    public static CartDto toDto(Cart cart) {
+    public static CartDto toDto(Cart cart, Page<CartItemResponse> cartItemResponses) {
         return CartDto.builder()
             .cartId(cart.getId())
             .userId(cart.getUser().getId())
-            .cartItems(cart.getCartItems().stream()
-                .map(CartItemResponse::toDto)
-                .collect(Collectors.toList()))
+            .cartItems(cartItemResponses)
             .build();
     }
 }
