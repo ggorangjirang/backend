@@ -1,5 +1,6 @@
 package com.elice.ggorangjirang.users.service;
 
+import com.elice.ggorangjirang.carts.service.CartService;
 import com.elice.ggorangjirang.users.dto.UserSignupDto;
 import com.elice.ggorangjirang.users.entity.Role;
 import com.elice.ggorangjirang.users.entity.Users;
@@ -16,6 +17,7 @@ public class UserService {
     private final UserRepository userRepository;
 
     private final PasswordEncoder passwordEncoder;
+    private final CartService cartService;
 
 
     public void signUp(UserSignupDto userSignupDto) throws Exception {
@@ -32,6 +34,8 @@ public class UserService {
 
         users.passwordEncode(passwordEncoder);
         userRepository.save(users);
+
+        cartService.createCartForUser(users);
     }
 
     public Users findByUsername(String username) {
