@@ -2,6 +2,7 @@ package com.elice.ggorangjirang.carts.entity;
 
 import com.elice.ggorangjirang.users.entity.Users;
 import jakarta.persistence.*;
+import java.util.Set;
 import lombok.*;
 
 import java.util.List;
@@ -25,5 +26,5 @@ public class Cart {
     private Users user;
 
     @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<CartItem> cartItems;
+    private Set<CartItem> cartItems;
 }
