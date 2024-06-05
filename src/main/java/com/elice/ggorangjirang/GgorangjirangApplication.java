@@ -12,13 +12,16 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @SpringBootApplication
 @EnableJpaAuditing
 @PropertySource(value = {
-		"classpath:env.yml",
+        "classpath:env.yml",
 }, factory = EnvConfig.class)
-@OpenAPIDefinition(servers = {@Server(url = "https://ggorangjirang.duckdns.org", description = "GRJR")})
+@OpenAPIDefinition(servers = {
+        @Server(url = "https://ggorangjirang.duckdns.org", description = "GRJR"),
+        @Server(url = "http://localhost:8080", description = "local server")
+})
 @EnableScheduling
 public class GgorangjirangApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(GgorangjirangApplication.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(GgorangjirangApplication.class, args);
+    }
 }
