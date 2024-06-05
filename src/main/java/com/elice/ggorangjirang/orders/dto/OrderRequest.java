@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Getter
 public class OrderRequest {
-  private Long userId;
+
   private Long deliveryId;
   private List<Long> orderItemId;
 }
