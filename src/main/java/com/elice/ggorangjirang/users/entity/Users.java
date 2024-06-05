@@ -1,10 +1,8 @@
 package com.elice.ggorangjirang.users.entity;
 
-import com.elice.ggorangjirang.carts.entity.Cart;
 import com.elice.ggorangjirang.reviews.entity.Review;
 import jakarta.persistence.*;
 import lombok.*;
-import org.springframework.context.annotation.Bean;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -58,8 +56,8 @@ public class Users {
 
     private String refreshToken;
 
-    @OneToOne(mappedBy = "user")
-    private Cart cart;
+//    @OneToOne(mappedBy = "user")
+//    private Cart cart;
 
     @OneToMany(mappedBy = "user")
     private List<Review> reviews = new ArrayList<>();
