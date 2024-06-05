@@ -1,10 +1,8 @@
 package com.elice.ggorangjirang.reviews.controller;
 
 import com.elice.ggorangjirang.jwt.service.JwtService;
-import com.elice.ggorangjirang.reviews.dto.AddReviewRequest;
 import com.elice.ggorangjirang.reviews.dto.ReviewResponseMy;
 import com.elice.ggorangjirang.reviews.dto.ReviewResponsePublic;
-import com.elice.ggorangjirang.reviews.dto.UpdateReviewRequest;
 import com.elice.ggorangjirang.reviews.service.ReviewService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
