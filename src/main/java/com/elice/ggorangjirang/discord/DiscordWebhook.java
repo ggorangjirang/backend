@@ -19,7 +19,7 @@ public class DiscordWebhook {
   private static final String CONTENT_TYPE_JSON = "application/json";
   private static final String JSON_PAYLOAD_TEMPLATE = "{\"content\": \"%s\"}";
 
-  public void sendErrorMessage(String message) {
+  private void sendWebhookMessage(String message) {
     if (webhookUrl == null || webhookUrl.isEmpty()) {
       System.err.println("Webhook URL is not configured.");
       return;
@@ -38,5 +38,17 @@ public class DiscordWebhook {
     } catch (IOException e) {
       e.printStackTrace();
     }
+  }
+
+  public void sendErrorMessage(String message) {
+    sendWebhookMessage("[ERROR] " + message);
+  }
+
+  public void sendInfoMessage(String message) {
+    sendWebhookMessage("[INFO] " + message);
+  }
+
+  public void sendWarningMessage(String message) {
+    sendWebhookMessage("[WARNING] " + message);
   }
 }
