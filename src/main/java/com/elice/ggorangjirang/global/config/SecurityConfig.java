@@ -79,7 +79,6 @@ public class SecurityConfig {
                     "/css/**").permitAll()
                 .anyRequest().authenticated()
             );
-
         http
             .formLogin(config -> config.disable())
             .httpBasic(config -> config.disable())
