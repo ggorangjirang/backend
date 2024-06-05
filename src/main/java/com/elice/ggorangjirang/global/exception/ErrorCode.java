@@ -1,21 +1,21 @@
 package com.elice.ggorangjirang.global.exception;
 
+import com.elice.ggorangjirang.global.exception.constant.Constant;
 import lombok.Getter;
-import lombok.Setter;
 import org.springframework.http.HttpStatus;
 
 @Getter
 public enum ErrorCode {
 
   // Domain Common Exception
-  INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "E1", "Internal server error occurred."),
-  INVALID_PARAMETER(HttpStatus.BAD_REQUEST, "E2", "Invalid parameter."),
-  ACCESS_DENIED(HttpStatus.FORBIDDEN, "E3", "Access denied."),
+  INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, Constant.INTERNAL_SERVER_ERROR_CODE, Constant.INTERNAL_SERVER_ERROR_MSG),
+  INVALID_PARAMETER(HttpStatus.BAD_REQUEST, Constant.INVALID_PARAMETER_CODE, Constant.INVALID_PARAMETER_MSG),
+  ACCESS_DENIED(HttpStatus.FORBIDDEN, Constant.ACCESS_DENIED_CODE, Constant.ACCESS_DENIED_MSG),
 
   // Domain Custom Exception
   // SAMPLE
-  REFRESH_NOT_VALID(HttpStatus.FORBIDDEN, "RE1", "The refresh token is invalid. redirect to /login"),
-  INVALID_PRODUCT_DATA(HttpStatus.BAD_REQUEST, "PROD1", "가격 또는 재고가 음수로 입력되었습니다.")
+  REFRESH_NOT_VALID(HttpStatus.FORBIDDEN, Constant.REFRESH_NOT_VALID_CODE, Constant.REFRESH_NOT_VALID_MSG),
+  INVALID_PRODUCT_DATA(HttpStatus.BAD_REQUEST, Constant.INVALID_PRODUCT_DATA_CODE, Constant.INVALID_PRODUCT_DATA_MSG)
   ;
 
   private final HttpStatus status;

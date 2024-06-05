@@ -8,11 +8,9 @@ import com.elice.ggorangjirang.products.exception.SubcategoryNotFoundException;
 import com.elice.ggorangjirang.reviews.exception.ReviewNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.context.request.WebRequest;
 
 @ControllerAdvice
 @RequiredArgsConstructor
@@ -20,6 +18,7 @@ import org.springframework.web.context.request.WebRequest;
 public class GlobalExceptionHandler {
 
   private final DiscordWebhook discordWebhook;
+
   @ExceptionHandler({CustomBusinessException.class})
   public ResponseEntity<ErrorResponse> handle(CustomBusinessException e) {
     String errorMessage = "Exception occurred: " + e.getMessage();
