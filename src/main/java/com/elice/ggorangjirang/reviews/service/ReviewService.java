@@ -1,12 +1,10 @@
 package com.elice.ggorangjirang.reviews.service;
 
 import com.elice.ggorangjirang.amazonS3.service.S3Service;
-import com.elice.ggorangjirang.jwt.util.CustomUserDetails;
 import com.elice.ggorangjirang.orders.repository.OrderItemRepository;
 import com.elice.ggorangjirang.products.entity.Product;
 import com.elice.ggorangjirang.products.exception.ProductNotFoundException;
 import com.elice.ggorangjirang.products.repository.ProductRepository;
-import com.elice.ggorangjirang.products.service.ProductService;
 import com.elice.ggorangjirang.reviews.dto.AddReviewRequest;
 import com.elice.ggorangjirang.reviews.dto.ReviewResponseMy;
 import com.elice.ggorangjirang.reviews.dto.ReviewResponsePublic;
@@ -15,15 +13,10 @@ import com.elice.ggorangjirang.reviews.entity.Review;
 import com.elice.ggorangjirang.reviews.exception.ReviewNotFoundException;
 import com.elice.ggorangjirang.reviews.repository.ReviewRepository;
 import com.elice.ggorangjirang.users.entity.Users;
-import com.elice.ggorangjirang.users.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.authentication.AnonymousAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -37,32 +30,12 @@ public class ReviewService {
 
     private final ReviewRepository reviewRepository;
     private final ProductRepository productRepository;
-    private final UserRepository userRepository;
     private final OrderItemRepository orderItemRepository;
     private final S3Service s3Service;
 
     private static final String PRODUCT_NOT_FOUND_MESSAGE = "Product not found with id: ";
     private static final String REVIEW_NOT_FOUND_MESSAGE = "Review not found with id: ";
     private static final String HAS_PURCHASED_MESSAGE = "There is no purchase history for this product.";
-
-
-    // 인증된 사용자 정보 추출 메서드
-    private Users getAuthenticatedUser() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication == null || authentication instanceof AnonymousAuthenticationToken) {
-            throw new IllegalStateException("로그인이 필요합니다.");
-        }
-
-        if (!(authentication.getPrincipal() instanceof CustomUserDetails)) {
-            throw new IllegalStateException("잘못된 사용자 정보입니다.");
-        }
-
-        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
-        Long userId = userDetails.getUserId();
-
-        return userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalStateException("사용자 정보를 찾을 수 없습니다."));
-    }
 
     public List<Review> getAllReviews() {
         return reviewRepository.findAll();
@@ -112,21 +85,18 @@ public class ReviewService {
     }
 
     // 특정 유저의 아이디를 기준으로 리뷰 가져오기
-    public Page<ReviewResponseMy> getReviewByUserId(int page, int size) {
-        Users user = getAuthenticatedUser();
+    public Page<ReviewResponseMy> getReviewByUserId(Users user, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
-
         Page<Review> reviewPage = reviewRepository.findByUserId(user.getId(), pageable);
         return reviewPage.map(this::convertToReviewResponseMy);
     }
 
     @Transactional
-    public ReviewResponseMy addReview(AddReviewRequest request, MultipartFile imageFile) throws IOException {
-        Users user = getAuthenticatedUser();
+    public ReviewResponseMy addReview(Users user, AddReviewRequest request, MultipartFile imageFile) throws IOException {
         Product product = productRepository.findById(request.getProductId())
                 .orElseThrow(() -> new ProductNotFoundException(PRODUCT_NOT_FOUND_MESSAGE + request.getProductId()));
 
-        boolean hasPurchased = orderItemRepository.existsByUserIdAndProductId(request.getUserId(), request.getProductId());
+        boolean hasPurchased = orderItemRepository.existsByUserIdAndProductId(user.getId(), request.getProductId());
         if (!hasPurchased) {
             throw new IllegalStateException(HAS_PURCHASED_MESSAGE);
         }
@@ -149,8 +119,7 @@ public class ReviewService {
     }
 
     @Transactional
-    public ReviewResponseMy updateReview(Long id, UpdateReviewRequest request, MultipartFile imageFile) throws IOException {
-        Users user = getAuthenticatedUser();
+    public ReviewResponseMy updateReview(Users user, Long id, UpdateReviewRequest request, MultipartFile imageFile) throws IOException {
         Review review = reviewRepository.findById(id)
                 .orElseThrow(() -> new ReviewNotFoundException(REVIEW_NOT_FOUND_MESSAGE + id));
 
@@ -178,8 +147,7 @@ public class ReviewService {
     }
 
     @Transactional
-    public void deleteReview(Long id) {
-        Users user = getAuthenticatedUser();
+    public void deleteReview(Users user, Long id) {
         Review review = reviewRepository.findById(id)
                 .orElseThrow(() -> new ReviewNotFoundException(REVIEW_NOT_FOUND_MESSAGE + id));
 
