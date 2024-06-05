@@ -1,23 +1,18 @@
 package com.elice.ggorangjirang.reviews.controller;
 
-import com.elice.ggorangjirang.jwt.util.CustomUserDetails;
-import com.elice.ggorangjirang.reviews.dto.AddReviewRequest;
+import com.elice.ggorangjirang.jwt.service.JwtService;
 import com.elice.ggorangjirang.reviews.dto.ReviewResponseMy;
 import com.elice.ggorangjirang.reviews.dto.ReviewResponsePublic;
-import com.elice.ggorangjirang.reviews.dto.UpdateReviewRequest;
 import com.elice.ggorangjirang.reviews.service.ReviewService;
-import com.elice.ggorangjirang.users.entity.Users;
-import com.elice.ggorangjirang.users.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AnonymousAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.Optional;
 
 @RestController
 @RequiredArgsConstructor
@@ -25,23 +20,7 @@ import java.io.IOException;
 public class ReviewController {
 
     private final ReviewService reviewService;
-    private final UserRepository userRepository;
-
-    private Users getAuthenticatedUser() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication == null || authentication instanceof AnonymousAuthenticationToken) {
-            throw new IllegalStateException("로그인이 필요합니다.");
-        }
-        if (!(authentication.getPrincipal() instanceof CustomUserDetails)) {
-            throw new IllegalStateException("잘못된 사용자 정보입니다.");
-        }
-
-        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
-        Long userId = userDetails.getUserId();
-
-        return userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalStateException("사용자 정보를 찾을 수 없습니다."));
-    }
+    private final JwtService jwtService;
 
     @GetMapping("/products/{productId}/reviews")
     public ResponseEntity<Page<ReviewResponsePublic>> getReviewsByProduct(
@@ -56,21 +35,33 @@ public class ReviewController {
     @GetMapping("/users/my-reviews")
     public ResponseEntity<Page<ReviewResponseMy>> getReviewByUserId(
             @RequestParam(name = "page", defaultValue = "0") int page,
-            @RequestParam(name = "size", defaultValue = "3") int size) {
+            @RequestParam(name = "size", defaultValue = "3") int size,
+            @RequestHeader("Authorization") String token) {
 
-        Users user = getAuthenticatedUser();
-        Page<ReviewResponseMy> reviews = reviewService.getReviewByUserId(user, page, size);
+        Optional<String> emailOptional = jwtService.extractEmail(token);
+        if (emailOptional.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        String email = emailOptional.get();
+        Page<ReviewResponseMy> reviews = reviewService.getReviewByUserEmail(email, page, size);
         return ResponseEntity.ok(reviews);
     }
 
 
     @PostMapping("/users/review")
     public ResponseEntity<ReviewResponseMy> addReview(
-            @RequestPart("review") AddReviewRequest request,
-            @RequestPart(value = "imageFile", required = false) MultipartFile imageFile) throws IOException {
+            @RequestPart("review") String requestJson,
+            @RequestPart(value = "imageFile", required = false) MultipartFile imageFile,
+            @RequestHeader("Authorization") String token) throws IOException {
 
-        Users user = getAuthenticatedUser();
-        ReviewResponseMy review = reviewService.addReview(user, request, imageFile);
+        Optional<String> emailOptional = jwtService.extractEmail(token);
+        if (emailOptional.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        String email = jwtService.extractEmail(token).get();
+        ReviewResponseMy review = reviewService.addReview(email, requestJson, imageFile);
         return ResponseEntity.ok(review);
     }
 
@@ -78,19 +69,31 @@ public class ReviewController {
     @PatchMapping("/users/review/{reviewId}")
     public ResponseEntity<ReviewResponseMy> editReview(
             @PathVariable("reviewId") Long id,
-            @RequestPart("review") UpdateReviewRequest request,
-            @RequestPart(value = "imageFile", required = false) MultipartFile imageFile) throws IOException {
+            @RequestPart("review") String requestJson,
+            @RequestPart(value = "imageFile", required = false) MultipartFile imageFile,
+            @RequestHeader("Authorization") String token) throws IOException {
 
-        Users user = getAuthenticatedUser();
-        ReviewResponseMy updatedReview = reviewService.updateReview(user, id, request, imageFile);
+        Optional<String> emailOptional = jwtService.extractEmail(token);
+        if (emailOptional.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        String email = jwtService.extractEmail(token).get();
+        ReviewResponseMy updatedReview = reviewService.updateReview(email, id, requestJson, imageFile);
         return ResponseEntity.ok(updatedReview);
     }
 
     @DeleteMapping("/users/review/{reviewId}")
-    public ResponseEntity<Void> deleteReview(@PathVariable("reviewId") Long id) {
+    public ResponseEntity<Void> deleteReview(@PathVariable("reviewId") Long id,
+                                             @RequestHeader("Authorization") String token) {
 
-        Users user = getAuthenticatedUser();
-        reviewService.deleteReview(user, id);
+        Optional<String> emailOptional = jwtService.extractEmail(token);
+        if (emailOptional.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        String email = jwtService.extractEmail(token).get();
+        reviewService.deleteReview(email, id);
         return ResponseEntity.noContent().build();
     }
 }
