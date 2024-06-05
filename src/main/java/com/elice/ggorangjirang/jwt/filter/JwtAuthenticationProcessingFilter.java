@@ -54,7 +54,8 @@ public class JwtAuthenticationProcessingFilter extends OncePerRequestFilter {
             return;
         }
 
-        if (refreshToken == null) {
+        // response 객체가 null이 아닌 경우에만 checkAccessTokenAndAuthentication 메소드 호출
+        if (response != null) {
             checkAccessTokenAndAuthentication(request, response, filterChain);
         }
 
@@ -75,6 +76,12 @@ public class JwtAuthenticationProcessingFilter extends OncePerRequestFilter {
     public void checkAccessTokenAndAuthentication(HttpServletRequest request, HttpServletResponse response,
                                                   FilterChain filterChain) throws ServletException, IOException {
         log.info("checkAccessTokenAndAuthentication() 호출");
+
+        if (response == null) {
+            log.error("Response object is null in checkAccessTokenAndAuthentication method.");
+            return;
+        }
+
         jwtService.extractAccessToken(request)
             .filter(jwtService::isTokenValid)
             .ifPresent(accessToken -> jwtService.extractEmail(accessToken)
