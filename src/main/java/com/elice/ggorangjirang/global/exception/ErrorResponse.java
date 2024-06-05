@@ -12,4 +12,9 @@ public class ErrorResponse {
     this.code = errorCode.getCode();
     this.msg = errorCode.getMsg();
   }
+
+  public ErrorResponse(ErrorCode errorCode, String msg) {
+    this.code = errorCode.getCode();
+    this.msg = msg;
+  }
 }

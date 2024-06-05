@@ -25,7 +25,7 @@ public class GlobalExceptionHandler {
     String errorMessage = "Exception occurred: " + e.getMessage();
     discordWebhook.sendErrorMessage(errorMessage);
 
-    return new ResponseEntity<>(new ErrorResponse(e.getErrorCode()), e.getErrorCode().getStatus());
+    return new ResponseEntity<>(new ErrorResponse(e.getErrorCode(), e.getMessage()), e.getErrorCode().getStatus());
   }
 
   @ExceptionHandler(ProductNotFoundException.class)
