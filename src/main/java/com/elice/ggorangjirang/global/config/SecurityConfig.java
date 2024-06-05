@@ -59,27 +59,26 @@ public class SecurityConfig {
                     CorsConfiguration config = new CorsConfiguration();
 
                     config.setAllowedOrigins(List.of(
-                        "http://localhost:3000",
-                        "https://ggorangjirang.duckdns.org/"
+                        "http://localhost:3000"
                     ));
                     config.setAllowedMethods(Collections.singletonList("*"));
                     return config;
                 }));
 
         http
-            .authorizeHttpRequests(authorize -> authorize
-                .requestMatchers("/h2-console/**",
-                    "/swagger-ui/**",
-                    "/swagger-resources/**",
-                    "/api/**",
-                    "/v3/api-docs/**",
-                    "/admin/**",
-                    "/signup",
-                    "/js/**",
-                    "/css/**").permitAll()
-                .anyRequest().authenticated()
-            );
-
+                .authorizeHttpRequests(authorize -> authorize
+                        .requestMatchers("/h2-console/**",
+                                "/swagger-ui/**",
+                                "/swagger-resources/**",
+                                "/api/**",
+                                "/v3/api-docs/**",
+                                "/admin/**",
+                                "/js/**",
+                                "/css/**",
+                                "/actuator/**")
+                        .permitAll()
+                        .anyRequest().authenticated()
+                );
         http
             .formLogin(config -> config.disable())
             .httpBasic(config -> config.disable())
