@@ -14,6 +14,7 @@ import com.elice.ggorangjirang.reviews.exception.ReviewNotFoundException;
 import com.elice.ggorangjirang.reviews.repository.ReviewRepository;
 import com.elice.ggorangjirang.users.entity.Users;
 import com.elice.ggorangjirang.users.repository.UserRepository;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -33,6 +34,7 @@ public class ReviewService {
     private final OrderItemRepository orderItemRepository;
     private final S3Service s3Service;
     private final UserRepository userRepository;
+    private final ObjectMapper objectMapper;
 
     private static final String PRODUCT_NOT_FOUND_MESSAGE = "Product not found with id: ";
     private static final String REVIEW_NOT_FOUND_MESSAGE = "Review not found with id: ";
@@ -88,9 +90,11 @@ public class ReviewService {
     }
 
     @Transactional
-    public ReviewResponseMy addReview(String email, AddReviewRequest request, MultipartFile imageFile) throws IOException {
+    public ReviewResponseMy addReview(String email, String requestJson, MultipartFile imageFile) throws IOException {
         Users user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new IllegalArgumentException("회원을 찾을 수 없습니다."));
+
+        AddReviewRequest request = objectMapper.readValue(requestJson, AddReviewRequest.class);
 
         Product product = productRepository.findById(request.getProductId())
                 .orElseThrow(() -> new ProductNotFoundException(PRODUCT_NOT_FOUND_MESSAGE + request.getProductId()));
@@ -118,12 +122,14 @@ public class ReviewService {
     }
 
     @Transactional
-    public ReviewResponseMy updateReview(String email, Long id, UpdateReviewRequest request, MultipartFile imageFile) throws IOException {
+    public ReviewResponseMy updateReview(String email, Long id, String requestJson, MultipartFile imageFile) throws IOException {
         Users user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new IllegalArgumentException("회원을 찾을 수 없습니다."));
 
         Review review = reviewRepository.findById(id)
                 .orElseThrow(() -> new ReviewNotFoundException(REVIEW_NOT_FOUND_MESSAGE + id));
+
+        UpdateReviewRequest request = objectMapper.readValue(requestJson, UpdateReviewRequest.class);
 
         if (!review.getUser().getId().equals(user.getId())) {
             throw new IllegalStateException("리뷰 수정 권한이 없습니다.");

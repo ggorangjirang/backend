@@ -6,7 +6,6 @@ import com.elice.ggorangjirang.reviews.dto.ReviewResponseMy;
 import com.elice.ggorangjirang.reviews.dto.ReviewResponsePublic;
 import com.elice.ggorangjirang.reviews.dto.UpdateReviewRequest;
 import com.elice.ggorangjirang.reviews.service.ReviewService;
-import com.elice.ggorangjirang.users.entity.Users;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -54,7 +53,7 @@ public class ReviewController {
 
     @PostMapping("/users/review")
     public ResponseEntity<ReviewResponseMy> addReview(
-            @RequestPart("review") AddReviewRequest request,
+            @RequestPart("review") String requestJson,
             @RequestPart(value = "imageFile", required = false) MultipartFile imageFile,
             @RequestHeader("Authorization") String token) throws IOException {
 
@@ -64,7 +63,7 @@ public class ReviewController {
         }
 
         String email = jwtService.extractEmail(token).get();
-        ReviewResponseMy review = reviewService.addReview(email, request, imageFile);
+        ReviewResponseMy review = reviewService.addReview(email, requestJson, imageFile);
         return ResponseEntity.ok(review);
     }
 
@@ -72,7 +71,7 @@ public class ReviewController {
     @PatchMapping("/users/review/{reviewId}")
     public ResponseEntity<ReviewResponseMy> editReview(
             @PathVariable("reviewId") Long id,
-            @RequestPart("review") UpdateReviewRequest request,
+            @RequestPart("review") String requestJson,
             @RequestPart(value = "imageFile", required = false) MultipartFile imageFile,
             @RequestHeader("Authorization") String token) throws IOException {
 
@@ -82,7 +81,7 @@ public class ReviewController {
         }
 
         String email = jwtService.extractEmail(token).get();
-        ReviewResponseMy updatedReview = reviewService.updateReview(email, id, request, imageFile);
+        ReviewResponseMy updatedReview = reviewService.updateReview(email, id, requestJson, imageFile);
         return ResponseEntity.ok(updatedReview);
     }
 
