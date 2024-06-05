@@ -27,8 +27,8 @@ public class UserController {
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody UserLoginDto userLoginDto, HttpServletResponse response) throws Exception {
         try {
-            String accessToken = loginService.login(userLoginDto, response);
-            return ResponseEntity.ok().header("Authorization", "Bearer " + accessToken).body("로그인 성공");
+            loginService.login(userLoginDto, response);
+            return ResponseEntity.ok().body("로그인 성공");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인 실패: " + e.getMessage());
         }
