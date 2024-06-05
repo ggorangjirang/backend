@@ -58,3 +58,9 @@ cloud:
 discord:
   webhook:
     url: ${DISCORD_URL}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "prometheus"
