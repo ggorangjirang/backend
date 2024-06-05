@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.time.LocalDateTime;
@@ -13,10 +14,11 @@ import java.util.List;
 
 @Table(name = "users")
 @Entity
-@Getter
+@Data
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
+@EntityListeners(AuditingEntityListener.class)
 public class Users {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -59,6 +61,7 @@ public class Users {
 //    @OneToOne(mappedBy = "user")
 //    private Cart cart;
 
+    @Builder.Default
     @OneToMany(mappedBy = "user")
     private List<Review> reviews = new ArrayList<>();
 

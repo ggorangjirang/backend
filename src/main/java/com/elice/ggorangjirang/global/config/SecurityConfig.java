@@ -66,18 +66,19 @@ public class SecurityConfig {
                 }));
 
         http
-            .authorizeHttpRequests(authorize -> authorize
-                .requestMatchers("/h2-console/**",
-                    "/swagger-ui/**",
-                    "/swagger-resources/**",
-                    "/api/**",
-                    "/v3/api-docs/**",
-                    "/admin/**",
-                    "/js/**",
-                    "/css/**").permitAll()
-                .anyRequest().authenticated()
-            );
-
+                .authorizeHttpRequests(authorize -> authorize
+                        .requestMatchers("/h2-console/**",
+                                "/swagger-ui/**",
+                                "/swagger-resources/**",
+                                "/api/**",
+                                "/v3/api-docs/**",
+                                "/admin/**",
+                                "/js/**",
+                                "/css/**",
+                                "/actuator/**")
+                        .permitAll()
+                        .anyRequest().authenticated()
+                );
         http
             .formLogin(config -> config.disable())
             .httpBasic(config -> config.disable())
