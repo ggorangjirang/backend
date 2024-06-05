@@ -13,6 +13,7 @@ import com.elice.ggorangjirang.reviews.entity.Review;
 import com.elice.ggorangjirang.reviews.exception.ReviewNotFoundException;
 import com.elice.ggorangjirang.reviews.repository.ReviewRepository;
 import com.elice.ggorangjirang.users.entity.Users;
+import com.elice.ggorangjirang.users.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -22,7 +23,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -32,20 +32,12 @@ public class ReviewService {
     private final ProductRepository productRepository;
     private final OrderItemRepository orderItemRepository;
     private final S3Service s3Service;
+    private final UserRepository userRepository;
 
     private static final String PRODUCT_NOT_FOUND_MESSAGE = "Product not found with id: ";
     private static final String REVIEW_NOT_FOUND_MESSAGE = "Review not found with id: ";
     private static final String HAS_PURCHASED_MESSAGE = "There is no purchase history for this product.";
 
-    public List<Review> getAllReviews() {
-        return reviewRepository.findAll();
-    }
-
-    public Review getReviewById(Long id) {
-        Review review = reviewRepository.findById(id)
-                .orElseThrow(() -> new ReviewNotFoundException(REVIEW_NOT_FOUND_MESSAGE + id));
-        return review;
-    }
 
     // 상품 상세 페이지 review GET 요청에 대한 DTO 맵핑
     private ReviewResponsePublic convertToReviewResponsePublic(Review review) {
@@ -85,14 +77,21 @@ public class ReviewService {
     }
 
     // 특정 유저의 아이디를 기준으로 리뷰 가져오기
-    public Page<ReviewResponseMy> getReviewByUserId(Users user, int page, int size) {
+    public Page<ReviewResponseMy> getReviewByUserEmail(String email, int page, int size) {
+        Users user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("회원을 찾을 수 없습니다."));
+        Long userId = user.getId();
+
         Pageable pageable = PageRequest.of(page, size);
-        Page<Review> reviewPage = reviewRepository.findByUserId(user.getId(), pageable);
+        Page<Review> reviewPage = reviewRepository.findByUserId(userId, pageable);
         return reviewPage.map(this::convertToReviewResponseMy);
     }
 
     @Transactional
-    public ReviewResponseMy addReview(Users user, AddReviewRequest request, MultipartFile imageFile) throws IOException {
+    public ReviewResponseMy addReview(String email, AddReviewRequest request, MultipartFile imageFile) throws IOException {
+        Users user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("회원을 찾을 수 없습니다."));
+
         Product product = productRepository.findById(request.getProductId())
                 .orElseThrow(() -> new ProductNotFoundException(PRODUCT_NOT_FOUND_MESSAGE + request.getProductId()));
 
@@ -119,7 +118,10 @@ public class ReviewService {
     }
 
     @Transactional
-    public ReviewResponseMy updateReview(Users user, Long id, UpdateReviewRequest request, MultipartFile imageFile) throws IOException {
+    public ReviewResponseMy updateReview(String email, Long id, UpdateReviewRequest request, MultipartFile imageFile) throws IOException {
+        Users user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("회원을 찾을 수 없습니다."));
+
         Review review = reviewRepository.findById(id)
                 .orElseThrow(() -> new ReviewNotFoundException(REVIEW_NOT_FOUND_MESSAGE + id));
 
@@ -147,7 +149,10 @@ public class ReviewService {
     }
 
     @Transactional
-    public void deleteReview(Users user, Long id) {
+    public void deleteReview(String email, Long id) {
+        Users user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("회원을 찾을 수 없습니다."));
+
         Review review = reviewRepository.findById(id)
                 .orElseThrow(() -> new ReviewNotFoundException(REVIEW_NOT_FOUND_MESSAGE + id));
 
