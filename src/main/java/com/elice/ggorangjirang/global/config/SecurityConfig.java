@@ -48,19 +48,6 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-//        http
-//            .cors((cors) -> cors
-//                .configurationSource(request -> {
-
-//                    CorsConfiguration config = new CorsConfiguration();
-
-//                    config.setAllowedOrigins(List.of(
-//                            "http://localhost:3000",
-//                            "https://ggorangjirang.duckdns.org"
-//                    ));
-//                    config.setAllowedMethods(Collections.singletonList("*"));
-//                    return config;
-//                }));
 
         http
             .cors(withDefaults())
@@ -111,8 +98,6 @@ public class SecurityConfig {
         configuration.setAllowedHeaders(List.of("authorization", "content-type", "x-auth-token"));
         configuration.setExposedHeaders(List.of("x-auth-token"));
         configuration.setAllowCredentials(true); // 쿠키와 인증 정보를 포함한 요청이 가능하도록 설정
-
-        System.out.println("CORS 설정이 적용되었습니다: " + configuration);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
