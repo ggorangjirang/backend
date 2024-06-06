@@ -8,6 +8,8 @@ import com.elice.ggorangjirang.carts.exception.CartNotFoundException;
 import com.elice.ggorangjirang.carts.repository.CartItemRepository;
 import com.elice.ggorangjirang.carts.repository.CartRepository;
 import com.elice.ggorangjirang.users.entity.Users;
+import com.elice.ggorangjirang.users.repository.UserRepository;
+import com.elice.ggorangjirang.users.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -20,20 +22,25 @@ import org.springframework.transaction.annotation.Transactional;
 public class CartService {
     private final CartRepository cartRepository;
     private final CartItemRepository cartItemRepository;
+    private final UserRepository userRepository;
 
     public void createCartForUser(Users user) {
-        if (cartRepository.findByUserId(user.getId()).isEmpty()) {
+        if (cartRepository.findByUserId(user.getId()) == null || cartRepository.findByUserId(user.getId()).isEmpty()) {
             Cart cart = Cart.builder()
-                .user(user)
-                .build();
+                    .user(user)
+                    .build();
             cartRepository.save(cart);
         }
     }
 
     @Transactional(readOnly = true)
-    public CartDto getCartItems(Long userId, Pageable pageable) {
-        Cart cart = cartRepository.findByUserId(userId)
-            .orElseThrow(() -> new CartNotFoundException("장바구니가 존재하지 않습니다."));
+    public CartDto getCartItems(String email, Pageable pageable) {
+        Users user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("사용자 이메일을 찾을 수 없습니다."));
+
+        Cart cart = cartRepository.findByUserId(user.getId())
+                .orElseThrow(() -> new CartNotFoundException("장바구니가 존재하지 않습니다."));
+
         Page<CartItem> cartItemsPage = cartItemRepository.findByCartId(cart.getId(), pageable);
         Page<CartItemResponse> cartItemResponsesPage = cartItemsPage.map(CartItemResponse::toDto);
         return CartDto.toDto(cart, cartItemResponsesPage);
