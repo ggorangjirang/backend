@@ -165,6 +165,11 @@ public class ReviewService {
         if(!review.getUser().getId().equals(user.getId())) {
             throw new IllegalStateException("리뷰 삭제 권한이 없습니다.");
         }
+
+        if(review.getImageUrl() != null && !review.getImageUrl().isEmpty()) {
+            s3Service.deleteFile(review.getImageUrl());
+        }
+
         reviewRepository.delete(review);
     }
 }
