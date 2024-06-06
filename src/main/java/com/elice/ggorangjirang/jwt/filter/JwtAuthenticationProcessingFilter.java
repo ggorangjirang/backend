@@ -28,6 +28,7 @@ import java.io.IOException;
 public class JwtAuthenticationProcessingFilter extends OncePerRequestFilter {
 
     private static final String NO_CHECK_URL = "/login"; // "/login"으로 들어오는 요청은 Filter 작동x
+    private static final String NO_CHECK_ACTUATOR = "/actuator"; // "/actuator"으로 들어오는 요청은 Filter 작동x
 
     private final JwtService jwtService;
     private final UserRepository userRepository;
@@ -38,7 +39,7 @@ public class JwtAuthenticationProcessingFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
         throws ServletException, IOException {
         // "/login" 요청이 들어온 경우 다음 필터 진행
-        if (request.getRequestURI().equals(NO_CHECK_URL)) {
+        if (request.getRequestURI().equals(NO_CHECK_URL) || request.getRequestURI().startsWith(NO_CHECK_ACTUATOR)) {
             filterChain.doFilter(request, response);
             return;
         }
