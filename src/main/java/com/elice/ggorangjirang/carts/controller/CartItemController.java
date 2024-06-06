@@ -46,13 +46,24 @@ public class CartItemController {
     }
 
     @GetMapping
-    public ResponseEntity<Page<CartItemResponse>> getCartItems(@RequestParam Long cartId,
-        @PageableDefault(size = 16) Pageable pageable) {
+    public ResponseEntity<Page<CartItemResponse>> getCartItems(@RequestHeader("Authorization") String token,
+                                                               @PageableDefault(size = 16) Pageable pageable) {
+
+        Optional<String> emailOptional = jwtService.extractEmail(token);
+        if (emailOptional.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        String email = emailOptional.get();
+        Users user = userService.findByUsername(email);
+        Long cartId = user.getCart().getId();
+
         Page<CartItemResponse> cartItems = cartItemService.getCartItemsByCartId(cartId, pageable);
         return ResponseEntity.ok(cartItems);
     }
 
-    @PutMapping("/{id}")
+
+    @PatchMapping("/{id}")
     public ResponseEntity<CartItemResponse> updateCartItem(@PathVariable Long id,
                                                            @RequestParam(name = "quantity") int quantity,
                                                            @RequestHeader("Authorization") String token) {
@@ -64,6 +75,7 @@ public class CartItemController {
         CartItemResponse cartItemDto = cartItemService.updateCartItem(id, quantity);
         return ResponseEntity.ok(cartItemDto);
     }
+
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteCartItem(@PathVariable Long id,
