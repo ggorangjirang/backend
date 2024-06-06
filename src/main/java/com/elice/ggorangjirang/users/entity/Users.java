@@ -1,5 +1,6 @@
 package com.elice.ggorangjirang.users.entity;
 
+import com.elice.ggorangjirang.carts.entity.Cart;
 import com.elice.ggorangjirang.reviews.entity.Review;
 import jakarta.persistence.*;
 import lombok.*;
@@ -58,8 +59,8 @@ public class Users {
 
     private String refreshToken;
 
-//    @OneToOne(mappedBy = "user")
-//    private Cart cart;
+    @OneToOne(mappedBy = "user")
+    private Cart cart;
 
     @Builder.Default
     @OneToMany(mappedBy = "user")

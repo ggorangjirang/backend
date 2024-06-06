@@ -8,7 +8,6 @@ import com.elice.ggorangjirang.carts.exception.CartNotFoundException;
 import com.elice.ggorangjirang.carts.repository.CartItemRepository;
 import com.elice.ggorangjirang.carts.repository.CartRepository;
 import com.elice.ggorangjirang.users.entity.Users;
-import com.elice.ggorangjirang.users.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -21,7 +20,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class CartService {
     private final CartRepository cartRepository;
     private final CartItemRepository cartItemRepository;
-    private final UserService userService;
 
     public void createCartForUser(Users user) {
         if (cartRepository.findByUserId(user.getId()).isEmpty()) {
@@ -34,8 +32,7 @@ public class CartService {
 
     @Transactional(readOnly = true)
     public CartDto getCartItems(Long userId, Pageable pageable) {
-        Users user = userService.findById(userId);
-        Cart cart = cartRepository.findByUserId(user.getId())
+        Cart cart = cartRepository.findByUserId(userId)
             .orElseThrow(() -> new CartNotFoundException("장바구니가 존재하지 않습니다."));
         Page<CartItem> cartItemsPage = cartItemRepository.findByCartId(cart.getId(), pageable);
         Page<CartItemResponse> cartItemResponsesPage = cartItemsPage.map(CartItemResponse::toDto);
