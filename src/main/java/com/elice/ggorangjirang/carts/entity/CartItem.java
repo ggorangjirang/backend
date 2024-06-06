@@ -4,6 +4,7 @@ import com.elice.ggorangjirang.products.entity.Product;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+import java.time.LocalDateTime;
 
 @Builder
 @Data
@@ -28,4 +29,12 @@ public class CartItem {
 
     @Column(name = "quantity", nullable = false)
     private int quantity;
+
+    @Column(name = "created_at", nullable = false, updatable = false)
+    private LocalDateTime createdAt;
+
+    @PrePersist
+    protected void onCreate() {
+        createdAt = LocalDateTime.now();
+    }
 }
