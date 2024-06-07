@@ -3,7 +3,7 @@ package com.elice.ggorangjirang.deliveries.controller;
 import com.elice.ggorangjirang.deliveries.dto.DeliveryDto;
 import com.elice.ggorangjirang.deliveries.entity.Deliveries;
 import com.elice.ggorangjirang.deliveries.service.DeliveryService;
-import com.elice.ggorangjirang.websocket.DeliveryStatusDto;
+import com.elice.ggorangjirang.deliveries.dto.DeliveryStatusDto;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

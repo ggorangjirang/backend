@@ -1,4 +1,4 @@
-package com.elice.ggorangjirang.websocket;
+package com.elice.ggorangjirang.deliveries.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
