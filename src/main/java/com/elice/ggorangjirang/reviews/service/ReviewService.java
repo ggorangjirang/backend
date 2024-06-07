@@ -106,7 +106,7 @@ public class ReviewService {
 
         boolean isReviewExisting = reviewRepository.existsByProduct_IdAndUser_Id(user.getId(), request.getProductId());
         if (isReviewExisting) {
-            throw new IllegalStateException("해당 상품에 대한 리뷰는 이미 작성되었습니다.");
+            throw new IllegalStateException("하나의 상품에 하나의 리뷰만 작성하실 수 있습니다.");
         }
 
         String imageUrl = null;
