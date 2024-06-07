@@ -25,8 +25,6 @@ import org.springframework.security.web.authentication.logout.LogoutFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-
-import java.util.Collections;
 import java.util.List;
 import static org.springframework.security.config.Customizer.withDefaults;
 
@@ -52,7 +50,7 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
         http
-            .cors().and()
+            .cors(withDefaults())
             .authorizeHttpRequests(authorize -> authorize
                     .requestMatchers("/h2-console/**",
                                 "/swagger-ui/**",
@@ -93,9 +91,13 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource configurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.addAllowedOrigin(""); // 모든 오리진 허용 (실제 운영 환경에서는 적절한 오리진을 지정해야 함)
-        configuration.addAllowedHeader(""); // 모든 헤더 허용
-        configuration.addAllowedMethod("*"); // 모든 HTTP 메소드 허용
+        configuration.setAllowedOrigins(List.of(
+                "http://localhost:3000",
+                "https://ggorangjirang.duckdns.org"
+        ));
+        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        configuration.setAllowedHeaders(List.of("authorization", "content-type", "x-auth-token"));
+        configuration.setExposedHeaders(List.of("x-auth-token"));
         configuration.setAllowCredentials(true); // 쿠키와 인증 정보를 포함한 요청이 가능하도록 설정
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
