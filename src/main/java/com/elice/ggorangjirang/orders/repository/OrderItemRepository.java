@@ -11,5 +11,5 @@ public interface OrderItemRepository extends JpaRepository<OrderItem, Long> {
   @Query("SELECT COUNT(oi) > 0 FROM OrderItem oi WHERE oi.order.users.id = :userId AND oi.product.id = :productId")
   boolean existsByUserIdAndProductId(@Param("userId") Long userId, @Param("productId") Long productId);
 
-  List<OrderItem> findByOrder_Users_IdAndOrder_Deliveries_Status(Long userId, String status);
+  List<OrderItem> findByOrder_Users_EmailAndOrder_Deliveries_Status(String email, String status);
 }

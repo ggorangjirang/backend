@@ -1,6 +1,8 @@
 package com.elice.ggorangjirang.reviews.controller;
 
 import com.elice.ggorangjirang.jwt.service.JwtService;
+import com.elice.ggorangjirang.orders.dto.ReviewableOrderItemResponse;
+import com.elice.ggorangjirang.orders.service.OrderItemService;
 import com.elice.ggorangjirang.reviews.dto.ReviewResponseMy;
 import com.elice.ggorangjirang.reviews.dto.ReviewResponsePublic;
 import com.elice.ggorangjirang.reviews.service.ReviewService;
@@ -12,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -21,6 +24,7 @@ public class ReviewController {
 
     private final ReviewService reviewService;
     private final JwtService jwtService;
+    private final OrderItemService orderItemService;
 
     @GetMapping("/products/{productId}/reviews")
     public ResponseEntity<Page<ReviewResponsePublic>> getReviewsByProduct(
@@ -30,6 +34,20 @@ public class ReviewController {
 
         Page<ReviewResponsePublic> reviews = reviewService.getReviewsByProduct(productId, page, size);
         return ResponseEntity.ok(reviews);
+    }
+
+    @GetMapping("/users/reviewable-items")
+    public ResponseEntity<List<ReviewableOrderItemResponse>> getReviewableOrderItems(
+            @RequestHeader("Authorization") String token) {
+
+        Optional<String> emailOptional = jwtService.extractEmail(token);
+        if (emailOptional.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        String email = emailOptional.get();
+        List<ReviewableOrderItemResponse> reviewableItems = orderItemService.getReviewableOrderItems(email);
+        return ResponseEntity.ok(reviewableItems);
     }
 
     @GetMapping("/users/my-reviews")

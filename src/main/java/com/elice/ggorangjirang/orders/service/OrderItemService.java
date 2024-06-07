@@ -7,6 +7,8 @@ import com.elice.ggorangjirang.orders.repository.OrderItemRepository;
 import com.elice.ggorangjirang.products.entity.Product;
 import com.elice.ggorangjirang.products.repository.ProductRepository;
 import com.elice.ggorangjirang.reviews.repository.ReviewRepository;
+import com.elice.ggorangjirang.users.entity.Users;
+import com.elice.ggorangjirang.users.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -19,6 +21,7 @@ public class OrderItemService {
   private final OrderItemRepository orderItemRepository;
   private final ProductRepository productRepository;
   private final ReviewRepository reviewRepository;
+  private final UserRepository userRepository;
 
 
   // 주문상품 추가
@@ -38,11 +41,15 @@ public class OrderItemService {
     orderItemRepository.deleteById(id);
   }
 
-  public List<ReviewableOrderItemResponse> getReviewableOrderItems(Long userId) {
-    List<OrderItem> deliveredOrderItems = orderItemRepository.findByOrder_Users_IdAndOrder_Deliveries_Status(userId, "DELIVERY_COMPLETE");
+  public List<ReviewableOrderItemResponse> getReviewableOrderItems(String email) {
+    List<OrderItem> deliveredOrderItems = orderItemRepository.findByOrder_Users_EmailAndOrder_Deliveries_Status(email, "DELIVERY_COMPLETE");
+    Users user = userRepository.findByEmail(email)
+            .orElseThrow(() -> new IllegalArgumentException("회원을 찾을 수 없습니다."));
+
+    Long userId = user.getId();
 
     return deliveredOrderItems.stream()
-            .filter(orderItem -> !reviewRepository.existsByProduct_IdAndUser_Id(orderItem.getProduct().getId(), userId))
+            .filter(orderItem -> !reviewRepository.existsByProduct_IdAndUser_Email(orderItem.getProduct().getId(), email))
             .map(orderItem -> new ReviewableOrderItemResponse(
                     orderItem.getProduct().getId(),
                     userId,
