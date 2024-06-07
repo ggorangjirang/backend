@@ -17,5 +17,13 @@ public class Constant {
   public static final String INVALID_PRODUCT_DATA_CODE = "PROD1";
   public static final String INVALID_PRODUCT_DATA_MSG = "가격 또는 재고가 음수로 입력되었습니다.";
 
+  // Product Specific
+  public static final String PRODUCT_NOT_FOUND_CODE = "EP1";
+  public static final String PRODUCT_NOT_FOUND_MSG = "Product not found";
+  public static final String PRODUCT_OUT_OF_STOCK_CODE = "EP2";
+  public static final String PRODUCT_OUT_OF_STOCK_MSG = "Product out of stock";
+
+  public static final String DATA_INTEGRITY_VIOLATION_CODE = "D1";
+  public static final String DATA_INTEGRITY_VIOLATION = "Data Integrity Violation";
   private Constant() {}
 }
