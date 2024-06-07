@@ -9,10 +9,10 @@ spring:
           kakao:
             client-id: ${CLIENT_ID}
             client-secret: ${CLIENT_SECRET}
-            redirect-uri: https://ggorangjirang.duckdns.org/api/login/oauth2/code/kakao
+            redirect-uri: http://localhost:8080/api/login/oauth2/code/kakao
             client-authentication-method: POST
             authorization-grant-type: authorization_code
-            scope: name, email
+            scope: profile_nickname
             client-name: Kakao
         provider:
           kakao:
