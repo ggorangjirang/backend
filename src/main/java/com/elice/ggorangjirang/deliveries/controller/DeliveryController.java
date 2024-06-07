@@ -1,14 +1,12 @@
 package com.elice.ggorangjirang.deliveries.controller;
 
-import java.util.List;
-import org.springframework.http.ResponseEntity;
-import org.springframework.ui.Model;
 import com.elice.ggorangjirang.deliveries.dto.DeliveryDto;
-import com.elice.ggorangjirang.deliveries.dto.DeliveryStatusDto;
 import com.elice.ggorangjirang.deliveries.entity.Deliveries;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Controller;
 import com.elice.ggorangjirang.deliveries.service.DeliveryService;
+import com.elice.ggorangjirang.deliveries.dto.DeliveryStatusDto;
+import java.util.List;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -24,13 +22,13 @@ public class DeliveryController {
 
 
 
-  @PostMapping("/deliveries")
+  @PostMapping("/api/deliveries")
   public ResponseEntity<Long> addDelivery(@RequestBody DeliveryDto deliveryDto) {
     Long deliveryId = deliveryService.addDelivery(deliveryDto);
     return ResponseEntity.ok(deliveryId);
   }
 
-  @GetMapping("/deliveries/{id}")
+  @GetMapping("/api/deliveries/{id}")
   public ResponseEntity<Deliveries> viewDelivery(@PathVariable("id")  long id) {
     Deliveries delivery = deliveryService.getDeliveryById(id);
     return ResponseEntity.ok(delivery);
@@ -48,32 +46,4 @@ public class DeliveryController {
     return ResponseEntity.ok("배송 상태 변경.");
   }
 
-  /* @PostMapping("/deliveries")
-  public String addDelivery(@RequestBody DeliveryDto deliveryDto) {
-    deliveryService.addDelivery(deliveryDto);
-    return "/deliveries";
-  }
-
- @GetMapping("/deliveries/{id}")
-  public String viewDelivery(@PathVariable long id, Model model) {
-    Deliveries delivery = deliveryService.getDeliveryById(id);
-    model.addAttribute("delivery", delivery);
-    return "deliveries";
-  }
-
-  // 특정 주문에 대한 모든 배송 정보 조회
-  @GetMapping("/admin/orders/{orderId}/deliveries")
-  public String viewDeliveryByOrderId(@PathVariable long orderId, Model model) {
-    List<Deliveries> deliveriesList = deliveryService.getDeliveriesByOrderId(orderId);
-    model.addAttribute("deliveries", deliveriesList);
-    return "deliveries";
-  }
-
-  // 상태 업데이트
-  @PatchMapping("/admin/deliveries/{id}/status")
-  public String updateDeliveriesStatus(@PathVariable long id, @RequestBody DeliveryStatusDto statusDto) {
-    deliveryService.updateDeliveryStatus(id, statusDto.getStatus());
-    return "redirect:/admin/deliveries";
-  }
-*/
 }

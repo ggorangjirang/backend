@@ -10,9 +10,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import jakarta.validation.constraints.NotNull;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -27,6 +25,8 @@ public class Deliveries {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
+  private LocalDateTime startDate;
+
   private LocalDateTime arrivalDate;
 
   @Column(nullable = false)
@@ -40,7 +40,7 @@ public class Deliveries {
   private String name;
 
   @NotNull(message = "전화번호는 필수입니다.")
-  private int phoneNumber;
+  private String phoneNumber;
 
   private String request;
 
@@ -61,7 +61,7 @@ public class Deliveries {
 //  }
 
   public static Deliveries createDelivery(String zipcode, String streetAddress, String detailAddress, String status, String request,
-      LocalDateTime arrivalDate, Integer phoneNumber, String name) {
+      LocalDateTime arrivalDate, String phoneNumber, String name) {
     Deliveries deliveries = new Deliveries();
     deliveries.setZipcode(zipcode);
     deliveries.setStreetAddress(streetAddress);

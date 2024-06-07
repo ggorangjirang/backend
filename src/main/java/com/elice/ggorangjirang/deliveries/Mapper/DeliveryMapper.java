@@ -2,8 +2,6 @@ package com.elice.ggorangjirang.deliveries.Mapper;
 
 import com.elice.ggorangjirang.deliveries.dto.DeliveryDto;
 import com.elice.ggorangjirang.deliveries.entity.Deliveries;
-import com.elice.ggorangjirang.orders.entity.Order;
-import java.time.LocalDate;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -24,5 +22,18 @@ public class DeliveryMapper {
     return delivery;
   }
 
+
+  public DeliveryDto toDto(Deliveries delivery) {
+    DeliveryDto deliveryDto = new DeliveryDto();
+    deliveryDto.setName(delivery.getName());
+    deliveryDto.setPhoneNumber(delivery.getPhoneNumber());
+    deliveryDto.setZipcode(delivery.getZipcode());
+    deliveryDto.setStreetAddress(delivery.getStreetAddress());
+    deliveryDto.setDetailAddress(delivery.getDetailAddress());
+    deliveryDto.setRequest(delivery.getRequest());
+    // Set other fields as needed
+
+    return deliveryDto;
+  }
 
 }

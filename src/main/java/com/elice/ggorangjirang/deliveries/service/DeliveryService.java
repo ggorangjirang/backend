@@ -4,7 +4,6 @@ import com.elice.ggorangjirang.deliveries.Mapper.DeliveryMapper;
 import com.elice.ggorangjirang.deliveries.dto.DeliveryDto;
 import com.elice.ggorangjirang.deliveries.entity.Deliveries;
 import com.elice.ggorangjirang.deliveries.repository.DeliveryRepository;
-import com.elice.ggorangjirang.orders.entity.Order;
 import com.elice.ggorangjirang.orders.repository.OrderRepository;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
@@ -38,7 +37,7 @@ public class DeliveryService {
   public Deliveries updateDeliveryStatus(long id, String status) {
     Deliveries delivery = getDeliveryById(id);
     delivery.setStatus(status);
-    if ("DELIVERY_COMPLETE".equalsIgnoreCase(status)) {
+    if ("DELIVERY_COMPLETE".equalsIgnoreCase(status) || "DELIVERING".equalsIgnoreCase(status)) {
       LocalDateTime now = LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS);
       delivery.setArrivalDate(now);
     }
