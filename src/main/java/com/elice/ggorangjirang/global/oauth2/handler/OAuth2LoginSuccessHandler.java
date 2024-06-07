@@ -43,7 +43,8 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
                 response.sendRedirect("/main");
             }
         } catch (Exception e) {
-            throw e;
+            log.error("OAuth2 Login 성공 후 예외 발생", e);
+            throw new ServletException("OAuth2 Login 성공 후 예외 발생", e);
         }
     }
 
