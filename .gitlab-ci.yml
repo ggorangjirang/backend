@@ -11,11 +11,7 @@ stages:
 compile:
   stage: compile
   before_script:
-    - sudo chmod -R 755 /home/ubuntu/.sdkman/candidates/gradle/current/bin
-    - ls -la /home/ubuntu/.sdkman/candidates/gradle/current/bin
     - export PATH="/home/ubuntu/.sdkman/candidates/gradle/current/bin:$PATH"
-    - which gradle
-    - gradle --version
   script:
     - gradle build --exclude-task test
   tags:
