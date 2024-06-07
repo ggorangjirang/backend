@@ -1,7 +1,5 @@
 package com.elice.ggorangjirang.deliveries.dto;
 
-import jakarta.persistence.Column;
-import java.time.LocalDate;
 import lombok.Data;
 
 @Data
@@ -9,7 +7,7 @@ public class DeliveryDto {
 
   private String name;
 
-  private int phoneNumber;
+  private String phoneNumber;
 
   private String zipcode;
 
