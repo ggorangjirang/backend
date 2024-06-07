@@ -2,8 +2,10 @@ package com.elice.ggorangjirang.global.exception;
 
 import com.elice.ggorangjirang.discord.DiscordWebhook;
 import com.elice.ggorangjirang.global.exception.hierachy.CustomBusinessException;
+import com.elice.ggorangjirang.global.exception.hierachy.common.ProductNotFoundException;
+import com.elice.ggorangjirang.global.exception.hierachy.common.ProductOutOfStockException;
 import com.elice.ggorangjirang.products.exception.InvalidProductDataException;
-import com.elice.ggorangjirang.products.exception.ProductNotFoundException;
+
 import com.elice.ggorangjirang.products.exception.SubcategoryNotFoundException;
 import com.elice.ggorangjirang.reviews.exception.ReviewNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -21,10 +23,14 @@ public class GlobalExceptionHandler {
 
   @ExceptionHandler({CustomBusinessException.class})
   public ResponseEntity<ErrorResponse> handle(CustomBusinessException e) {
-    String errorMessage = "Exception occurred: " + e.getMessage();
-    discordWebhook.sendErrorMessage(errorMessage);
+    String errorMessage = getErrorMessage(e);
+    discordWebhook.sendWebhookMessage(errorMessage);
 
     return new ResponseEntity<>(new ErrorResponse(e.getErrorCode(), e.getMessage()), e.getErrorCode().getStatus());
+  }
+
+  private String getErrorMessage(CustomBusinessException e) {
+    return e.getErrorCode().getMsg() + ": " + e.getErrorCode();
   }
 
   @ExceptionHandler(ProductNotFoundException.class)

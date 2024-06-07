@@ -19,7 +19,7 @@ public class DiscordWebhook {
   private static final String CONTENT_TYPE_JSON = "application/json";
   private static final String JSON_PAYLOAD_TEMPLATE = "{\"content\": \"%s\"}";
 
-  private void sendWebhookMessage(String message) {
+  public void sendWebhookMessage(String message) {
     if (webhookUrl == null || webhookUrl.isEmpty()) {
       System.err.println("Webhook URL is not configured.");
       return;
