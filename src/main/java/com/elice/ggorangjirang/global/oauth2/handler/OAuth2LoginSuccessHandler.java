@@ -35,11 +35,12 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
             if (oAuth2User.getRole() == Role.GUEST) {
                 String accessToken = jwtService.createAccessToken(oAuth2User.getEmail());
                 response.addHeader(jwtService.getAccessHeader(), "Bearer " + accessToken);
-                // response.sendRedirect("oauth2/signup"); // 회원가입 성공 후 추가 정보를 받을지 바로 로그인 성공 띄울지 고민중
+
 
                 jwtService.sendAccessAndRefreshToken(response, accessToken, null);
             } else if (oAuth2User.getRole() == Role.USER) {
                 loginSuccess(response, oAuth2User); // 로그인에 성공한 경우 access, refresh 토큰 생성
+                response.sendRedirect("/main");
             }
         } catch (Exception e) {
             throw e;

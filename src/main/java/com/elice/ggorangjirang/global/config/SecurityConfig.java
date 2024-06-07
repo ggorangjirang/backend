@@ -1,5 +1,4 @@
 package com.elice.ggorangjirang.global.config;
-
 import com.elice.ggorangjirang.global.login.filter.CustomUsernamePasswordAuthenticationFilter;
 import com.elice.ggorangjirang.global.login.handler.LoginFailHandler;
 import com.elice.ggorangjirang.global.login.handler.LoginSuccessHandler;
@@ -12,25 +11,22 @@ import com.elice.ggorangjirang.jwt.service.JwtService;
 import com.elice.ggorangjirang.users.repository.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Lazy;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.logout.LogoutFilter;
 import org.springframework.web.cors.CorsConfiguration;
-import java.util.Arrays;
-import java.util.Collections;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import java.util.List;
+import static org.springframework.security.config.Customizer.withDefaults;
 
 // 인증은 CustomUsernamePasswordAuthenticationFilter에서 authenticate()로 인증된 사용자로 처리
 // JwtAuthenticationProcessingFilter는 AccessToken, RefreshToken 재발급
@@ -52,33 +48,22 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http
-            .cors((cors) -> cors
-                .configurationSource(request -> {
-
-                    CorsConfiguration config = new CorsConfiguration();
-
-                    config.setAllowedOrigins(List.of(
-                            "http://localhost:3000",
-                            "https://ggorangjirang.duckdns.org"
-                    ));
-                    config.setAllowedMethods(Collections.singletonList("*"));
-                    return config;
-                }));
 
         http
-                .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/h2-console/**",
+            .cors(withDefaults())
+            .authorizeHttpRequests(authorize -> authorize
+                    .requestMatchers("/h2-console/**",
                                 "/swagger-ui/**",
                                 "/swagger-resources/**",
                                 "/api/**",
+                                "/api/login/oauth2/**",
                                 "/v3/api-docs/**",
                                 "/admin/**",
                                 "/js/**",
                                 "/css/**",
                                 "/actuator/**")
-                        .permitAll()
-                        .anyRequest().authenticated()
+                    .permitAll()
+                    .anyRequest().authenticated()
                 );
         http
             .formLogin(config -> config.disable())
@@ -100,6 +85,24 @@ public class SecurityConfig {
             .addFilterBefore(jwtAuthenticationProcessingFilter(), CustomUsernamePasswordAuthenticationFilter.class);
 
         return http.build();
+    }
+
+    // cors() 설정을 별도의 bean으로 관리
+    @Bean
+    public CorsConfigurationSource configurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowedOrigins(List.of(
+                "http://localhost:3000",
+                "https://ggorangjirang.duckdns.org"
+        ));
+        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        configuration.setAllowedHeaders(List.of("authorization", "content-type", "x-auth-token"));
+        configuration.setExposedHeaders(List.of("x-auth-token"));
+        configuration.setAllowCredentials(true); // 쿠키와 인증 정보를 포함한 요청이 가능하도록 설정
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
     }
 
     @Bean
