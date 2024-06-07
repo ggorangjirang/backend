@@ -118,11 +118,12 @@ CREATE TABLE order_item (
 
 CREATE TABLE deliveries (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    arrival_date DATE NOT NULL,
+    start_date DATETIME,
+    arrival_date DATETIME,
     status VARCHAR(255) NOT NULL,
     order_id BIGINT,
     name VARCHAR(255) NOT NULL,
-    phone_number INT NOT NULL,
+    phone_number VARCHAR(255) NOT NULL,
     request VARCHAR(255),
     zipcode VARCHAR(255) NOT NULL,
     street_address VARCHAR(255) NOT NULL,
