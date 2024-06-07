@@ -15,7 +15,7 @@ compile:
   script:
     - gradle build --exclude-task test
   tags:
-    - jiny
+    - juny
   rules:
     - if: $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "main"
     - if: $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == $CI_DEFAULT_BRANCH
@@ -28,7 +28,7 @@ test:
     - cat $ENV_YML > src/main/resources/env.yml
     - gradle build test
   tags:
-    - jiny
+    - juny
   rules:
     - if: $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "main"
     - if: $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == $CI_DEFAULT_BRANCH
@@ -48,7 +48,7 @@ build:
     - docker build -t $IMAGE_NAME:$IMAGE_TAG .
     - docker push $IMAGE_NAME:$IMAGE_TAG
   tags:
-    - jiny
+    - juny
   rules:
     - if: $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "main"
     - if: $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "dev"
@@ -64,7 +64,7 @@ deploy:
   script:
     - ssh -i $SSH_KEY elice@34.64.229.17 "echo $DOCKER_REGISTRY_PASS | docker login --username $DOCKER_REGISTRY_USER --password-stdin && docker rm app -f || true && docker pull $IMAGE_NAME:$IMAGE_TAG && docker run -d -p 8080:8080 --name app --network elice $IMAGE_NAME:$IMAGE_TAG"
   tags:
-    - jiny
+    - juny
   rules:
     - if: $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "main"
     - if: $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "dev"
