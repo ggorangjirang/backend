@@ -104,6 +104,11 @@ public class ReviewService {
             throw new IllegalStateException(HAS_PURCHASED_MESSAGE);
         }
 
+        boolean isReviewExisting = reviewRepository.existsByProduct_IdAndUser_Id(user.getId(), request.getProductId());
+        if (isReviewExisting) {
+            throw new IllegalStateException("해당 상품에 대한 리뷰는 이미 작성되었습니다.");
+        }
+
         String imageUrl = null;
         if(imageFile != null && !imageFile.isEmpty()) {
             imageUrl = s3Service.uploadReviewImage(imageFile);
