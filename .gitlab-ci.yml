@@ -43,7 +43,6 @@ build:
     DOCKER_TLS_CERTDIR: "/certs"
   before_script:
     - cat $ENV_YML > src/main/resources/env.yml
-    - echo src/main/resources/env.yml
     - echo $DOCKER_REGISTRY_PASS | docker login --username $DOCKER_REGISTRY_USER --password-stdin
   script:
     - docker build -t $IMAGE_NAME:$IMAGE_TAG .
@@ -71,4 +70,3 @@ deploy:
     - if: $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "dev"
       when: manual
       allow_failure: true
-
