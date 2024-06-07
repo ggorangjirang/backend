@@ -3,6 +3,7 @@ package com.elice.ggorangjirang.carts.entity;
 import com.elice.ggorangjirang.products.entity.Product;
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import java.time.LocalDateTime;
 
@@ -30,11 +31,7 @@ public class CartItem {
     @Column(name = "quantity", nullable = false)
     private int quantity;
 
+    @CreatedDate
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
-
-    @PrePersist
-    protected void onCreate() {
-        createdAt = LocalDateTime.now();
-    }
 }
