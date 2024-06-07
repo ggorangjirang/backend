@@ -83,7 +83,3 @@ management:
       enabled: true
     metrics:
       enabled: true
-
-logging:
-  level:
-    org.springframework.web.cors: DEBUG
