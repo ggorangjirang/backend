@@ -364,48 +364,48 @@ VALUES ('고양이 사료 추가10', 2, 2, 25600, 40, '2024-12-31', 1, 180, fals
 
 
 -- 주소
-INSERT INTO deliveries (zipcode, street_address, detail_address, status, request, arrival_date, phone_number, name)
-VALUE('12345', '123 test St', 'May 101', 'Pending', 'Testing~', '2024-06-01', 1234567890, 'Test');
-
-INSERT INTO deliveries (zipcode, street_address, detail_address, status, request, arrival_date, phone_number, name)
-VALUE('12345', '123 test St', 'May 102', 'Pending', 'Testing~', '2024-06-01', 1234567890, 'Test2');
-
-INSERT INTO deliveries (zipcode, street_address, detail_address, status, request, arrival_date, phone_number, name)
-    VALUE('12345', '123 test St', 'May 102', 'Pending', 'Testing~', '2024-06-01', 1234567890, 'Test3');
+--INSERT INTO deliveries (zipcode, street_address, detail_address, status, request, arrival_date, phone_number, name)
+--VALUE('12345', '123 test St', 'May 101', 'Pending', 'Testing~', '2024-06-01', 1234567890, 'Test');
+--
+--INSERT INTO deliveries (zipcode, street_address, detail_address, status, request, arrival_date, phone_number, name)
+--VALUE('12345', '123 test St', 'May 102', 'Pending', 'Testing~', '2024-06-01', 1234567890, 'Test2');
+--
+--INSERT INTO deliveries (zipcode, street_address, detail_address, status, request, arrival_date, phone_number, name)
+--VALUE('12345', '123 test St', 'May 102', 'Pending', 'Testing~', '2024-06-01', 1234567890, 'Test3');
 
 
 -- 유저
-INSERT INTO users (name, password, email) VALUES ('test','1234','test@test.com');
+--INSERT INTO users (name, password, email) VALUES ('test','1234','test@test.com');
 
 
 -- 주문
-INSERT INTO orders (deliveries_id, order_date,  order_status, order_number,user_id, total_all_price)
-VALUES (1, '2024-05-01T10:00:00','ORDER','adf123', 1, 3000);
-
-INSERT INTO orders (deliveries_id, order_date,  order_status,order_number, user_id, total_all_price)
-VALUES (2, '2024-05-01T10:00:00','ORDER','bef234', 1, 4000);
+--INSERT INTO orders (deliveries_id, order_date,  order_status, order_number,user_id, total_all_price)
+--VALUES (1, '2024-05-01T10:00:00','ORDER','adf123', 1, 3000);
+--
+--INSERT INTO orders (deliveries_id, order_date,  order_status,order_number, user_id, total_all_price)
+--VALUES (2, '2024-05-01T10:00:00','ORDER','bef234', 1, 4000);
 
 
 
 
 -- 주문 아이템
-INSERT INTO order_item (order_price, quantity, order_id, product_id) VALUES (100,10,1,8);
-INSERT INTO order_item (order_price, quantity, order_id, product_id) VALUES (40,10,1,9);
-INSERT INTO order_item (order_price, quantity, order_id, product_id) VALUES (500,10,2,3);
-
+--INSERT INTO order_item (order_price, quantity, order_id, product_id) VALUES (100,10,1,8);
+--INSERT INTO order_item (order_price, quantity, order_id, product_id) VALUES (40,10,1,9);
+--INSERT INTO order_item (order_price, quantity, order_id, product_id) VALUES (500,10,2,3);
+--
 
 -- 리뷰
 -- 이미지를 업로드한 리뷰
-INSERT INTO reviews (title, content, image_url, product_id, user_id, created_at)
-VALUES ('만족', '좋네요. 잘 쓸게요.', 'url', 1, 1, NOW());
+--INSERT INTO reviews (title, content, image_url, product_id, user_id, created_at)
+--VALUES ('만족', '좋네요. 잘 쓸게요.', 'url', 1, 1, NOW());
 
 -- 이미지를 업로드하지 않은 리뷰
-INSERT INTO reviews (title, content, product_id, user_id, created_at)
-VALUES ('흠', '좀 더 써보고 판단할게요.', 1, 1, NOW());
+--INSERT INTO reviews (title, content, product_id, user_id, created_at)
+--VALUES ('흠', '좀 더 써보고 판단할게요.', 1, 1, NOW());
 
 -- 카트 데이터 삽입
-INSERT INTO carts (user_id) VALUES (1);
+--INSERT INTO carts (user_id) VALUES (1);
 
 -- 카트 아이템 데이터 삽입
-INSERT INTO cart_items (cart_id, product_id, quantity) VALUES (1, 1, 2);
+--INSERT INTO cart_items (cart_id, product_id, quantity) VALUES (1, 1, 2);
 
