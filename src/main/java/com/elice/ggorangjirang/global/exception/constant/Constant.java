@@ -23,5 +23,7 @@ public class Constant {
   public static final String PRODUCT_OUT_OF_STOCK_CODE = "EP2";
   public static final String PRODUCT_OUT_OF_STOCK_MSG = "Product out of stock";
 
+  public static final String DATA_INTEGRITY_VIOLATION_CODE = "D1";
+  public static final String DATA_INTEGRITY_VIOLATION = "Data Integrity Violation";
   private Constant() {}
 }
