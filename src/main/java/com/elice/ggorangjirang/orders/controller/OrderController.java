@@ -16,6 +16,7 @@ import com.elice.ggorangjirang.users.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -43,11 +44,16 @@ public class OrderController {
 
   // 주문 생성
   @PostMapping("")
-  public ResponseEntity<Long> addOrder(@RequestBody OrderRequest request){
+  public ResponseEntity<Long> addOrder(@RequestBody OrderRequest request, @RequestHeader("Authorization") String token){
 
-    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-    CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
-    Users users = userDetails.getUsers();
+    // 토큰에서 이메일 추출
+    Optional<String> emailOptional = jwtService.extractEmail(token);
+    if (emailOptional.isEmpty()) {
+      return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+    }
+
+    String email = emailOptional.get();
+    Users users = userService.findByUsername(email);
 
     if(users == null){
       throw new IllegalStateException("유저 없음");
