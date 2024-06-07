@@ -40,7 +40,7 @@ public class Deliveries {
   private String name;
 
   @NotNull(message = "전화번호는 필수입니다.")
-  private int phoneNumber;
+  private String phoneNumber;
 
   private String request;
 
@@ -61,7 +61,7 @@ public class Deliveries {
 //  }
 
   public static Deliveries createDelivery(String zipcode, String streetAddress, String detailAddress, String status, String request,
-      LocalDateTime arrivalDate, Integer phoneNumber, String name) {
+      LocalDateTime arrivalDate, String phoneNumber, String name) {
     Deliveries deliveries = new Deliveries();
     deliveries.setZipcode(zipcode);
     deliveries.setStreetAddress(streetAddress);
