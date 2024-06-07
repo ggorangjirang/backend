@@ -31,11 +31,13 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
         OAuth2UserService<OAuth2UserRequest, OAuth2User> delegate = new DefaultOAuth2UserService();
         OAuth2User oAuth2User = delegate.loadUser(userRequest); // OAuth 서비스에서 가져온 유저 정보를 담고 있는 유저
 
-        String registrationId = userRequest.getClientRegistration().getRegistrationId();
+        // String registrationId = userRequest.getClientRegistration().getRegistrationId(); // 소셜 로그인 추가시 쓸 변수
 
         // OAuth2 로그인 시 키(PK)가 되는 값
         String userNameAttributeName = userRequest.getClientRegistration().getProviderDetails()
                                                   .getUserInfoEndpoint().getUserNameAttributeName();
+
+
         Map<String, Object> attributes = oAuth2User.getAttributes();
 
         OAuthAttributes extractAttributes = OAuthAttributes.ofKakao(userNameAttributeName, attributes);
