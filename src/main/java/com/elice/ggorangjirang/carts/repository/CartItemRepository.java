@@ -14,7 +14,6 @@ import java.util.List;
 import java.util.Optional;
 
 public interface CartItemRepository extends JpaRepository<CartItem, Long> {
-    List<CartItem> findByCartId(Long cartId);
 
     @Query("SELECT ci FROM CartItem ci WHERE ci.cart.id = :cartId")
     Page<CartItem> findByCartId(@Param("cartId") Long cartId, Pageable pageable);
@@ -25,5 +24,6 @@ public interface CartItemRepository extends JpaRepository<CartItem, Long> {
     @Modifying
     @Transactional
     @Query("DELETE FROM CartItem ci WHERE ci.createdAt < :deletionThreshold")
-    void deleteOldCartItems(@Param("deletionThreshold") LocalDateTime deletionThreshold);
+    int deleteOldCartItems(@Param("deletionThreshold") LocalDateTime deletionThreshold);
 }
+
