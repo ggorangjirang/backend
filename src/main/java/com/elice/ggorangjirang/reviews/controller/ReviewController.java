@@ -37,7 +37,9 @@ public class ReviewController {
     }
 
     @GetMapping("/users/reviewable-items")
-    public ResponseEntity<List<ReviewableOrderItemResponse>> getReviewableOrderItems(
+    public ResponseEntity<Page<ReviewableOrderItemResponse>> getReviewableOrderItems(
+            @RequestParam(name = "page", defaultValue = "0") int page,
+            @RequestParam(name = "size", defaultValue = "5") int size,
             @RequestHeader("Authorization") String token) {
 
         Optional<String> emailOptional = jwtService.extractEmail(token);
@@ -46,7 +48,7 @@ public class ReviewController {
         }
 
         String email = emailOptional.get();
-        List<ReviewableOrderItemResponse> reviewableItems = orderItemService.getReviewableOrderItems(email);
+        Page<ReviewableOrderItemResponse> reviewableItems = orderItemService.getReviewableOrderItems(email, page, size);
         return ResponseEntity.ok(reviewableItems);
     }
 

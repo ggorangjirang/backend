@@ -10,6 +10,10 @@ import com.elice.ggorangjirang.reviews.repository.ReviewRepository;
 import com.elice.ggorangjirang.users.entity.Users;
 import com.elice.ggorangjirang.users.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -41,14 +45,15 @@ public class OrderItemService {
     orderItemRepository.deleteById(id);
   }
 
-  public List<ReviewableOrderItemResponse> getReviewableOrderItems(String email) {
-    List<OrderItem> deliveredOrderItems = orderItemRepository.findByOrder_Users_EmailAndOrder_Deliveries_Status(email, "DELIVERY_COMPLETE");
+  public Page<ReviewableOrderItemResponse> getReviewableOrderItems(String email, int page, int size) {
+    Pageable pageable = PageRequest.of(page, size);
+    Page<OrderItem> deliveredOrderItems = orderItemRepository.findByOrder_Users_EmailAndOrder_Deliveries_Status(email, "DELIVERY_COMPLETE", pageable);
     Users user = userRepository.findByEmail(email)
             .orElseThrow(() -> new IllegalArgumentException("회원을 찾을 수 없습니다."));
 
     Long userId = user.getId();
 
-    return deliveredOrderItems.stream()
+    List<ReviewableOrderItemResponse> reviewableItems = deliveredOrderItems.getContent().stream()
             .filter(orderItem -> !reviewRepository.existsByProduct_IdAndUser_Email(orderItem.getProduct().getId(), email))
             .map(orderItem -> new ReviewableOrderItemResponse(
                     orderItem.getProduct().getId(),
@@ -60,5 +65,7 @@ public class OrderItemService {
                     orderItem.getTotalPrice()
             ))
             .collect(Collectors.toList());
+
+    return new PageImpl<>(reviewableItems, pageable, deliveredOrderItems.getTotalElements());
   }
 }
