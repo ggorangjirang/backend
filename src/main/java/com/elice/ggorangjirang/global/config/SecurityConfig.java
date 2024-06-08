@@ -78,6 +78,7 @@ public class SecurityConfig {
                         "/api/login/oauth2/**",
                         "/v3/api-docs/**",
                         "/admin/**",
+                        "/login",
                         "/js/**",
                         "/css/**",
                         "/actuator/**")
