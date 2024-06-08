@@ -1,5 +1,4 @@
 package com.elice.ggorangjirang.global.config;
-
 import com.elice.ggorangjirang.global.login.filter.CustomUsernamePasswordAuthenticationFilter;
 import com.elice.ggorangjirang.global.login.handler.LoginFailHandler;
 import com.elice.ggorangjirang.global.login.handler.LoginSuccessHandler;
@@ -51,21 +50,18 @@ public class SecurityConfig {
   @Bean
   public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
-    http.cors(
-        (cors) ->
-            cors.configurationSource(
-                request -> {
-                  CorsConfiguration config = new CorsConfiguration();
-
-                  config.setAllowedOrigins(
-                      List.of("http://localhost:3000", "https://ggorangjirang.duckdns.org"));
-                  config.setAllowedMethods(Collections.singletonList("*"));
-                  config.setAllowCredentials(true);
-                  config.setAllowedHeaders(Collections.singletonList("*"));
-                  config.setExposedHeaders(Collections.singletonList("Authorization"));
-                  config.setExposedHeaders(Collections.singletonList("Refresh-Token"));
-                  return config;
-                }));
+    http.cors(cors -> {
+        CorsConfigurationSource source = request -> {
+          CorsConfiguration config = new CorsConfiguration();
+          config.setAllowedOrigins(List.of("http://localhost:3000", "https://ggorangjirang.duckdns.org"));
+          config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+          config.setAllowedHeaders(List.of("*"));
+          config.setExposedHeaders(List.of("Authorization", "Refresh-Token"));
+          config.setAllowCredentials(true);
+          return config;
+      };
+      cors.configurationSource(source);
+                });
 
     http.cors(withDefaults())
         .authorizeHttpRequests(
@@ -81,9 +77,11 @@ public class SecurityConfig {
                         "/admin/**",
                         "/js/**",
                         "/css/**",
+                        "/actuator/**",
+                        "/login",
+                        "/oauth2/**",
                         "/api/test",
-                        "/api/test2",
-                        "/actuator/**")
+                        "/api/test2")
                     .permitAll()
                     .anyRequest()
                     .authenticated());
