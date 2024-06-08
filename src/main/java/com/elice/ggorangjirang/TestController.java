@@ -18,12 +18,12 @@ public class TestController {
     return "Post Hello " + name;
   }
 
-  @PostMapping("/test")
+  @PostMapping("/api/test")
   public String test(String name) {
     return "test post Hello " + name;
   }
 
-  @PostMapping("/test2")
+  @PostMapping("/api/test2")
   public String test2(String name, @RequestHeader("Authorization") String token) {
     return "test2 post Hello " + name;
   }
