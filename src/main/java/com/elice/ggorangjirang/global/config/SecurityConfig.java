@@ -80,7 +80,9 @@ public class SecurityConfig {
                         "/admin/**",
                         "/js/**",
                         "/css/**",
-                        "/actuator/**")
+                        "/actuator/**",
+                        "/login",
+                        "/oauth2/**")
                     .permitAll()
                     .anyRequest()
                     .authenticated());
