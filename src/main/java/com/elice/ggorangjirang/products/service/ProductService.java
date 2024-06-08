@@ -28,21 +28,17 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.elice.ggorangjirang.global.constant.GlobalConstants.*;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class ProductService {
+
     private final ProductRepository productRepository;
     private final SubcategoryRepository subcategoryRepository;
     private final S3Service s3Service;
     private final DiscordWebhook discordWebhook;
-
-    private static final String PRODUCT_NOT_FOUND_MESSAGE = "Product not found with id: ";
-    private static final String INVALID_PRODUCT_MESSAGE = "Price or Stock cannot be negative.";
-    private static final String SUBCATEGORY_NOT_FOUND_MESSAGE = "Subcategory not found with id: ";
-    private static final String NEW_PRODUCT_NOTICE = "New Product has created: ";
-    private static final String PRODUCT_CHANGED_NOTICE = "Product has changed. Check the details in logs: ";
-    private static final String PRODUCT_DELETED_NOTICE = "Product has deleted: ";
 
     // Spring MVC 방식 관리자 페이지용
     public List<Product> findProducts() {

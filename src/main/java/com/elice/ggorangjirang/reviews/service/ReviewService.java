@@ -25,6 +25,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 
+import static com.elice.ggorangjirang.global.constant.GlobalConstants.*;
+
 @Service
 @RequiredArgsConstructor
 public class ReviewService {
@@ -35,11 +37,6 @@ public class ReviewService {
     private final S3Service s3Service;
     private final UserRepository userRepository;
     private final ObjectMapper objectMapper;
-
-    private static final String PRODUCT_NOT_FOUND_MESSAGE = "Product not found with id: ";
-    private static final String REVIEW_NOT_FOUND_MESSAGE = "Review not found with id: ";
-    private static final String HAS_PURCHASED_MESSAGE = "There is no purchase history for this product.";
-
 
     // 상품 상세 페이지 review GET 요청에 대한 DTO 맵핑
     private ReviewResponsePublic convertToReviewResponsePublic(Review review) {
