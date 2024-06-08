@@ -3,6 +3,7 @@ package com.elice.ggorangjirang.jwt.service;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.elice.ggorangjirang.users.repository.UserRepository;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.Getter;
@@ -11,7 +12,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 @RequiredArgsConstructor
@@ -71,13 +76,30 @@ public class JwtService {
         log.info("재발급된 Access Token : {}", accessToken);
     }
 
-    // AccessToken + RefreshToken 헤더에 실어서 보내는 메소드
-    public void sendAccessAndRefreshToken(HttpServletResponse response, String accessToken, String refreshToken) {
-        response.setStatus(HttpServletResponse.SC_OK);
+    // AccessToken + RefreshToken 응답 바디에 실어서 보내는 메소드
+    public void sendAccessAndRefreshToken(HttpServletResponse response, String accessToken, String refreshToken)
+        throws IOException {
+        if (!response.isCommitted()) {
+            response.setStatus(HttpServletResponse.SC_OK);
 
-        setAccessTokenHeader(response, accessToken);
-        setRefreshTokenHeader(response, refreshToken);
-        log.info("Access Token, Refresh Token 헤더 설정 완료");
+            Map<String, String> tokens = new HashMap<>();
+            tokens.put("accessToken", "Bearer " + accessToken);
+            if (refreshToken != null) {
+                tokens.put("refreshToken", "Bearer " + refreshToken);
+            }
+            tokens.put("message", "로그인 성공"); // 로그인 성공 시 메시지
+            response.setContentType("application/json");
+            response.setCharacterEncoding("UTF-8");
+
+            PrintWriter writer = response.getWriter();
+            writer.write(new ObjectMapper().writeValueAsString(tokens));
+            writer.flush();
+            writer.close();
+
+            log.info("Access Token, Refresh Token 응답 바디 설정 완료");
+        } else {
+            log.warn("응답이 이미 커밋되었습니다.");
+        }
     }
 
     // AccessToken 헤더 설정

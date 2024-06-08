@@ -29,6 +29,7 @@ public class JwtAuthenticationProcessingFilter extends OncePerRequestFilter {
 
     private static final String NO_CHECK_URL = "/login"; // "/login"으로 들어오는 요청은 Filter 작동x
     private static final String NO_CHECK_ACTUATOR = "/actuator"; // "/actuator"으로 들어오는 요청은 Filter 작동x
+    private static final String NO_CHECK_OAUTH2 = "/oauth2/"; // "/oauth2/"으로 들어오는 요청은 Filter 작동x
 
     private final JwtService jwtService;
     private final UserRepository userRepository;
@@ -38,29 +39,35 @@ public class JwtAuthenticationProcessingFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
         throws ServletException, IOException {
+
+        String requestURI = request.getRequestURI();
+
         // "/login" 요청이 들어온 경우 다음 필터 진행
-        if (request.getRequestURI().equals(NO_CHECK_URL) || request.getRequestURI().startsWith(NO_CHECK_ACTUATOR)) {
+        if (requestURI.equals(NO_CHECK_URL) || requestURI.startsWith(NO_CHECK_ACTUATOR)
+            || requestURI.startsWith(NO_CHECK_OAUTH2)) {
             filterChain.doFilter(request, response);
             return;
         }
 
-        // 사용자 요청 헤더에서 Refresh Token 추출
-        String refreshToken = jwtService.extractRefreshToken(request)
-            .filter(jwtService::isTokenValid)
-            .orElse(null);
-
-        // 요청 헤더에 Refresh Token이 있는 경우
-        if (refreshToken != null) {
-            checkRefreshTokenAndReIssueAccessToken(response, refreshToken);
-            return;
-        }
-
-        // response 객체가 null이 아닌 경우에만 checkAccessTokenAndAuthentication 메소드 호출
-        if (response != null) {
+        // 커밋되지 않은 경우에만 checkAccessTokenAndAuthentication 메소드 호출
+        if (!response.isCommitted()) {
             checkAccessTokenAndAuthentication(request, response, filterChain);
+
+            // 사용자 요청 헤더에서 Refresh Token 추출
+            String refreshToken = jwtService.extractRefreshToken(request)
+                .filter(jwtService::isTokenValid)
+                .orElse(null);
+
+            // 요청 헤더에 Refresh Token이 있는 경우
+            if (refreshToken != null) {
+                checkRefreshTokenAndReIssueAccessToken(response, refreshToken);
+                return;
+            }
+        } else {
+            log.warn("응답이 이미 커밋되었습니다.");
         }
 
-
+        filterChain.doFilter(request, response);
     }
 
     // Refresh Token으로 유저 정보 찾기 + 토큰 재발급 메소드
@@ -68,8 +75,13 @@ public class JwtAuthenticationProcessingFilter extends OncePerRequestFilter {
         userRepository.findByRefreshToken(refreshToken)
             .ifPresent(users -> {
                 String reIssuedRefreshedToken = reIssueRefreshToken(users);
-                jwtService.sendAccessAndRefreshToken(response, jwtService.createAccessToken(users.getEmail()),
-                    reIssuedRefreshedToken);
+
+                try {
+                    jwtService.sendAccessAndRefreshToken(response, jwtService.createAccessToken(users.getEmail()),
+                        reIssuedRefreshedToken);
+                } catch (IOException e) {
+                    log.error("토큰 전송에 실패했습니다." , e);
+                }
             });
     }
 
@@ -77,11 +89,6 @@ public class JwtAuthenticationProcessingFilter extends OncePerRequestFilter {
     public void checkAccessTokenAndAuthentication(HttpServletRequest request, HttpServletResponse response,
                                                   FilterChain filterChain) throws ServletException, IOException {
         log.info("checkAccessTokenAndAuthentication() 호출");
-
-        if (response == null) {
-            log.error("Response object is null in checkAccessTokenAndAuthentication method.");
-            return;
-        }
 
         jwtService.extractAccessToken(request)
             .filter(jwtService::isTokenValid)

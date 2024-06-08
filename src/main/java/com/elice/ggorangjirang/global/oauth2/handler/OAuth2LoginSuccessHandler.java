@@ -35,8 +35,6 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
             if (oAuth2User.getRole() == Role.GUEST) {
                 String accessToken = jwtService.createAccessToken(oAuth2User.getEmail());
                 response.addHeader(jwtService.getAccessHeader(), "Bearer " + accessToken);
-
-
                 jwtService.sendAccessAndRefreshToken(response, accessToken, null);
             } else if (oAuth2User.getRole() == Role.USER) {
                 loginSuccess(response, oAuth2User); // 로그인에 성공한 경우 access, refresh 토큰 생성

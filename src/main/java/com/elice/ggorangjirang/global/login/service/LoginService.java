@@ -16,6 +16,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 
+import java.io.IOException;
+
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -45,7 +47,12 @@ public class LoginService implements UserDetailsService {
 
             user.updateRefreshToken(refreshToken);
             userRepository.saveAndFlush(user);
-            jwtService.sendAccessAndRefreshToken(response, accessToken, refreshToken);
+
+            try {
+                jwtService.sendAccessAndRefreshToken(response, accessToken, refreshToken);
+            } catch (IOException e) {
+                log.error("토큰 전송에 실패했습니다.", e);
+            }
         } else {
             throw new BadCredentialsException("비밀번호가 일치하지 않습니다.");
         }
