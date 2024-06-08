@@ -1,7 +1,5 @@
 package com.elice.ggorangjirang.deliveries.dto;
 
-import jakarta.persistence.Column;
-import java.time.LocalDate;
 import lombok.Data;
 
 @Data

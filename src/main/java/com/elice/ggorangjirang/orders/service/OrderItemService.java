@@ -7,7 +7,13 @@ import com.elice.ggorangjirang.orders.repository.OrderItemRepository;
 import com.elice.ggorangjirang.products.entity.Product;
 import com.elice.ggorangjirang.products.repository.ProductRepository;
 import com.elice.ggorangjirang.reviews.repository.ReviewRepository;
+import com.elice.ggorangjirang.users.entity.Users;
+import com.elice.ggorangjirang.users.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -19,6 +25,7 @@ public class OrderItemService {
   private final OrderItemRepository orderItemRepository;
   private final ProductRepository productRepository;
   private final ReviewRepository reviewRepository;
+  private final UserRepository userRepository;
 
 
   // 주문상품 추가
@@ -38,11 +45,16 @@ public class OrderItemService {
     orderItemRepository.deleteById(id);
   }
 
-  public List<ReviewableOrderItemResponse> getReviewableOrderItems(Long userId) {
-    List<OrderItem> deliveredOrderItems = orderItemRepository.findByOrder_Users_IdAndOrder_Deliveries_Status(userId, "DELIVERY_COMPLETE");
+  public Page<ReviewableOrderItemResponse> getReviewableOrderItems(String email, int page, int size) {
+    Pageable pageable = PageRequest.of(page, size);
+    Page<OrderItem> deliveredOrderItems = orderItemRepository.findByOrder_Users_EmailAndOrder_Deliveries_Status(email, "DELIVERY_COMPLETE", pageable);
+    Users user = userRepository.findByEmail(email)
+            .orElseThrow(() -> new IllegalArgumentException("회원을 찾을 수 없습니다."));
 
-    return deliveredOrderItems.stream()
-            .filter(orderItem -> !reviewRepository.existsByProduct_IdAndUser_Id(orderItem.getProduct().getId(), userId))
+    Long userId = user.getId();
+
+    List<ReviewableOrderItemResponse> reviewableItems = deliveredOrderItems.getContent().stream()
+            .filter(orderItem -> !reviewRepository.existsByProduct_IdAndUser_Email(orderItem.getProduct().getId(), email))
             .map(orderItem -> new ReviewableOrderItemResponse(
                     orderItem.getProduct().getId(),
                     userId,
@@ -53,5 +65,7 @@ public class OrderItemService {
                     orderItem.getTotalPrice()
             ))
             .collect(Collectors.toList());
+
+    return new PageImpl<>(reviewableItems, pageable, deliveredOrderItems.getTotalElements());
   }
 }
