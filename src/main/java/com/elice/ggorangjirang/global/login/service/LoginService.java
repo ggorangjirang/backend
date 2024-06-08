@@ -7,6 +7,7 @@ import com.elice.ggorangjirang.users.entity.Users;
 import com.elice.ggorangjirang.users.repository.UserRepository;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class LoginService implements UserDetailsService {
 
     private final UserRepository userRepository;
@@ -32,6 +34,8 @@ public class LoginService implements UserDetailsService {
     }
 
     public void login(@RequestBody UserLoginDto userLoginDto, HttpServletResponse response) {
+
+        log.info("loginService, login UserLoginDto: {}", userLoginDto);
         var user = userRepository.findByEmail(userLoginDto.getEmail())
             .orElseThrow(() -> new UsernameNotFoundException("해당 이메일이 존재하지 않습니다."));
 
