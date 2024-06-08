@@ -8,6 +8,8 @@ import com.elice.ggorangjirang.products.exception.InvalidProductDataException;
 
 import com.elice.ggorangjirang.products.exception.SubcategoryNotFoundException;
 import com.elice.ggorangjirang.reviews.exception.ReviewNotFoundException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -22,7 +24,12 @@ public class GlobalExceptionHandler {
   private final DiscordWebhook discordWebhook;
 
   @ExceptionHandler({CustomBusinessException.class})
-  public ResponseEntity<ErrorResponse> handle(CustomBusinessException e) {
+  public ResponseEntity<ErrorResponse> handle(CustomBusinessException e, HttpServletRequest request,
+                                              HttpServletResponse response) {
+    if (response.isCommitted()) {
+        log.warn("Response is already committed for CustomBusinessException: {}", e.getMessage());
+        return null;
+    }
     String errorMessage = getErrorMessage(e);
     discordWebhook.sendWebhookMessage(errorMessage);
 
@@ -34,7 +41,13 @@ public class GlobalExceptionHandler {
   }
 
   @ExceptionHandler(ProductNotFoundException.class)
-  public ResponseEntity<ErrorResponse> handleProductNotFoundException(ProductNotFoundException e) {
+  public ResponseEntity<ErrorResponse> handleProductNotFoundException(ProductNotFoundException e, HttpServletRequest request,
+                                                                      HttpServletResponse response) {
+    if (response.isCommitted()) {
+      log.warn("Response is already committed for ProductNotFoundException: {}", e.getMessage());
+      return null;
+    }
+
     log.error("error: {}", e);
     return new ResponseEntity<>(
             new ErrorResponse(ErrorCode.INVALID_PARAMETER),
@@ -42,7 +55,13 @@ public class GlobalExceptionHandler {
   }
 
   @ExceptionHandler(ReviewNotFoundException.class)
-  public ResponseEntity<ErrorResponse> handleReviewNotFoundException(ReviewNotFoundException e) {
+  public ResponseEntity<ErrorResponse> handleReviewNotFoundException(ReviewNotFoundException e,
+    HttpServletRequest request, HttpServletResponse response) {
+    if (response.isCommitted()) {
+      log.warn("Response is already committed for ProductNotFoundException: {}", e.getMessage());
+      return null;
+    }
+
     log.error("error: {}", e);
     return new ResponseEntity<>(
             new ErrorResponse(ErrorCode.INVALID_PARAMETER),
@@ -50,7 +69,13 @@ public class GlobalExceptionHandler {
   }
 
   @ExceptionHandler(InvalidProductDataException.class)
-  public ResponseEntity<ErrorResponse> handleInvalidProductDataException(InvalidProductDataException e) {
+  public ResponseEntity<ErrorResponse> handleInvalidProductDataException(InvalidProductDataException e,
+    HttpServletRequest request, HttpServletResponse response) {
+    if (response.isCommitted()) {
+      log.warn("Response is already committed for ProductNotFoundException: {}", e.getMessage());
+      return null;
+    }
+
     log.error("error: {}", e);
     return new ResponseEntity<>(
             new ErrorResponse(ErrorCode.INVALID_PRODUCT_DATA),
@@ -58,7 +83,13 @@ public class GlobalExceptionHandler {
   }
 
   @ExceptionHandler(SubcategoryNotFoundException.class)
-  public ResponseEntity<ErrorResponse> handleSubcategoryNotFoundException(SubcategoryNotFoundException e) {
+  public ResponseEntity<ErrorResponse> handleSubcategoryNotFoundException(SubcategoryNotFoundException e,
+    HttpServletRequest request, HttpServletResponse response) {
+    if (response.isCommitted()) {
+      log.warn("Response is already committed for ProductNotFoundException: {}", e.getMessage());
+      return null;
+    }
+
     log.error("error: {}", e);
     return new ResponseEntity<>(
             new ErrorResponse(ErrorCode.INVALID_PARAMETER),
@@ -66,7 +97,12 @@ public class GlobalExceptionHandler {
   }
 
   @ExceptionHandler(Exception.class)
-  public ResponseEntity<ErrorResponse> handle(Exception e) {
+  public ResponseEntity<ErrorResponse> handle(Exception e, HttpServletRequest request, HttpServletResponse response) {
+    if (response.isCommitted()) {
+      log.warn("Response is already committed for ProductNotFoundException: {}", e.getMessage());
+      return null;
+    }
+
     log.error("error: {}", e);
 
     return new ResponseEntity<>(
