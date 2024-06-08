@@ -40,10 +40,10 @@ public class JwtService {
     @Value("${jwt.refresh.header}")
     private String refreshHeader;
 
-    private static final String ACCESS_TOKEN_SUBJECT = "AccessToken";
-    private static final String REFRESH_TOKEN_SUBJECT = "RefreshToken";
-    private static final String EMAIL_CLAIM = "email"; // 클레임으로 email 사용
-    private static final String BEARER = "Bearer";
+    public static final String ACCESS_TOKEN_SUBJECT = "AccessToken";
+    public static final String REFRESH_TOKEN_SUBJECT = "RefreshToken";
+    public static final String EMAIL_CLAIM = "email"; // 클레임으로 email 사용
+    public static final String BEARER = "Bearer";
 
     private final UserRepository userRepository;
 
@@ -83,12 +83,13 @@ public class JwtService {
             response.setStatus(HttpServletResponse.SC_OK);
 
             Map<String, String> tokens = new HashMap<>();
-            tokens.put("accessToken", "Bearer " + accessToken);
+            tokens.put("accessToken", BEARER + " " + accessToken);
             if (refreshToken != null) {
-                tokens.put("refreshToken", "Bearer " + refreshToken);
+                tokens.put("refreshToken", BEARER + " " + refreshToken);
             }
             tokens.put("message", "로그인 성공"); // 로그인 성공 시 메시지
             response.setContentType("application/json");
+            response.setCharacterEncoding("UTF-8");
             
             PrintWriter writer = response.getWriter();
             writer.write(new ObjectMapper().writeValueAsString(tokens));
@@ -113,16 +114,18 @@ public class JwtService {
 
     // 헤더에서 AccessToken 추출
     public Optional<String> extractAccessToken(HttpServletRequest request) {
-        return Optional.ofNullable(request.getHeader(accessHeader))
-            .filter(accessToken -> accessToken.startsWith(BEARER))
-            .map(accessToken -> accessToken.replace(BEARER, ""));
+        String headerValue = request.getHeader(accessHeader);
+        log.info("Extracted Access Token Header: {}", headerValue);
+
+        return Optional.ofNullable(headerValue);
     }
 
     // 헤더에서 RefreshToken 추출
     public Optional<String> extractRefreshToken(HttpServletRequest request) {
-        return Optional.ofNullable(request.getHeader(refreshHeader))
-            .filter(refreshToken -> refreshToken.startsWith(BEARER))
-            .map(refreshToken -> refreshToken.replace(BEARER, ""));
+        String headerValue = request.getHeader(refreshHeader);
+        log.info("Extracted Refresh Token Header: {}", headerValue);
+
+        return Optional.ofNullable(headerValue);
     }
 
     // AccessToken에서 email 추출
