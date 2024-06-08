@@ -92,24 +92,26 @@
             </div>
 
             <!-- 주문 데이터 반복 처리 -->
-            <div class="columns is-variable is-1 orders-item" th:each="order : ${orders}">
-                <div class="column is-2" th:text="${order.orderDate}">-</div>
-                <div class="column is-3" th:if="${order.orderItems.size() > 0}" th:text="${order.orderItems[0].productName}">-</div>
-                <div class="column is-2" th:text="${order.totalAllPrice}">-</div>
-                <div class="column is-2">
-                    <span th:text="${order.orderStatus == 'ORDER' ? '주문 완료' : '주문 취소'}"></span>
-                </div>
-                <div class="column is-2">
-                    <div class="select">
-                        <select th:id="'deliveryStatusSelectBox-' + ${order.id}">
-                            <option th:selected="${order.deliveryStatus == 'DELIVERY_READY'}" value="DELIVERY_READY">상품 준비중</option>
-                            <option th:selected="${order.deliveryStatus == 'DELIVERING'}" value="DELIVERING">상품 배송중</option>
-                            <option th:selected="${order.deliveryStatus == 'DELIVERY_COMPLETE'}" value="DELIVERY_COMPLETE">배송완료</option>
-                        </select>
+            <div th:each="order : ${orders}">
+                <div class="columns is-variable is-1 orders-item">
+                    <div class="column is-2" th:text="${order.orderDate}">-</div>
+                    <div class="column is-3" th:if="${order.orderItems.size() > 0}" th:text="${order.orderItems[0].productName}">-</div>
+                    <div class="column is-2" th:text="${order.totalAllPrice}">-</div>
+                    <div class="column is-2">
+                        <span th:text="${order.orderStatus == 'ORDER' ? '주문 완료' : '주문 취소'}"></span>
                     </div>
-                </div>
-                <div class="column is-1">
-                    <button class="button" th:id="'deleteButton-' + ${order.id}">주문 취소</button>
+                    <div class="column is-2">
+                        <div class="select">
+                            <select th:id="'deliveryStatusSelectBox-' + ${order.id}">
+                                <option th:selected="${order.deliveryStatus == 'DELIVERY_READY'}" value="DELIVERY_READY">상품 준비중</option>
+                                <option th:selected="${order.deliveryStatus == 'DELIVERING'}" value="DELIVERING">상품 배송중</option>
+                                <option th:selected="${order.deliveryStatus == 'DELIVERY_COMPLETE'}" value="DELIVERY_COMPLETE">배송완료</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="column is-1">
+                        <button class="button" th:id="'deleteButton-' + ${order.id}">주문 취소</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -149,7 +151,6 @@
         aria-label="close"
     ></button>
 </div>
-</body>
 <script>
     document.addEventListener('DOMContentLoaded', () => {
         countOrders(); // 주문 개수 세기
@@ -265,4 +266,5 @@
         orderElement.remove();
     }
 </script>
+</body>
 </html>

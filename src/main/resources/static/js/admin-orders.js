@@ -12,13 +12,7 @@ const deleteCancelButton = document.querySelector("#deleteCancelButton");
 
 let orderIdToDelete;
 
-addAllElements();
 addAllEvents();
-
-function addAllElements() {
-  createNavbar();
-  insertOrders();
-}
 
 function addAllEvents() {
   modalBackground.addEventListener("click", closeModal);
@@ -26,6 +20,7 @@ function addAllEvents() {
   document.addEventListener("keydown", keyDownCloseModal);
   deleteCompleteButton.addEventListener("click", deleteOrderData);
   deleteCancelButton.addEventListener("click", cancelDelete);
+  insertOrders();
 }
 
 async function insertOrders() {
@@ -53,8 +48,8 @@ async function insertOrders() {
     }
 
     ordersContainer.insertAdjacentHTML(
-      "beforeend",
-      `
+        "beforeend",
+        `
       <div class="columns orders-item" id="order-${id}">
         <div class="column is-2">${date}</div>
         <div class="column is-4 order-summary">${summaryTitle}</div>
