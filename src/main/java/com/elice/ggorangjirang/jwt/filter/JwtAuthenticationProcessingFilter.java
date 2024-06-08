@@ -44,16 +44,14 @@ public class JwtAuthenticationProcessingFilter extends OncePerRequestFilter {
         String requestURI = request.getRequestURI();
 
         // "/login" 요청이 들어온 경우 다음 필터 진행
-        if (requestURI.equals(NO_CHECK_URL) || requestURI.startsWith(NO_CHECK_ACTUATOR)
-            || requestURI.startsWith(NO_CHECK_OAUTH2)) {
+        if (requestURI.equals(NO_CHECK_URL) || requestURI.startsWith(NO_CHECK_ACTUATOR) ||
+        requestURI.startsWith(NO_CHECK_OAUTH2)) {
             filterChain.doFilter(request, response);
             return;
         }
 
         // 커밋되지 않은 경우에만 checkAccessTokenAndAuthentication 메소드 호출
         if (!response.isCommitted()) {
-            checkAccessTokenAndAuthentication(request, response, filterChain);
-
             // 사용자 요청 헤더에서 Refresh Token 추출
             String refreshToken = jwtService.extractRefreshToken(request)
                 .filter(jwtService::isTokenValid)
@@ -64,6 +62,13 @@ public class JwtAuthenticationProcessingFilter extends OncePerRequestFilter {
                 checkRefreshTokenAndReIssueAccessToken(response, refreshToken);
                 return;
             }
+
+            // AccessToken이 유효한 경우에만 인증 처리 메소드 호출
+            jwtService.extractAccessToken(request)
+                .filter(jwtService::isTokenValid)
+                .ifPresent(accessToken -> jwtService.extractEmail(accessToken)
+                    .ifPresent(email -> userRepository.findByEmail(email)
+                        .ifPresent(this::saveAuthentication)));
         } else {
             log.warn("응답이 이미 커밋되었습니다.");
         }
