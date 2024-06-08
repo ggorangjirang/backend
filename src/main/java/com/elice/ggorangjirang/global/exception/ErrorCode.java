@@ -1,6 +1,6 @@
 package com.elice.ggorangjirang.global.exception;
 
-import com.elice.ggorangjirang.global.exception.constant.Constant;
+import com.elice.ggorangjirang.global.exception.constant.ExceptionConstants;
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
 
@@ -8,21 +8,21 @@ import org.springframework.http.HttpStatus;
 public enum ErrorCode {
 
   // Domain Common Exception
-  INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, Constant.INTERNAL_SERVER_ERROR_CODE, Constant.INTERNAL_SERVER_ERROR_MSG),
-  INVALID_PARAMETER(HttpStatus.BAD_REQUEST, Constant.INVALID_PARAMETER_CODE, Constant.INVALID_PARAMETER_MSG),
-  ACCESS_DENIED(HttpStatus.FORBIDDEN, Constant.ACCESS_DENIED_CODE, Constant.ACCESS_DENIED_MSG),
+  INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, ExceptionConstants.INTERNAL_SERVER_ERROR_CODE, ExceptionConstants.INTERNAL_SERVER_ERROR_MSG),
+  INVALID_PARAMETER(HttpStatus.BAD_REQUEST, ExceptionConstants.INVALID_PARAMETER_CODE, ExceptionConstants.INVALID_PARAMETER_MSG),
+  ACCESS_DENIED(HttpStatus.FORBIDDEN, ExceptionConstants.ACCESS_DENIED_CODE, ExceptionConstants.ACCESS_DENIED_MSG),
 
   // Domain Custom Exception
   // SAMPLE
-  REFRESH_NOT_VALID(HttpStatus.FORBIDDEN, Constant.REFRESH_NOT_VALID_CODE, Constant.REFRESH_NOT_VALID_MSG),
-  INVALID_PRODUCT_DATA(HttpStatus.BAD_REQUEST, Constant.INVALID_PRODUCT_DATA_CODE, Constant.INVALID_PRODUCT_DATA_MSG),
+  REFRESH_NOT_VALID(HttpStatus.FORBIDDEN, ExceptionConstants.REFRESH_NOT_VALID_CODE, ExceptionConstants.REFRESH_NOT_VALID_MSG),
+  INVALID_PRODUCT_DATA(HttpStatus.BAD_REQUEST, ExceptionConstants.INVALID_PRODUCT_DATA_CODE, ExceptionConstants.INVALID_PRODUCT_DATA_MSG),
 
 
   // Product Specific Exception
-  PRODUCT_NOT_FOUND(HttpStatus.NOT_FOUND, Constant.PRODUCT_NOT_FOUND_CODE, Constant.PRODUCT_NOT_FOUND_MSG),
-  PRODUCT_OUT_OF_STOCK(HttpStatus.BAD_REQUEST, Constant.PRODUCT_OUT_OF_STOCK_CODE, Constant.PRODUCT_OUT_OF_STOCK_MSG),
+  PRODUCT_NOT_FOUND(HttpStatus.NOT_FOUND, ExceptionConstants.PRODUCT_NOT_FOUND_CODE, ExceptionConstants.PRODUCT_NOT_FOUND_MSG),
+  PRODUCT_OUT_OF_STOCK(HttpStatus.BAD_REQUEST, ExceptionConstants.PRODUCT_OUT_OF_STOCK_CODE, ExceptionConstants.PRODUCT_OUT_OF_STOCK_MSG),
 
-  DATA_INTEGRITY_VIOLATION(HttpStatus.CONFLICT, Constant.DATA_INTEGRITY_VIOLATION_CODE, Constant.DATA_INTEGRITY_VIOLATION);
+  DATA_INTEGRITY_VIOLATION(HttpStatus.CONFLICT, ExceptionConstants.DATA_INTEGRITY_VIOLATION_CODE, ExceptionConstants.DATA_INTEGRITY_VIOLATION);
 
 
 

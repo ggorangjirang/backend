@@ -50,6 +50,7 @@ public class ReviewController {
         String email = emailOptional.get();
         Page<ReviewableOrderItemResponse> reviewableItems = orderItemService.getReviewableOrderItems(email, page, size);
         return ResponseEntity.ok(reviewableItems);
+
     }
 
     @GetMapping("/users/my-reviews")

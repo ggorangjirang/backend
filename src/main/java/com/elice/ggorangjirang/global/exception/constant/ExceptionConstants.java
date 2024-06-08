@@ -1,6 +1,6 @@
 package com.elice.ggorangjirang.global.exception.constant;
 
-public class Constant {
+public class ExceptionConstants {
 
   public static final String INTERNAL_SERVER_ERROR_CODE = "E1";
   public static final String INTERNAL_SERVER_ERROR_MSG = "Internal server error occurred.";
@@ -25,5 +25,5 @@ public class Constant {
 
   public static final String DATA_INTEGRITY_VIOLATION_CODE = "D1";
   public static final String DATA_INTEGRITY_VIOLATION = "Data Integrity Violation";
-  private Constant() {}
+  private ExceptionConstants() {}
 }
