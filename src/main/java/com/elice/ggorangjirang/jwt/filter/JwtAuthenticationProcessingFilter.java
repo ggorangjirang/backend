@@ -10,6 +10,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.MediaType;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.mapping.GrantedAuthoritiesMapper;
@@ -79,6 +80,7 @@ public class JwtAuthenticationProcessingFilter extends OncePerRequestFilter {
                 try {
                     jwtService.sendAccessAndRefreshToken(response, jwtService.createAccessToken(users.getEmail()),
                         reIssuedRefreshedToken);
+                    response.setContentType(MediaType.APPLICATION_JSON_VALUE);
                 } catch (IOException e) {
                     log.error("토큰 전송에 실패했습니다." , e);
                 }
