@@ -5,6 +5,7 @@ import com.elice.ggorangjirang.jwt.util.CustomUserDetails;
 import com.elice.ggorangjirang.users.dto.UserLoginDto;
 import com.elice.ggorangjirang.users.entity.Users;
 import com.elice.ggorangjirang.users.repository.UserRepository;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,6 +18,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.HashMap;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -49,14 +53,18 @@ public class LoginService implements UserDetailsService {
             userRepository.saveAndFlush(user);
 
             try {
+                // JSON 응답 바디 설정
                 jwtService.sendAccessAndRefreshToken(response, accessToken, refreshToken);
             } catch (IOException e) {
                 log.error("토큰 전송에 실패했습니다.", e);
             }
+
+            // 응답 헤더를 AccessToken 과 RefreshToken 설정
+            response.setHeader(jwtService.getAccessHeader(), JwtService.BEARER + accessToken);
+            response.setHeader(jwtService.getRefreshHeader(), JwtService.BEARER + refreshToken);
         } else {
             throw new BadCredentialsException("비밀번호가 일치하지 않습니다.");
         }
     }
-
 }
 
