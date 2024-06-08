@@ -22,6 +22,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.LogoutFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
@@ -61,12 +62,10 @@ public class SecurityConfig {
           return config;
       };
       cors.configurationSource(source);
-                });
+    });
 
-    http.cors(withDefaults())
-        .authorizeHttpRequests(
-            authorize ->
-                authorize
+    http.authorizeHttpRequests(
+            authorize -> authorize
                     .requestMatchers(
                         "/h2-console/**",
                         "/swagger-ui/**",
@@ -83,25 +82,23 @@ public class SecurityConfig {
                         "/api/test",
                         "/api/test2")
                     .permitAll()
-                    .anyRequest()
-                    .authenticated());
+                    .anyRequest().authenticated());
+
     http.formLogin(config -> config.disable())
         .httpBasic(config -> config.disable())
         .csrf(config -> config.disable())
         .headers(config -> config.disable())
-        .sessionManagement(config -> config.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+        .sessionManagement(sesson -> sesson.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
     http.oauth2Login(
-        oauth2Login ->
-            oauth2Login
+        oauth2Login -> oauth2Login
                 .successHandler(oAuth2LoginSuccessHandler)
                 .failureHandler(oAuth2LoginFailHandler)
                 .userInfoEndpoint(
                     userInfoEndpoint -> userInfoEndpoint.userService(customOAuth2UserService)));
 
     http.addFilterAfter(customUsernamePasswordAuthenticationFilter(), LogoutFilter.class)
-        .addFilterBefore(
-            jwtAuthenticationProcessingFilter(), CustomUsernamePasswordAuthenticationFilter.class);
+        .addFilterBefore(jwtAuthenticationProcessingFilter(), UsernamePasswordAuthenticationFilter.class);
 
     return http.build();
   }
@@ -142,8 +139,7 @@ public class SecurityConfig {
 
   @Bean
   public CustomUsernamePasswordAuthenticationFilter customUsernamePasswordAuthenticationFilter() {
-    CustomUsernamePasswordAuthenticationFilter filter =
-        new CustomUsernamePasswordAuthenticationFilter(objectMapper);
+    CustomUsernamePasswordAuthenticationFilter filter = new CustomUsernamePasswordAuthenticationFilter(objectMapper);
     filter.setAuthenticationManager(authenticationManager());
     filter.setAuthenticationSuccessHandler(loginSuccessHandler());
     filter.setAuthenticationFailureHandler(loginFailHandler());
@@ -152,8 +148,6 @@ public class SecurityConfig {
 
   @Bean
   public JwtAuthenticationProcessingFilter jwtAuthenticationProcessingFilter() {
-    JwtAuthenticationProcessingFilter filter =
-        new JwtAuthenticationProcessingFilter(jwtService, userRepository);
-    return filter;
+    return new JwtAuthenticationProcessingFilter(jwtService, userRepository);
   }
 }

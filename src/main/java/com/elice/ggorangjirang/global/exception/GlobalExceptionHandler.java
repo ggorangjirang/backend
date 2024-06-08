@@ -12,6 +12,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -102,6 +103,21 @@ public class GlobalExceptionHandler {
         .status(ErrorCode.INVALID_PARAMETER.getStatus())
         .contentType(MediaType.APPLICATION_JSON)
         .body(new ErrorResponse(ErrorCode.INVALID_PARAMETER));
+  }
+
+  @ExceptionHandler(RuntimeException.class)
+  public ResponseEntity<String> handleRuntimeException(RuntimeException e, HttpServletRequest request,
+                                                       HttpServletResponse response) {
+    if (response.isCommitted()) {
+      log.warn("Response is already committed for SubcategoryNotFoundException: {}", e.getMessage());
+      return null;
+    }
+
+    log.error("error: {}", e);
+    return ResponseEntity
+        .status(HttpStatus.NOT_FOUND)
+        .contentType(MediaType.APPLICATION_JSON)
+        .body("유저를 찾을 수 없습니다.");
   }
 
   @ExceptionHandler(Exception.class)

@@ -24,6 +24,8 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 
+import static com.elice.ggorangjirang.users.entity.QUsers.users;
+
 @RequiredArgsConstructor
 @Slf4j
 public class JwtAuthenticationProcessingFilter extends OncePerRequestFilter {
@@ -42,10 +44,12 @@ public class JwtAuthenticationProcessingFilter extends OncePerRequestFilter {
         throws ServletException, IOException {
 
         String requestURI = request.getRequestURI();
+        log.info("Request URI: {}", requestURI);
 
         // "/login" 요청이 들어온 경우 다음 필터 진행
         if (requestURI.equals(NO_CHECK_URL) || requestURI.startsWith(NO_CHECK_ACTUATOR) ||
         requestURI.startsWith(NO_CHECK_OAUTH2)) {
+            log.info("Skipping JWT filter for URL: {}", requestURI);
             filterChain.doFilter(request, response);
             return;
         }
@@ -56,21 +60,33 @@ public class JwtAuthenticationProcessingFilter extends OncePerRequestFilter {
             String refreshToken = jwtService.extractRefreshToken(request)
                 .filter(jwtService::isTokenValid)
                 .orElse(null);
+            log.info("Extracted Refresh Token: {}", refreshToken);
 
             // 요청 헤더에 Refresh Token이 있는 경우
             if (refreshToken != null) {
+                log.info("Refresh token found and valid");
                 checkRefreshTokenAndReIssueAccessToken(response, refreshToken);
                 return;
             }
 
             // AccessToken이 유효한 경우에만 인증 처리 메소드 호출
-            jwtService.extractAccessToken(request)
-                .filter(jwtService::isTokenValid)
-                .ifPresent(accessToken -> jwtService.extractEmail(accessToken)
-                    .ifPresent(email -> userRepository.findByEmail(email)
-                        .ifPresent(this::saveAuthentication)));
+            jwtService.extractAccessToken(request).ifPresent(accessToken -> {
+                log.info("Access token found: {}", accessToken);
+                if (jwtService.isTokenValid(accessToken)) {
+                    log.info("Access token is valid");
+                    jwtService.extractEmail(accessToken).ifPresent(email -> {
+                        log.info("Extracted email from access token: {}", email);
+                        userRepository.findByEmail(email).ifPresentOrElse(users -> {
+                            log.info("User found in database: {}", users.getEmail());
+                            saveAuthentication(users, request);
+                        }, () -> log.error("No user found for email: {}", email));
+                    });
+                } else {
+                    log.error("Invalid access token: {}", accessToken);
+                }
+            });
         } else {
-            log.warn("응답이 이미 커밋되었습니다.");
+            log.warn("Response is already committed.");
         }
 
         filterChain.doFilter(request, response);
@@ -93,17 +109,17 @@ public class JwtAuthenticationProcessingFilter extends OncePerRequestFilter {
     }
 
     // Access Token 체크 + 인증 처리 메소드
-    public void checkAccessTokenAndAuthentication(HttpServletRequest request, HttpServletResponse response,
-                                                  FilterChain filterChain) throws ServletException, IOException {
-        log.info("checkAccessTokenAndAuthentication() 호출");
-
-        jwtService.extractAccessToken(request)
-            .filter(jwtService::isTokenValid)
-            .ifPresent(accessToken -> jwtService.extractEmail(accessToken)
-                .ifPresent(email -> userRepository.findByEmail(email)
-                    .ifPresent(this::saveAuthentication)));
-        filterChain.doFilter(request, response);
-    }
+//    public void checkAccessTokenAndAuthentication(HttpServletRequest request, HttpServletResponse response,
+//                                                  FilterChain filterChain) throws ServletException, IOException {
+//        log.info("checkAccessTokenAndAuthentication() 호출");
+//
+//        jwtService.extractAccessToken(request)
+//            .filter(jwtService::isTokenValid)
+//            .ifPresent(accessToken -> jwtService.extractEmail(accessToken)
+//                .ifPresent(email -> userRepository.findByEmail(email)
+//                    .ifPresent(this::saveAuthentication)));
+//        filterChain.doFilter(request, response);
+//    }
 
     // Refresh Token 재발급 + DB에 업데이트 메소드
     private String reIssueRefreshToken(Users users) {
@@ -114,7 +130,7 @@ public class JwtAuthenticationProcessingFilter extends OncePerRequestFilter {
     }
 
     // 인증 허가 메소드
-    public void saveAuthentication(Users myUser) {
+    public void saveAuthentication(Users myUser, HttpServletRequest request) {
         String password = myUser.getPassword();
 
         // OAuth2 로그인시 유저의 비밀번호 임의로 설정하여 OAuth2 유저도 인증되도록 설정
@@ -128,11 +144,13 @@ public class JwtAuthenticationProcessingFilter extends OncePerRequestFilter {
             .roles(myUser.getRole().name())
             .build();
 
-        Authentication authentication =
-            new UsernamePasswordAuthenticationToken(userDetails, null,
-                authoritiesMapper.mapAuthorities(userDetails.getAuthorities()));
+        UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
+            userDetails, null, userDetails.getAuthorities());
+        authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
+        log.info("User authenticated: {}", myUser.getEmail());
+        log.info("Security context authentication: {}", SecurityContextHolder.getContext().getAuthentication());
     }
 }
 
