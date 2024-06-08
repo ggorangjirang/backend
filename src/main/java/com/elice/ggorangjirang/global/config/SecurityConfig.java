@@ -50,21 +50,18 @@ public class SecurityConfig {
   @Bean
   public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
-    http.cors(
-        (cors) ->
-            cors.configurationSource(
-                request -> {
-                  CorsConfiguration config = new CorsConfiguration();
-
-                  config.setAllowedOrigins(
-                      List.of("http://localhost:3000", "https://ggorangjirang.duckdns.org"));
-                  config.setAllowedMethods(Collections.singletonList("*"));
-                  config.setAllowCredentials(true);
-                  config.setAllowedHeaders(Collections.singletonList("*"));
-                  config.setExposedHeaders(Collections.singletonList("Authorization"));
-                  config.setExposedHeaders(Collections.singletonList("Refresh-Token"));
-                  return config;
-                }));
+    http.cors(cors -> {
+        CorsConfigurationSource source = request -> {
+          CorsConfiguration config = new CorsConfiguration();
+          config.setAllowedOrigins(List.of("http://localhost:3000", "https://ggorangjirang.duckdns.org"));
+          config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+          config.setAllowedHeaders(List.of("*"));
+          config.setExposedHeaders(List.of("Authorization", "Refresh-Token"));
+          config.setAllowCredentials(true);
+          return config;
+      };
+      cors.configurationSource(source);
+                });
 
     http.cors(withDefaults())
         .authorizeHttpRequests(
