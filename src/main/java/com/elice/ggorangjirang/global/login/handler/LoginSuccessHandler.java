@@ -11,6 +11,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 
+import java.io.IOException;
+
 // JWT 로그인 성공 시 처리하는 핸들러
 @Slf4j
 @RequiredArgsConstructor
@@ -29,13 +31,19 @@ public class LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
         String accessToken = jwtService.createAccessToken(email);
         String refreshToken = jwtService.createRefreshToken();
 
-        jwtService.sendAccessAndRefreshToken(response, accessToken, refreshToken);
-
+        // DB에 RefreshToken 업데이트
         userRepository.findByEmail(email)
             .ifPresent(users -> {
                 users.updateRefreshToken(refreshToken);
                 userRepository.saveAndFlush(users); // DB에 반영
             });
+
+        // AccessToken과 RefreshToken 전송
+        try {
+            jwtService.sendAccessAndRefreshToken(response, accessToken, refreshToken);
+        } catch (IOException e) {
+            log.error("토큰 전송에 실패했습니다.", e);
+        }
 
         log.info("로그인에 성공하였습니다. 이메일 : {}", email);
         log.info("로그인에 성공하였습니다. AccessToken : {}", accessToken);
