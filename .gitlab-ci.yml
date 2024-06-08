@@ -12,7 +12,6 @@ compile:
   stage: compile
   before_script:
     - export PATH="/home/ubuntu/.sdkman/candidates/gradle/current/bin:$PATH"
-    - echo $PATH
   script:
     - gradle build --exclude-task test
   tags:
