@@ -11,6 +11,9 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Controller;
 
 @Controller
@@ -25,6 +28,13 @@ public class DeliveryStatusController {
   //배송상태 변했을때 실시간 알람 표시
   @MessageMapping("/updateAlarm")
   public void updateDeliveryStatus(DeliveryStatusDto statusDto) {
+
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    if (authentication == null || !authentication.isAuthenticated()) {
+      throw new IllegalArgumentException("User not authenticated");
+    }
+
+
     long deliveryId = statusDto.getId();
     String status = statusDto.getStatus();
 
@@ -35,7 +45,7 @@ public class DeliveryStatusController {
       Long userId = order.getUsers().getId();
       String notificationMessage = getNotificationMessage(status);
 
-      messagingTemplate.convertAndSendToUser(String.valueOf(userId), "/sub/deliveryStatus", notificationMessage);
+      messagingTemplate.convertAndSendToUser(String.valueOf(userId), "/queue/updateDeliveryStatus", notificationMessage);
     }
   }
 
@@ -52,6 +62,13 @@ public class DeliveryStatusController {
   //배송 상태 업데이트 되었을때 위에 종모양 알람 표시
   @MessageMapping("/bellAlarm")
   public void handleDeliveryCompleteNotification(DeliveryStatusDto statusDto) {
+
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    if (authentication == null || !authentication.isAuthenticated()) {
+      throw new IllegalArgumentException("User not authenticated");
+    }
+
+
     long deliveryId = statusDto.getId();
     String status = statusDto.getStatus();
 
@@ -73,7 +90,7 @@ public class DeliveryStatusController {
       }
 
 
-      messagingTemplate.convertAndSendToUser(String.valueOf(userId), "/sub/deliveryStatus", notificationMessage);
+      messagingTemplate.convertAndSendToUser(String.valueOf(userId), "/queue/bellDeliveryStatus", notificationMessage);
     }
   }
 

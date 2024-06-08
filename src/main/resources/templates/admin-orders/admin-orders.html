@@ -5,19 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>꼬랑지랑 - 주문관리</title>
     <!-- bulma css -->
-    <link
-        rel="stylesheet"
-        href="https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.min.css"
-    />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.min.css" />
     <!-- 폰트 어썸: 아이콘 -->
-    <script
-        defer
-        src="https://kit.fontawesome.com/9daa42bcef.js"
-        crossorigin="anonymous"
-    ></script>
+    <script defer src="https://kit.fontawesome.com/9daa42bcef.js" crossorigin="anonymous"></script>
     <!-- 커스텀 css, js -->
     <link rel="stylesheet" href="/css/admin-orders.css" />
-    <script src="/js/admin-orders.js" type="module" defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
 </head>
 <body>
 <!-- 헤더 -->
@@ -27,14 +20,7 @@
             <a class="navbar-item" href="/">
                 <span class="has-text-link">꼬랑지랑</span>
             </a>
-
-            <a
-                role="button"
-                class="navbar-burger"
-                aria-label="menu"
-                aria-expanded="false"
-                data-target="navbarBasicExample"
-            >
+            <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" data-target="navbarBasicExample">
                 <span aria-hidden="true"></span>
                 <span aria-hidden="true"></span>
                 <span aria-hidden="true"></span>
@@ -80,9 +66,7 @@
         </nav>
 
         <div class="container orders-container" id="ordersContainer">
-            <div
-                class="columns is-variable is-1 notification is-info is-light is-mobile orders-top"
-            >
+            <div class="columns is-variable is-1 notification is-info is-light is-mobile orders-top">
                 <div class="column is-2">날짜</div>
                 <div class="column is-3">주문정보</div>
                 <div class="column is-2">주문총액</div>
@@ -127,61 +111,72 @@
             </p>
 
             <div class="buttons">
-                <button
-                    class="button mt-5"
-                    id="deleteCompleteButton"
-                    aria-label="close"
-                >
-                    네
-                </button>
-                <button
-                    class="button is-primary mt-5"
-                    id="deleteCancelButton"
-                    aria-label="close"
-                >
-                    아니오
-                </button>
+                <button class="button mt-5" id="deleteCompleteButton" aria-label="close">네</button>
+                <button class="button is-primary mt-5" id="deleteCancelButton" aria-label="close">아니오</button>
             </div>
         </div>
     </div>
-
-    <button
-        class="modal-close is-large"
-        id="modalCloseButton"
-        aria-label="close"
-    ></button>
+    <button class="modal-close is-large" id="modalCloseButton" aria-label="close"></button>
 </div>
 <script>
     document.addEventListener('DOMContentLoaded', () => {
+        // 웹소켓 설정
+        const socket = new WebSocket('ws://localhost:8080/ws');
+        let stompClient = Stomp.over(socket);
+
+        stompClient.connect({}, function(frame) {
+            console.log('Connected: ' + frame);
+        });
+
+        stompClient.onopen = function() {
+            console.log('WebSocket 연결 성공');
+        };
+
+        stompClient.onerror = function(error) {
+            console.error('WebSocket 오류 발생:', error);
+        };
+
         countOrders(); // 주문 개수 세기
 
-        document.querySelectorAll('select[id^="deliveryStatusSelectBox-"]').forEach(
-            selectBox => {
-                selectBox.addEventListener('change', event => {
-                    const deliveryId = event.target.id.split('-')[1];
-                    const newStatus = event.target.value;
+        document.querySelectorAll('select[id^="deliveryStatusSelectBox-"]').forEach(selectBox => {
+            selectBox.addEventListener('change', event => {
+                const deliveryId = event.target.id.split('-')[1];
+                const newStatus = event.target.value;
 
-                    fetch(`/admin/deliveries/${deliveryId}/status`, {
-                        method: 'PATCH',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({status: newStatus})
-                    })
-                    .then(response => {
-                        if (response.ok) {
-                            alert('배송 상태가 업데이트되었습니다.');
-                            countOrders(); // 배송 상태 변경 시 주문 개수 업데이트
-                        } else {
-                            alert('배송 상태 업데이트에 실패했습니다.');
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Error:', error);
-                        alert('배송 상태 업데이트 중 오류가 발생했습니다.');
-                    });
+                // 웹 소켓을 통해 서버로 메시지 전송
+                const message = {
+                    id: deliveryId,
+                    status: newStatus
+                };
+
+                if (stompClient && stompClient.connected) {
+                    stompClient.send('/pub/updateAlarm', {}, JSON.stringify(message));
+                    stompClient.send('/pub/bellAlarm', {}, JSON.stringify(message));
+                } else {
+                    console.log('WebSocket 연결이 준비되지 않았습니다.');
+                }
+
+                fetch(`/admin/deliveries/${deliveryId}/status`, {
+                    method: 'PATCH',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({status: newStatus})
+                })
+                .then(response => {
+                    if (response.ok) {
+                        alert('배송 상태가 업데이트되었습니다.');
+                        countOrders(); // 배송 상태 변경 시 주문 개수 업데이트
+                    } else {
+                        alert('배송 상태 업데이트에 실패했습니다.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('배송 상태 업데이트 중 오류가 발생했습니다.');
                 });
             });
+        });
 
         // 주문 취소 버튼 클릭 이벤트 리스너 추가
         document.querySelectorAll('button[id^="deleteButton-"]').forEach(button => {
