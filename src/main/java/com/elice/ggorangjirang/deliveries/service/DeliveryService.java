@@ -37,9 +37,12 @@ public class DeliveryService {
   public Deliveries updateDeliveryStatus(long id, String status) {
     Deliveries delivery = getDeliveryById(id);
     delivery.setStatus(status);
-    if ("DELIVERY_COMPLETE".equalsIgnoreCase(status) || "DELIVERING".equalsIgnoreCase(status)) {
+    if ("DELIVERY_COMPLETE".equalsIgnoreCase(status)) {
       LocalDateTime now = LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS);
       delivery.setArrivalDate(now);
+    } else if("DELIVERING".equalsIgnoreCase(status)){
+      LocalDateTime now = LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS);
+      delivery.setStartDate(now);
     }
     return deliveryRepository.save(delivery);
   }
