@@ -36,16 +36,16 @@ import static org.springframework.security.config.Customizer.withDefaults;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    private final LoginService loginService;
-    private final JwtService jwtService;
-    private final CustomOAuth2UserService customOAuth2UserService;
-    private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
-    private final ObjectMapper objectMapper;
+  private final LoginService loginService;
+  private final JwtService jwtService;
+  private final CustomOAuth2UserService customOAuth2UserService;
+  private final UserRepository userRepository;
+  private final PasswordEncoder passwordEncoder;
+  private final ObjectMapper objectMapper;
 
-    private final OAuth2LoginSuccessHandler oAuth2LoginSuccessHandler;
+  private final OAuth2LoginSuccessHandler oAuth2LoginSuccessHandler;
 
-    private final OAuth2LoginFailHandler oAuth2LoginFailHandler;
+  private final OAuth2LoginFailHandler oAuth2LoginFailHandler;
 
   @Bean
   public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -82,7 +82,9 @@ public class SecurityConfig {
                         "/css/**",
                         "/actuator/**",
                         "/login",
-                        "/oauth2/**")
+                        "/oauth2/**",
+                        "/api/test",
+                        "/api/test2")
                     .permitAll()
                     .anyRequest()
                     .authenticated());
@@ -108,20 +110,20 @@ public class SecurityConfig {
   }
 
   // cors() 설정을 별도의 bean으로 관리
-//  @Bean
-//  public CorsConfigurationSource configurationSource() {
-//    CorsConfiguration configuration = new CorsConfiguration();
-//    configuration.setAllowedOrigins(
-//        List.of("http://localhost:3000", "https://ggorangjirang.duckdns.org"));
-//    configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-//    configuration.setAllowedHeaders(List.of("authorization", "content-type", "x-auth-token"));
-//    configuration.setExposedHeaders(List.of("x-auth-token"));
-//    configuration.setAllowCredentials(true); // 쿠키와 인증 정보를 포함한 요청이 가능하도록 설정
-//
-//    UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-//    source.registerCorsConfiguration("/**", configuration);
-//    return source;
-//  }
+  //  @Bean
+  //  public CorsConfigurationSource configurationSource() {
+  //    CorsConfiguration configuration = new CorsConfiguration();
+  //    configuration.setAllowedOrigins(
+  //        List.of("http://localhost:3000", "https://ggorangjirang.duckdns.org"));
+  //    configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+  //    configuration.setAllowedHeaders(List.of("authorization", "content-type", "x-auth-token"));
+  //    configuration.setExposedHeaders(List.of("x-auth-token"));
+  //    configuration.setAllowCredentials(true); // 쿠키와 인증 정보를 포함한 요청이 가능하도록 설정
+  //
+  //    UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+  //    source.registerCorsConfiguration("/**", configuration);
+  //    return source;
+  //  }
 
   @Bean
   public AuthenticationManager authenticationManager() {
