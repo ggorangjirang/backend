@@ -4,8 +4,6 @@ import com.elice.ggorangjirang.carts.dto.CartDto;
 import com.elice.ggorangjirang.carts.service.CartService;
 import com.elice.ggorangjirang.jwt.service.JwtService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,14 +20,15 @@ public class CartController {
 
     @GetMapping
     public ResponseEntity<CartDto> getCartItemsByUserId(@RequestHeader("Authorization") String token,
-                                                        @PageableDefault(page = 0, size = 5) Pageable pageable) {
+                                                        @RequestParam(name = "page", defaultValue = "0") int page,
+                                                        @RequestParam(name = "size", defaultValue = "5") int size) {
         Optional<String> emailOptional = jwtService.extractEmail(token);
         if (emailOptional.isEmpty()) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
         String email = emailOptional.get();
-        CartDto cartDto = cartService.getCartItems(email, pageable);
+        CartDto cartDto = cartService.getCartItems(email, page, size);
         return ResponseEntity.ok(cartDto);
     }
 }

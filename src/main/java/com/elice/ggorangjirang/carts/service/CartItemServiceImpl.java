@@ -9,6 +9,7 @@ import com.elice.ggorangjirang.products.exception.ProductNotFoundException;
 import com.elice.ggorangjirang.products.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -42,8 +43,8 @@ public class CartItemServiceImpl implements CartItemService {
 
     @Override
     @Transactional(readOnly = true)
-    public Page<CartItemResponse> getCartItemsByCartId(Long cartId, Pageable pageable) {
-
+    public Page<CartItemResponse> getCartItemsByCartId(Long cartId, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
         Page<CartItem> cartItemsPage = cartItemRepository.findByCartId(cartId, pageable);
         return cartItemsPage.map(CartItemResponse::toDto);
     }

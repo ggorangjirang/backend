@@ -8,8 +8,6 @@ import com.elice.ggorangjirang.users.entity.Users;
 import com.elice.ggorangjirang.users.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -47,7 +45,8 @@ public class CartItemController {
 
     @GetMapping
     public ResponseEntity<Page<CartItemResponse>> getCartItems(@RequestHeader("Authorization") String token,
-                                                               @PageableDefault(size = 16) Pageable pageable) {
+                                                               @RequestParam(name = "page", defaultValue = "0") int page,
+                                                               @RequestParam(name = "size", defaultValue = "16") int size) {
 
         Optional<String> emailOptional = jwtService.extractEmail(token);
         if (emailOptional.isEmpty()) {
@@ -58,10 +57,9 @@ public class CartItemController {
         Users user = userService.findByUsername(email);
         Long cartId = user.getCart().getId();
 
-        Page<CartItemResponse> cartItems = cartItemService.getCartItemsByCartId(cartId, pageable);
+        Page<CartItemResponse> cartItems = cartItemService.getCartItemsByCartId(cartId, page, size);
         return ResponseEntity.ok(cartItems);
     }
-
 
     @PatchMapping("/{id}")
     public ResponseEntity<CartItemResponse> updateCartItem(@PathVariable Long id,
@@ -75,7 +73,6 @@ public class CartItemController {
         CartItemResponse cartItemDto = cartItemService.updateCartItem(id, quantity);
         return ResponseEntity.ok(cartItemDto);
     }
-
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteCartItem(@PathVariable Long id,
