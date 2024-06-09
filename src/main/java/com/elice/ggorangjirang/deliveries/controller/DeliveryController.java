@@ -1,14 +1,20 @@
 package com.elice.ggorangjirang.deliveries.controller;
 
+import static com.elice.ggorangjirang.global.constant.GlobalConstants.DELIVERY_COMPLETE_EMAIL_CONTENT;
+import static com.elice.ggorangjirang.global.constant.GlobalConstants.DELIVERY_COMPLETE_EMAIL_TITLE;
+
 import com.elice.ggorangjirang.deliveries.dto.DeliveryDto;
 import com.elice.ggorangjirang.deliveries.entity.Deliveries;
 import com.elice.ggorangjirang.deliveries.service.DeliveryService;
 import com.elice.ggorangjirang.deliveries.dto.DeliveryStatusDto;
 import com.elice.ggorangjirang.deliveries.repository.DeliveryRepository;
+import com.elice.ggorangjirang.global.email.service.EmailService;
+import com.elice.ggorangjirang.orders.entity.Order;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,6 +24,7 @@ public class DeliveryController {
 
   private final DeliveryService deliveryService;
   private final DeliveryRepository deliveryRepository;
+  private final EmailService emailService;
 
   @PostMapping("/api/deliveries")
   public ResponseEntity<Long> addDelivery(@RequestBody DeliveryDto deliveryDto) {
@@ -44,11 +51,21 @@ public class DeliveryController {
       throw new IllegalArgumentException("Invalid order ID: " + orderId);
     }
 
-    Deliveries delivery = deliveriesList.get(0); // Assuming one delivery per order
+    Deliveries delivery = deliveriesList.get(0);
     delivery.setStatus(statusDto.getStatus());
 
     if ("DELIVERY_COMPLETE".equalsIgnoreCase(statusDto.getStatus())) {
       delivery.setArrivalDate(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS));
+
+      Order order = delivery.getOrder();
+      if (order == null) {
+        throw new IllegalStateException("Order not found for delivery ID: " + delivery.getId());
+      }
+      String orderNumber = order.getOrderNumber();
+
+      String title = DELIVERY_COMPLETE_EMAIL_TITLE;
+      String content = DELIVERY_COMPLETE_EMAIL_CONTENT + orderNumber;
+      emailService.sendSimpleMessage("kakotopoe@naver.com", title, content);
     } else if ("DELIVERING".equalsIgnoreCase(statusDto.getStatus())) {
       delivery.setStartDate(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS));
     }
