@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class DeliveryStatusDto {
 
-  private Long id;
+  private Long orderId;
 
   private String status;
 
