@@ -6,15 +6,14 @@ import com.elice.ggorangjirang.deliveries.service.DeliveryService;
 import com.elice.ggorangjirang.deliveries.repository.DeliveryRepository;
 import com.elice.ggorangjirang.orders.entity.Order;
 import com.elice.ggorangjirang.orders.entity.OrderItem;
-import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
-import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
+
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
+import java.util.List;
 
 @Controller
 public class DeliveryStatusController {
@@ -30,55 +29,11 @@ public class DeliveryStatusController {
 
   @MessageMapping("/updateAlarm")
   public void updateDeliveryStatus(DeliveryStatusDto statusDto) {
-    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-    if (authentication == null || !authentication.isAuthenticated()) {
-      throw new IllegalArgumentException("User not authenticated");
+    if (statusDto.getOrderId() == null) {
+      throw new IllegalArgumentException("Order ID is required");
     }
 
-    long orderId = statusDto.getId();
-    String status = statusDto.getStatus();
-
-    List<Deliveries> deliveriesList = deliveryRepository.findByOrderId(orderId);
-    if (deliveriesList.isEmpty()) {
-      throw new IllegalArgumentException("Invalid order ID: " + orderId);
-    }
-
-    Deliveries delivery = deliveriesList.get(0); // Assuming one delivery per order
-    delivery.setStatus(status);
-
-    if ("DELIVERY_COMPLETE".equalsIgnoreCase(status)) {
-      delivery.setArrivalDate(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS));
-    } else if ("DELIVERING".equalsIgnoreCase(status)) {
-      delivery.setStartDate(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS));
-    }
-
-    deliveryRepository.save(delivery);
-
-    Order order = delivery.getOrder();
-    if (order != null && order.getUsers() != null) {
-      Long userId = order.getUsers().getId();
-      String notificationMessage = getNotificationMessage(status);
-      messagingTemplate.convertAndSendToUser(String.valueOf(userId), "/queue/updateDeliveryStatus", notificationMessage);
-    }
-  }
-
-  private String getNotificationMessage(String status) {
-    if ("DELIVERY_COMPLETE".equalsIgnoreCase(status)) {
-      return "배달이 완료되었습니다.";
-    } else if ("DELIVERING".equalsIgnoreCase(status)) {
-      return "배달이 시작되었습니다.";
-    }
-    return "";
-  }
-
-  @MessageMapping("/bellAlarm")
-  public void handleDeliveryCompleteNotification(DeliveryStatusDto statusDto) {
-    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-    if (authentication == null || !authentication.isAuthenticated()) {
-      throw new IllegalArgumentException("User not authenticated");
-    }
-
-    long orderId = statusDto.getId();
+    long orderId = statusDto.getOrderId();
     String status = statusDto.getStatus();
 
     List<Deliveries> deliveriesList = deliveryRepository.findByOrderId(orderId);
@@ -97,7 +52,49 @@ public class DeliveryStatusController {
 
     deliveryRepository.save(delivery);
 
-    Order order = delivery.getOrder();
+    Order order = deliveryService.getOrderWithItems(orderId); // 수정된 부분
+    if (order != null && order.getUsers() != null) {
+      Long userId = order.getUsers().getId();
+      String notificationMessage = getNotificationMessage(status);
+      messagingTemplate.convertAndSendToUser(String.valueOf(userId), "/queue/updateDeliveryStatus", notificationMessage);
+    }
+  }
+
+  private String getNotificationMessage(String status) {
+    if ("DELIVERY_COMPLETE".equalsIgnoreCase(status)) {
+      return "배달이 완료되었습니다.";
+    } else if ("DELIVERING".equalsIgnoreCase(status)) {
+      return "배달이 시작되었습니다.";
+    }
+    return "";
+  }
+
+  @MessageMapping("/bellAlarm")
+  public void handleDeliveryCompleteNotification(DeliveryStatusDto statusDto) {
+    if (statusDto.getOrderId() == null) {
+      throw new IllegalArgumentException("Order ID is required");
+    }
+
+    long orderId = statusDto.getOrderId();
+    String status = statusDto.getStatus();
+
+    List<Deliveries> deliveriesList = deliveryRepository.findByOrderId(orderId);
+    if (deliveriesList.isEmpty()) {
+      throw new IllegalArgumentException("Invalid order ID: " + orderId);
+    }
+
+    Deliveries delivery = deliveriesList.get(0);
+    delivery.setStatus(status);
+
+    if ("DELIVERY_COMPLETE".equalsIgnoreCase(status)) {
+      delivery.setArrivalDate(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS));
+    } else if ("DELIVERING".equalsIgnoreCase(status)) {
+      delivery.setStartDate(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS));
+    }
+
+    deliveryRepository.save(delivery);
+
+    Order order = deliveryService.getOrderWithItems(orderId); // 수정된 부분
     if (order != null && order.getUsers() != null) {
       Long userId = order.getUsers().getId();
       String notificationMessage = "";
