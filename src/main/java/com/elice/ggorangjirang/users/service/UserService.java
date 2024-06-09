@@ -3,6 +3,7 @@ package com.elice.ggorangjirang.users.service;
 import com.elice.ggorangjirang.carts.service.CartService;
 import com.elice.ggorangjirang.users.dto.UserDto;
 import com.elice.ggorangjirang.users.dto.UserSignupDto;
+import com.elice.ggorangjirang.users.dto.UserUpdateRequest;
 import com.elice.ggorangjirang.users.entity.Role;
 import com.elice.ggorangjirang.users.entity.Users;
 import com.elice.ggorangjirang.users.repository.UserRepository;
@@ -53,7 +54,7 @@ public class UserService {
         return userRepository.findById(id).orElseThrow(()-> new IllegalArgumentException("not found : " + id));
     }
 
-    public UserDto getUserInfoByEmail(String email) {
+    public UserDto getUserProfileByEmail(String email) {
         log.info("Searching for user with email: {}", email);
         Users users = userRepository.findByEmail(email)
             .orElseThrow(() -> {
@@ -88,4 +89,32 @@ public class UserService {
         log.info("User found: {}", users.getEmail());
         return users;
     }
+
+    public void updateUserProfile(String email, UserUpdateRequest updateRequest) {
+        Users users = userRepository.findByEmail(email)
+            .orElseThrow(() -> new IllegalArgumentException("유저를 찾을 수 없습니다."));
+
+        if (updateRequest.getName() != null) {
+            users.setName(updateRequest.getName());
+        }
+        if (updateRequest.getPhoneNumber() != null) {
+            users.setPhoneNumber(updateRequest.getPhoneNumber());
+        }
+        if (updateRequest.getCurrentPassword() != null && updateRequest.getNewPassword() != null
+            && updateRequest.getConfirmPassword() != null) {
+            if (!passwordEncoder.matches(updateRequest.getCurrentPassword(), users.getPassword())) {
+                throw new IllegalArgumentException("기존 비밀번호가 일치하지 않습니다.");
+            }
+            if (!updateRequest.getNewPassword().equals(updateRequest.getConfirmPassword())) {
+                throw new IllegalArgumentException("새 비밀번호와 비밀번호 확인이 일치하지 않습니다.");
+            }
+            users.setPassword(passwordEncoder.encode(updateRequest.getNewPassword()));
+        }
+        if (updateRequest.getAddress() != null) {
+            users.setAddress(updateRequest.getAddress());
+        }
+
+        userRepository.save(users);
+    }
+
 }
