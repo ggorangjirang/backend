@@ -4,6 +4,7 @@ import com.elice.ggorangjirang.global.login.service.LoginService;
 import com.elice.ggorangjirang.users.dto.UserDto;
 import com.elice.ggorangjirang.users.dto.UserLoginDto;
 import com.elice.ggorangjirang.users.dto.UserSignupDto;
+import com.elice.ggorangjirang.users.dto.UserUpdateRequest;
 import com.elice.ggorangjirang.users.entity.Users;
 import com.elice.ggorangjirang.users.service.UserService;
 import jakarta.servlet.http.HttpServletResponse;
@@ -60,8 +61,8 @@ public class UserController {
         }
     }
 
-    @GetMapping("/userInfo")
-    public ResponseEntity<UserDto> getUserInfo() {
+    @GetMapping("/userProfile")
+    public ResponseEntity<UserDto> getUserProfile() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         log.info("Authentication object: {}", authentication);
 
@@ -89,13 +90,44 @@ public class UserController {
         UserDto userDto;
 
         try {
-            userDto = userService.getUserInfoByEmail(email);
+            userDto = userService.getUserProfileByEmail(email);
         } catch (RuntimeException e) {
             log.error("Error fetching user info for email: {}", email, e);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
 
         return ResponseEntity.ok(userDto);
+    }
+
+    @PatchMapping("/userProfile")
+    public ResponseEntity<?> updateUserProfile(@RequestBody UserUpdateRequest userUpdateRequest) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication == null || !authentication.isAuthenticated()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        Object principal = authentication.getPrincipal();
+        String email = null;
+
+        if (principal instanceof UserDetails) {
+            email = ((UserDetails) principal).getUsername();
+        } else if (principal instanceof String) {
+            email = (String) principal;
+        }
+
+        if (email == null || email.equals("anonymousUser")) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        try {
+            userService.updateUserProfile(email, userUpdateRequest);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+
+        return ResponseEntity
+            .ok("유저 정보가 수정되었습니다.");
     }
 
 }
