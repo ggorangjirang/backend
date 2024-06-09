@@ -13,8 +13,9 @@ import com.elice.ggorangjirang.orders.entity.Order;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
+
+import com.elice.ggorangjirang.users.entity.Users;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -58,14 +59,17 @@ public class DeliveryController {
       delivery.setArrivalDate(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS));
 
       Order order = delivery.getOrder();
+      Users user = order.getUsers();
+
       if (order == null) {
         throw new IllegalStateException("Order not found for delivery ID: " + delivery.getId());
       }
       String orderNumber = order.getOrderNumber();
 
+      String email = user.getEmail();
       String title = DELIVERY_COMPLETE_EMAIL_TITLE;
       String content = DELIVERY_COMPLETE_EMAIL_CONTENT + orderNumber;
-      emailService.sendSimpleMessage("kakotopoe@naver.com", title, content);
+      emailService.sendSimpleMessage(email, title, content);
     } else if ("DELIVERING".equalsIgnoreCase(statusDto.getStatus())) {
       delivery.setStartDate(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS));
     }
