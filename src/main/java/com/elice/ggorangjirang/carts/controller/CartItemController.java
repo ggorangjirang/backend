@@ -46,7 +46,7 @@ public class CartItemController {
     @GetMapping
     public ResponseEntity<Page<CartItemResponse>> getCartItems(@RequestHeader("Authorization") String token,
                                                                @RequestParam(name = "page", defaultValue = "0") int page,
-                                                               @RequestParam(name = "size", defaultValue = "16") int size) {
+                                                               @RequestParam(name = "size", defaultValue = "5") int size) {
 
         Optional<String> emailOptional = jwtService.extractEmail(token);
         if (emailOptional.isEmpty()) {
