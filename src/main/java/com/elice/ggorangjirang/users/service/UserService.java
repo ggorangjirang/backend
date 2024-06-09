@@ -77,4 +77,15 @@ public class UserService {
         return userDto;
     }
 
+    public Users getUsersInfoByEmail(String email) {
+        log.info("Searching for user with email: {}", email);
+        Users users = userRepository.findByEmail(email)
+            .orElseThrow(() -> {
+                log.error("User not found with email: {}", email);
+                return new RuntimeException("유저를 찾을 수 없습니다.");
+            });
+
+        log.info("User found: {}", users.getEmail());
+        return users;
+    }
 }

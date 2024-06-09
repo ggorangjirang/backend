@@ -86,7 +86,7 @@
                     </div>
                     <div class="column is-2">
                         <div class="select">
-                            <select th:id="'deliveryStatusSelectBox-' + ${order.id}">
+                            <select th:id="'deliveryStatusSelectBox-' + ${order.id}" th:data-order-id="${order.id}">
                                 <option th:selected="${order.deliveryStatus == 'DELIVERY_READY'}" value="DELIVERY_READY">상품 준비중</option>
                                 <option th:selected="${order.deliveryStatus == 'DELIVERING'}" value="DELIVERING">상품 배송중</option>
                                 <option th:selected="${order.deliveryStatus == 'DELIVERY_COMPLETE'}" value="DELIVERY_COMPLETE">배송완료</option>
@@ -120,7 +120,6 @@
 </div>
 <script>
     document.addEventListener('DOMContentLoaded', () => {
-        // 웹소켓 설정
         const socket = new WebSocket('ws://localhost:8080/ws');
         let stompClient = Stomp.over(socket);
 
@@ -136,16 +135,15 @@
             console.error('WebSocket 오류 발생:', error);
         };
 
-        countOrders(); // 주문 개수 세기
+        countOrders();
 
         document.querySelectorAll('select[id^="deliveryStatusSelectBox-"]').forEach(selectBox => {
             selectBox.addEventListener('change', event => {
-                const deliveryId = event.target.id.split('-')[1];
+                const orderId = event.target.getAttribute('data-order-id');
                 const newStatus = event.target.value;
 
-                // 웹 소켓을 통해 서버로 메시지 전송
                 const message = {
-                    id: deliveryId,
+                    orderId: orderId,
                     status: newStatus
                 };
 
@@ -156,7 +154,7 @@
                     console.log('WebSocket 연결이 준비되지 않았습니다.');
                 }
 
-                fetch(`/admin/deliveries/${deliveryId}/status`, {
+                fetch(`/admin/deliveries/order/${orderId}/status`, {
                     method: 'PATCH',
                     headers: {
                         'Content-Type': 'application/json'
@@ -166,7 +164,7 @@
                 .then(response => {
                     if (response.ok) {
                         alert('배송 상태가 업데이트되었습니다.');
-                        countOrders(); // 배송 상태 변경 시 주문 개수 업데이트
+                        countOrders();
                     } else {
                         alert('배송 상태 업데이트에 실패했습니다.');
                     }
@@ -178,7 +176,6 @@
             });
         });
 
-        // 주문 취소 버튼 클릭 이벤트 리스너 추가
         document.querySelectorAll('button[id^="deleteButton-"]').forEach(button => {
             button.addEventListener('click', event => {
                 const orderId = event.target.id.split('-')[1];
@@ -241,7 +238,7 @@
             if (response.ok) {
                 alert('주문이 취소되었습니다.');
                 removeOrderFromDOM(orderId);
-                countOrders(); // 주문 취소 시 주문 개수 업데이트
+                countOrders();
             } else {
                 return response.text().then(text => {
                     throw new Error(text);
