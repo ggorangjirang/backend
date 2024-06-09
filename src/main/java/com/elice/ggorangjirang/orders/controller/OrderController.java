@@ -5,12 +5,16 @@ import com.elice.ggorangjirang.deliveries.entity.Deliveries;
 import com.elice.ggorangjirang.deliveries.service.DeliveryService;
 import com.elice.ggorangjirang.jwt.service.JwtService;
 import com.elice.ggorangjirang.jwt.util.CustomUserDetails;
+import com.elice.ggorangjirang.orders.dto.OrderItemDTO;
+import com.elice.ggorangjirang.orders.dto.OrderItemRequest;
 import com.elice.ggorangjirang.orders.dto.OrderRequest;
 import com.elice.ggorangjirang.orders.dto.OrderResponse;
 import com.elice.ggorangjirang.orders.entity.Order;
 import com.elice.ggorangjirang.orders.entity.OrderItem;
 import com.elice.ggorangjirang.orders.service.OrderItemService;
 import com.elice.ggorangjirang.orders.service.OrderService;
+import com.elice.ggorangjirang.products.entity.Product;
+import com.elice.ggorangjirang.products.service.ProductService;
 import com.elice.ggorangjirang.users.entity.Users;
 import com.elice.ggorangjirang.users.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -44,10 +48,11 @@ public class OrderController {
   private final DeliveryService deliveryService;
   private final UserService userService;
   private final JwtService jwtService;
+  private final ProductService productService;
 
   // 주문 생성
   @PostMapping("")
-  public ResponseEntity<Long> addOrder(@RequestBody OrderRequest request, @RequestHeader("Authorization") String token){
+  public ResponseEntity<Long> addOrder(@RequestBody OrderRequest request){
 
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
     log.info("Authentication object: {}", authentication);
@@ -79,8 +84,12 @@ public class OrderController {
 
     List<OrderItem> orderItems = new ArrayList<>();
 
-    for(Long orderItemId : request.getOrderItemId()){
-      orderItems.add(orderItemService.findById(orderItemId));
+    for (OrderItemDTO orderItemRequest : request.getOrderItems()) {
+      Product product = productService.findProduct(orderItemRequest.getProductId());
+
+      int orderPrice = product.getPrice();
+      OrderItem orderItem = orderItemService.createOrderItem(product, orderPrice, orderItemRequest.getQuantity());
+      orderItems.add(orderItem);
     }
 
     Order order = orderService.create(users, deliveries,orderItems);
