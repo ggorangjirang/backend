@@ -2,32 +2,50 @@ package com.elice.ggorangjirang.carts.controller;
 
 import com.elice.ggorangjirang.carts.dto.CartDto;
 import com.elice.ggorangjirang.carts.service.CartService;
-import com.elice.ggorangjirang.jwt.service.JwtService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Optional;
-
+@Slf4j
 @RestController
 @RequestMapping("/api/carts")
 @RequiredArgsConstructor
 public class CartController {
 
     private final CartService cartService;
-    private final JwtService jwtService;
 
     @GetMapping
-    public ResponseEntity<CartDto> getCartItemsByUserId(@RequestHeader("Authorization") String token,
-                                                        @RequestParam(name = "page", defaultValue = "0") int page,
+    public ResponseEntity<CartDto> getCartItemsByUserId(@RequestParam(name = "page", defaultValue = "0") int page,
                                                         @RequestParam(name = "size", defaultValue = "5") int size) {
-        Optional<String> emailOptional = jwtService.extractEmail(token);
-        if (emailOptional.isEmpty()) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        log.info("Authentication object: {}", authentication);
+
+        if (authentication == null || !authentication.isAuthenticated()) {
+            log.warn("Authentication is null or not authenticated");
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
-        String email = emailOptional.get();
+        Object principal = authentication.getPrincipal();
+        String email = null;
+
+        if (principal instanceof UserDetails) {
+            email = ((UserDetails) principal).getUsername();
+        } else if (principal instanceof String) {
+            email = (String) principal;
+        }
+
+        if (email == null || email.equals("anonymousUser")) {
+            log.warn("Email is null or anonymousUser");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        log.info("Authenticated user email: {}", email);
+
         CartDto cartDto = cartService.getCartItems(email, page, size);
         return ResponseEntity.ok(cartDto);
     }
