@@ -15,7 +15,6 @@ import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 import com.elice.ggorangjirang.users.entity.Users;
-import com.elice.ggorangjirang.users.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -27,7 +26,6 @@ public class DeliveryController {
   private final DeliveryService deliveryService;
   private final DeliveryRepository deliveryRepository;
   private final EmailService emailService;
-  private final UserRepository userRepository;
 
   @PostMapping("/api/deliveries")
   public ResponseEntity<Long> addDelivery(@RequestBody DeliveryDto deliveryDto) {
