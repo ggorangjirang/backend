@@ -13,12 +13,10 @@ import com.elice.ggorangjirang.orders.entity.Order;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
-import java.util.Optional;
 
 import com.elice.ggorangjirang.users.entity.Users;
 import com.elice.ggorangjirang.users.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
