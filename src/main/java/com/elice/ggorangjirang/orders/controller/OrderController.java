@@ -18,10 +18,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -32,6 +34,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("api/orders")
@@ -46,18 +49,32 @@ public class OrderController {
   @PostMapping("")
   public ResponseEntity<Long> addOrder(@RequestBody OrderRequest request, @RequestHeader("Authorization") String token){
 
-    // 토큰에서 이메일 추출
-    Optional<String> emailOptional = jwtService.extractEmail(token);
-    if (emailOptional.isEmpty()) {
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    log.info("Authentication object: {}", authentication);
+
+    if (authentication == null || !authentication.isAuthenticated()) {
+      log.warn("Authentication is null or not authenticated");
       return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
 
-    String email = emailOptional.get();
-    Users users = userService.findByUsername(email);
+    Object principal = authentication.getPrincipal();
+    String email = null;
 
-    if(users == null){
-      throw new IllegalStateException("유저 없음");
+    if (principal instanceof UserDetails) {
+      email = ((UserDetails) principal).getUsername();
+    } else if (principal instanceof String) {
+      email = (String) principal;
     }
+
+    if (email == null || email.equals("anonymousUser")) {
+      log.warn("Email is null or anonymousUser");
+      return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+    }
+
+    log.info("Authenticated user email: {}", email);
+
+    Users users = userService.getUsersInfoByEmail(email);
+
     Deliveries deliveries = deliveryService.getDeliveryById(request.getDeliveryId());
 
     List<OrderItem> orderItems = new ArrayList<>();
@@ -73,7 +90,35 @@ public class OrderController {
 
   // 주문 목록 검색
   @GetMapping("")
-  public ResponseEntity<List<OrderResponse>> getOrders(@RequestParam Long usersId){
+  public ResponseEntity<List<OrderResponse>> getOrders(){
+
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    log.info("Authentication object: {}", authentication);
+
+    if (authentication == null || !authentication.isAuthenticated()) {
+      log.warn("Authentication is null or not authenticated");
+      return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+    }
+
+    Object principal = authentication.getPrincipal();
+    String email = null;
+
+    if (principal instanceof UserDetails) {
+      email = ((UserDetails) principal).getUsername();
+    } else if (principal instanceof String) {
+      email = (String) principal;
+    }
+
+    if (email == null || email.equals("anonymousUser")) {
+      log.warn("Email is null or anonymousUser");
+      return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+    }
+
+    log.info("Authenticated user email: {}", email);
+
+    Users users = userService.getUsersInfoByEmail(email);
+    Long usersId = users.getId();
+
     List<OrderResponse> orderResponses = orderService.findAllByUserId(usersId)
         .stream()
         .map(OrderResponse::new)
