@@ -18,6 +18,7 @@ public class CartItemResponse {
     private int price;
     private float discountRate;
     private int quantity;
+    private int discountedPrice; // 할인된 가격 필드 추가
 
     // 엔티티를 DTO로 변환하는 메서드
     public static CartItemResponse toDto(CartItem cartItem) {

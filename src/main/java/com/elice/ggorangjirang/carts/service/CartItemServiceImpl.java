@@ -38,7 +38,7 @@ public class CartItemServiceImpl implements CartItemService {
 
         cartItem = cartItemRepository.save(cartItem);
 
-        return CartItemResponse.toDto(cartItem);
+        return toCartItemResponse(cartItem);
     }
 
     @Override
@@ -46,7 +46,7 @@ public class CartItemServiceImpl implements CartItemService {
     public Page<CartItemResponse> getCartItemsByCartId(Long cartId, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
         Page<CartItem> cartItemsPage = cartItemRepository.findByCartId(cartId, pageable);
-        return cartItemsPage.map(CartItemResponse::toDto);
+        return cartItemsPage.map(this::toCartItemResponse);
     }
 
     @Override
@@ -57,7 +57,7 @@ public class CartItemServiceImpl implements CartItemService {
         cartItem.setQuantity(quantity);
         cartItem = cartItemRepository.save(cartItem);
 
-        return CartItemResponse.toDto(cartItem);
+        return toCartItemResponse(cartItem);
     }
 
     @Override
@@ -66,5 +66,16 @@ public class CartItemServiceImpl implements CartItemService {
             throw new IllegalArgumentException("유효하지 않은 장바구니 아이템 ID입니다.");
         }
         cartItemRepository.deleteById(cartItemId);
+    }
+
+    private CartItemResponse toCartItemResponse(CartItem cartItem) {
+        CartItemResponse dto = CartItemResponse.toDto(cartItem);
+        dto.setDiscountedPrice(calculateDiscountedPrice(cartItem.getProduct().getPrice(), cartItem.getProduct().getDiscountRate()));
+        return dto;
+    }
+
+    private int calculateDiscountedPrice(int price, float discountRate) {
+        int discountedPrice = Math.round(price * (1 - discountRate / 100));
+        return (discountedPrice + 5) / 10 * 10;
     }
 }
