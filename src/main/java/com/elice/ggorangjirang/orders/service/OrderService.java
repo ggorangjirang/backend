@@ -1,6 +1,8 @@
 package com.elice.ggorangjirang.orders.service;
 
 
+import com.elice.ggorangjirang.carts.repository.CartItemRepository;
+import com.elice.ggorangjirang.carts.repository.CartRepository;
 import com.elice.ggorangjirang.deliveries.entity.Deliveries;
 import com.elice.ggorangjirang.deliveries.repository.DeliveryRepository;
 import com.elice.ggorangjirang.orders.entity.Order;
@@ -19,13 +21,23 @@ public class OrderService {
   private final OrderRepository orderRepository;
   private final DeliveryRepository deliveryRepository;
   private final UserRepository userRepository;
+  private final CartRepository cartRepository;
+  private final CartItemRepository cartItemRepository;
 
   // User 엔티티 생성후 변경
   @Transactional
   public Order create(Users users, Deliveries delivery, List<OrderItem> orderItems) {
     Order createdOrder = Order.createOrder(users, delivery, orderItems);
+    Order savedOrder = orderRepository.save(createdOrder);
 
-    return orderRepository.save(createdOrder);
+    // 주문 생성 후 장바구니 아이템 삭제
+    Long cartId = cartRepository.findByUser_Id(users.getId()).getId();
+    List<Long> productIds = orderItems.stream()
+            .map(orderItem -> orderItem.getProduct().getId())
+            .toList();
+    cartItemRepository.deleteByCartIdAndProductIdIn(cartId, productIds);
+
+    return savedOrder;
   }
 
   // 회원 별 조회
