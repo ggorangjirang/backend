@@ -1,8 +1,14 @@
 package com.elice.ggorangjirang.orders.controller;
 
 
+import static com.elice.ggorangjirang.global.constant.GlobalConstants.DELIVERY_COMPLETE_EMAIL_CONTENT;
+import static com.elice.ggorangjirang.global.constant.GlobalConstants.DELIVERY_COMPLETE_EMAIL_TITLE;
+import static com.elice.ggorangjirang.global.constant.GlobalConstants.ORDER_COMPLETE_EMAIL_CONTENT;
+import static com.elice.ggorangjirang.global.constant.GlobalConstants.ORDER_COMPLETE_EMAIL_TITLE;
+
 import com.elice.ggorangjirang.deliveries.entity.Deliveries;
 import com.elice.ggorangjirang.deliveries.service.DeliveryService;
+import com.elice.ggorangjirang.global.email.service.EmailService;
 import com.elice.ggorangjirang.jwt.service.JwtService;
 import com.elice.ggorangjirang.jwt.util.CustomUserDetails;
 import com.elice.ggorangjirang.orders.dto.OrderItemDTO;
@@ -49,7 +55,7 @@ public class OrderController {
   private final UserService userService;
   private final JwtService jwtService;
   private final ProductService productService;
-
+  private final EmailService emailService;
   // 주문 생성
   @PostMapping("")
   public ResponseEntity<Long> addOrder(@RequestBody OrderRequest request){
@@ -93,6 +99,12 @@ public class OrderController {
     }
 
     Order order = orderService.create(users, deliveries,orderItems);
+
+    String orderNumber = order.getOrderNumber();
+    String userEmail = users.getEmail();
+    String title = ORDER_COMPLETE_EMAIL_TITLE;
+    String content = ORDER_COMPLETE_EMAIL_CONTENT + orderNumber;
+    emailService.sendSimpleMessage(userEmail, title, content);
 
     return ResponseEntity.status(HttpStatus.CREATED).body(order.getId());
   }

@@ -1,10 +1,14 @@
 package com.elice.ggorangjirang.orders.service;
 
 
+import static com.elice.ggorangjirang.global.constant.GlobalConstants.NEW_ORDER_NOTICE;
+import static com.elice.ggorangjirang.global.constant.GlobalConstants.NEW_PRODUCT_NOTICE;
+
 import com.elice.ggorangjirang.carts.repository.CartItemRepository;
 import com.elice.ggorangjirang.carts.repository.CartRepository;
 import com.elice.ggorangjirang.deliveries.entity.Deliveries;
 import com.elice.ggorangjirang.deliveries.repository.DeliveryRepository;
+import com.elice.ggorangjirang.discord.DiscordWebhook;
 import com.elice.ggorangjirang.orders.entity.Order;
 import com.elice.ggorangjirang.orders.entity.OrderItem;
 import com.elice.ggorangjirang.orders.repository.OrderRepository;
@@ -23,6 +27,7 @@ public class OrderService {
   private final UserRepository userRepository;
   private final CartRepository cartRepository;
   private final CartItemRepository cartItemRepository;
+  private final DiscordWebhook discordWebhook;
 
   // User 엔티티 생성후 변경
   @Transactional
@@ -36,6 +41,8 @@ public class OrderService {
             .map(orderItem -> orderItem.getProduct().getId())
             .toList();
     cartItemRepository.deleteByCartIdAndProductIdIn(cartId, productIds);
+
+    discordWebhook.sendInfoMessage(NEW_ORDER_NOTICE + " (ID: " + savedOrder.getOrderNumber() + ")");
 
     return savedOrder;
   }
