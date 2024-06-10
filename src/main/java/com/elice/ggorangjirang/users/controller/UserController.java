@@ -130,4 +130,34 @@ public class UserController {
             .ok("유저 정보가 수정되었습니다.");
     }
 
+    @PatchMapping("/cancellation")
+    public ResponseEntity<?> deleteUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication == null || !authentication.isAuthenticated()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        Object pricipal = authentication.getPrincipal();
+        String email = null;
+
+        if (pricipal instanceof UserDetails) {
+            email = ((UserDetails) pricipal).getUsername();
+        } else if (pricipal instanceof String) {
+            email = (String) pricipal;
+        }
+
+        if (email == null || email.equals("anonymousUser")) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        try {
+            userService.deleteUser(email);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+
+        return ResponseEntity.ok("유저가 탈퇴되었습니다.");
+    }
+
 }
