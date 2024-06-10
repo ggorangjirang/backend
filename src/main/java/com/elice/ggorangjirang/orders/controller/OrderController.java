@@ -86,7 +86,9 @@ public class OrderController {
 
     Users users = userService.getUsersInfoByEmail(email);
 
-    Deliveries deliveries = deliveryService.getDeliveryById(request.getDeliveryId());
+    // Create delivery using the provided delivery info
+    Long deliveryId = deliveryService.addDelivery(request.getDelivery());
+    Deliveries deliveries = deliveryService.getDeliveryById(deliveryId);
 
     List<OrderItem> orderItems = new ArrayList<>();
 
@@ -98,7 +100,7 @@ public class OrderController {
       orderItems.add(orderItem);
     }
 
-    Order order = orderService.create(users, deliveries,orderItems);
+    Order order = orderService.create(users, deliveries, orderItems);
 
     String orderNumber = order.getOrderNumber();
     String userEmail = users.getEmail();
@@ -108,6 +110,7 @@ public class OrderController {
 
     return ResponseEntity.status(HttpStatus.CREATED).body(order.getId());
   }
+
 
   // 주문 목록 검색
   @GetMapping("")
