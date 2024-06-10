@@ -86,5 +86,15 @@ public class Users {
     public void updateRefreshToken(String updatedRefreshToken) {
         this.refreshToken = updatedRefreshToken;
     }
+
+    // 탈퇴 여부를 확인하는 메소드
+    public boolean isDeleted() {
+        return deletedAt != null;
+    }
+
+    // 유저 탈퇴 메소드
+    public void delete() {
+        this.deletedAt = LocalDateTime.now();
+    }
 }
 
