@@ -15,6 +15,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @Slf4j
 @RestController
 @RequestMapping("/api/cart-items")
@@ -53,6 +55,20 @@ public class CartItemController {
         Long cartId = user.getCart().getId();
 
         Page<CartItemResponse> cartItems = cartItemService.getCartItemsByCartId(cartId, page, size);
+        return ResponseEntity.ok(cartItems);
+    }
+
+    @GetMapping("/array")
+    public ResponseEntity<List<CartItemResponse>> getCartItemList() {
+        String email = getAuthenticatedEmail();
+        if (email == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+        }
+
+        Users user = userService.findByUsername(email);
+        Long cartId = user.getCart().getId();
+
+        List<CartItemResponse> cartItems = cartItemService.getCartItemListByCartId(cartId);
         return ResponseEntity.ok(cartItems);
     }
 

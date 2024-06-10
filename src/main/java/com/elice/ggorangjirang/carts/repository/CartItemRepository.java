@@ -25,5 +25,10 @@ public interface CartItemRepository extends JpaRepository<CartItem, Long> {
     @Transactional
     @Query("DELETE FROM CartItem ci WHERE ci.createdAt < :deletionThreshold")
     int deleteOldCartItems(@Param("deletionThreshold") LocalDateTime deletionThreshold);
+
+    void deleteByCartIdAndProductIdIn(Long cartId, List<Long> productIds);
+
+    @Query("SELECT ci FROM CartItem ci WHERE ci.cart.id = :cartId")
+    List<CartItem> findCartItemListByCartId(@Param("cartId") Long cartId);
 }
 

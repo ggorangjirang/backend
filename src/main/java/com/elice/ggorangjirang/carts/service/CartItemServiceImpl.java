@@ -14,6 +14,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -47,6 +50,16 @@ public class CartItemServiceImpl implements CartItemService {
         Pageable pageable = PageRequest.of(page, size);
         Page<CartItem> cartItemsPage = cartItemRepository.findByCartId(cartId, pageable);
         return cartItemsPage.map(this::toCartItemResponse);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<CartItemResponse> getCartItemListByCartId(Long cartId) {
+        List<CartItem> cartItems = cartItemRepository.findCartItemListByCartId(cartId);
+        List<CartItemResponse> cartItemResponses = cartItems.stream()
+                .map(this::toCartItemResponse)
+                .collect(Collectors.toList());
+        return cartItemResponses;
     }
 
     @Override
