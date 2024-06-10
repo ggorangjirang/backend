@@ -41,16 +41,11 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
                 OAuthAttributes oAuthAttributes =
                     OAuthAttributes.ofKakao(oAuth2User.getNameAttributeKey(), oAuth2User.getAttributes());
                 Users newUser = customOAuth2UserService.addUser(oAuthAttributes);
-                log.info("유저 DB: ", newUser);
-                newUser.setRole(Role.USER); // Role을 USER로 변경
-                String accessToken = jwtService.createAccessToken(newUser.getEmail());
-                String refreshToken = jwtService.createRefreshToken();
-                newUser.updateRefreshToken(refreshToken);
-                userRepository.save(newUser);
+                log.info("유저 DB: {}", newUser);
 
+                String accessToken = jwtService.createAccessToken(newUser.getEmail());
                 jwtService.setAccessTokenHeader(response, accessToken);
-                jwtService.setRefreshTokenHeader(response, refreshToken);
-                jwtService.sendAccessAndRefreshToken(response, accessToken, refreshToken);
+                jwtService.sendAccessAndRefreshToken(response, accessToken, newUser.getRefreshToken());
                 log.info("Jwt AccessToken 및 RefreshToken 생성 및 설정 완료");
             } else if (oAuth2User.getRole() == Role.USER) {
                 loginSuccess(response, oAuth2User); // 로그인에 성공한 경우 access, refresh 토큰 생성
