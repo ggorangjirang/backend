@@ -9,10 +9,10 @@ spring:
           kakao:
             client-id: ${CLIENT_ID}
             client-secret: ${CLIENT_SECRET}
-            redirect-uri: http://localhost:8080/api/login/oauth2/code/kakao
-            client-authentication-method: POST
+            redirect-uri: http://localhost:8080/login/oauth2/code/kakao
+            client-authentication-method: client_secret_post
             authorization-grant-type: authorization_code
-            scope: profile_nickname
+            scope: profile_nickname, account_email
             client-name: Kakao
         provider:
           kakao:
