@@ -12,6 +12,7 @@ import com.elice.ggorangjirang.users.repository.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Collections;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -32,6 +33,7 @@ import static org.springframework.security.config.Customizer.withDefaults;
 
 // 인증은 CustomUsernamePasswordAuthenticationFilter에서 authenticate()로 인증된 사용자로 처리
 // JwtAuthenticationProcessingFilter는 AccessToken, RefreshToken 재발급
+@Slf4j
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
@@ -70,17 +72,17 @@ public class SecurityConfig {
                         "/h2-console/**",
                         "/swagger-ui/**",
                         "/swagger-resources/**",
-                        "/api/**",
-                        "/api/login/oauth2/**",
                         "/v3/api-docs/**",
                         "/admin/**",
                         "/js/**",
                         "/css/**",
                         "/actuator/**",
+                        "/api/**",
                         "/login",
                         "/oauth2/**",
                         "/api/test",
-                        "/api/test2")
+                        "/api/test2",
+                        "/login/oauth2/code/kakao")
                     .permitAll()
                     .anyRequest().authenticated());
 
@@ -99,6 +101,8 @@ public class SecurityConfig {
 
     http.addFilterAfter(customUsernamePasswordAuthenticationFilter(), LogoutFilter.class)
         .addFilterBefore(jwtAuthenticationProcessingFilter(), UsernamePasswordAuthenticationFilter.class);
+
+    log.debug("SecurityFilterChain 설정 완료");
 
     return http.build();
   }

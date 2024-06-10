@@ -2,6 +2,8 @@ package com.elice.ggorangjirang.global.oauth2.service;
 
 import com.elice.ggorangjirang.global.oauth2.CustomOAuth2User;
 import com.elice.ggorangjirang.global.oauth2.OAuthAttributes;
+import com.elice.ggorangjirang.jwt.service.JwtService;
+import com.elice.ggorangjirang.users.entity.Role;
 import com.elice.ggorangjirang.users.entity.Users;
 import com.elice.ggorangjirang.users.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +25,7 @@ import java.util.Map;
 public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequest, OAuth2User> {
 
     private final UserRepository userRepository;
+    private final JwtService jwtService;
 
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
@@ -39,6 +42,7 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
 
 
         Map<String, Object> attributes = oAuth2User.getAttributes();
+        log.info("OAuth2User attributes: {}", attributes);
 
         OAuthAttributes extractAttributes = OAuthAttributes.ofKakao(userNameAttributeName, attributes);
 
@@ -57,7 +61,7 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
      * attributes에 들어있는 소셜 로그인의 식별값 id를 통해 회원을 찾아 반환하는 메소드
      * 만약 찾은 회원이 있다면, 그대로 반환하고 없다면 addUser()를 호출하여 회원을 저장
      */
-    private Users getUser(OAuthAttributes attributes) {
+    public Users getUser(OAuthAttributes attributes) {
         Users findUser = userRepository.findBySocialId(attributes.getOAuth2UserInfo().getId()).orElse(null);
 
         if (findUser == null) {
@@ -66,9 +70,15 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
         return findUser;
     }
 
-    // 생성된 User 객체를 DB에 저장 : socialId, email, role 값만 있는 상태
-    private Users addUser(OAuthAttributes attributes) {
+    // 생성된 User 객체를 DB에 저장 : email, role 값만 있는 상태
+    public Users addUser(OAuthAttributes attributes) {
         Users createdUser = attributes.toEntity(attributes.getOAuth2UserInfo());
+        createdUser.setRole(Role.USER);
+
+        String refreshToken = jwtService.createRefreshToken();
+        createdUser.updateRefreshToken(refreshToken);
+
+
         return userRepository.save(createdUser);
     }
 }

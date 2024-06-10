@@ -36,21 +36,29 @@ public class LoginService implements UserDetailsService {
         Users users = userRepository.findByEmail(email)
             .orElseThrow(() -> new UsernameNotFoundException("해당 이메일이 존재하지 않습니다."));
 
+        if (users.isDeleted()) {
+            throw new UsernameNotFoundException("탈퇴한 사용자입니다.");
+        }
+
         return new CustomUserDetails(users);
     }
 
     public void login(@RequestBody UserLoginDto userLoginDto, HttpServletResponse response) {
 
         log.info("loginService, login UserLoginDto: {}", userLoginDto);
-        var user = userRepository.findByEmail(userLoginDto.getEmail())
+        var users = userRepository.findByEmail(userLoginDto.getEmail())
             .orElseThrow(() -> new UsernameNotFoundException("해당 이메일이 존재하지 않습니다."));
 
-        if (passwordEncoder.matches(userLoginDto.getPassword(), user.getPassword())) {
-            String accessToken = jwtService.createAccessToken(user.getEmail());
+        if (users.isDeleted()) {
+            throw new UsernameNotFoundException("탈퇴한 사용자입니다.");
+        }
+
+        if (passwordEncoder.matches(userLoginDto.getPassword(), users.getPassword())) {
+            String accessToken = jwtService.createAccessToken(users.getEmail());
             String refreshToken = jwtService.createRefreshToken();
 
-            user.updateRefreshToken(refreshToken);
-            userRepository.saveAndFlush(user);
+            users.updateRefreshToken(refreshToken);
+            userRepository.saveAndFlush(users);
 
             try {
                 // JSON 응답 바디 설정

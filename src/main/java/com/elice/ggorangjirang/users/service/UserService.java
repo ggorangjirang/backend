@@ -15,7 +15,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -66,6 +68,13 @@ public class UserService {
         return converToDto(users);
     }
 
+    public List<UserDto> getAllUsers() {
+        List<Users> usersList = userRepository.findAll();
+        return usersList.stream()
+            .map(this::converToDto)
+            .collect(Collectors.toList());
+    }
+
     private UserDto converToDto(Users users) {
         UserDto userDto = new UserDto();
 
@@ -114,6 +123,14 @@ public class UserService {
             users.setAddress(updateRequest.getAddress());
         }
 
+        userRepository.save(users);
+    }
+
+    public void deleteUser(String email) {
+        Users users = userRepository.findByEmail(email)
+            .orElseThrow(() -> new IllegalArgumentException("유저를 찾을 수 없습니다."));
+
+        users.delete();
         userRepository.save(users);
     }
 

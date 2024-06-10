@@ -12,6 +12,17 @@ public class OAuth2UserInfo {
     public String getId() {
         return String.valueOf(attributes.get("id"));
     }
+
+    public String getEmail() {
+        Map<String, Object> account = (Map<String, Object>) attributes.get("kakao_account");
+
+        if (account == null) {
+            return null;
+        }
+
+        return (String) account.get("email");
+    }
+
     public String getName() {
         Map<String, Object> account = (Map<String, Object>) attributes.get("kakao_account");
 
