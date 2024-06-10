@@ -13,6 +13,7 @@ public class CustomOAuth2User extends DefaultOAuth2User {
 
     private String email;
     private Role role; // OAuth 처음 로그인인지 확인 여부를 위한 변수
+    private String nameAttributeKey;
 
     public CustomOAuth2User(Collection<? extends GrantedAuthority> authorities,
                             Map<String, Object> attributes, String nameAttributeKey,
@@ -20,5 +21,10 @@ public class CustomOAuth2User extends DefaultOAuth2User {
         super(authorities, attributes, nameAttributeKey);
         this.email = email;
         this.role = role;
+        this.nameAttributeKey = nameAttributeKey;
+    }
+
+    public String getNameAttributeKey() {
+        return nameAttributeKey;
     }
 }
