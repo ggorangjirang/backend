@@ -2,6 +2,7 @@ package com.elice.ggorangjirang.global.aggregation.sale.dto;
 
 import com.querydsl.core.Tuple;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -9,7 +10,9 @@ public class SaleMapper {
 
   public CreatedSaleResponse toResCreateSale(Tuple tupleSale) {
 
-    return new CreatedSaleResponse(tupleSale.get(0, Long.class), tupleSale.get(1, Long.class));
+    Long totalAllPrice = Optional.ofNullable(tupleSale.get(0, Long.class)).orElse(0L);
+
+    return new CreatedSaleResponse(totalAllPrice, tupleSale.get(1, Long.class));
   }
 
   // QueryDsl tuple mapper
