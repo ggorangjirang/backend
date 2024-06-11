@@ -1,16 +1,11 @@
-document.addEventListener('DOMContentLoaded', function () {
-  let startDate = moment().startOf('day').format('YYYY-MM-DD HH:mm');
-  let endDate = moment().endOf('day').format('YYYY-MM-DD HH:mm');
-
-  document.getElementById(
-      'dateRangeText').textContent = `${startDate} - ${endDate}`;
-});
-
 $(document).ready(function () {
   let startDate = moment().startOf('day').format('YYYY-MM-DD HH:mm');
   let endDate = moment().endOf('day').format('YYYY-MM-DD HH:mm');
   let timeUnit = '1시간';
   let apiTimeUnit = 'hourly';
+
+  document.getElementById(
+      'dateRangeText').textContent = `${startDate} - ${endDate}`;
 
   $('#showDatePickerBtn').daterangepicker({
     timePicker: true,
@@ -29,7 +24,9 @@ $(document).ready(function () {
     $('#showDatePickerBtn').html(
         startDate + ' - ' + endDate
         + ' <i class="fa-solid fa-calendar-days"></i>');
+  });
 
+  $('#showDatePickerBtn').on('apply.daterangepicker', function(ev, picker) {
     fetchSalesData();
   });
 
