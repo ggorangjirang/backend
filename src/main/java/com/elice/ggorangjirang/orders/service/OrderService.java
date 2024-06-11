@@ -14,6 +14,8 @@ import com.elice.ggorangjirang.users.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import static com.elice.ggorangjirang.global.constant.GlobalConstants.*;
@@ -61,8 +63,8 @@ public class OrderService {
   }
 
   // 모든 회원 조회
-  public List<Order> findAllByUserId(Long userId){
-    return orderRepository.findAllByUsers_Id(userId);
+  public Page<Order> findAllByUserId(Long userId, Pageable pageable){
+    return orderRepository.findAllByUsers_Id(userId,pageable);
   }
 
   @Transactional
