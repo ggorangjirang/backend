@@ -29,6 +29,9 @@ import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -114,7 +117,8 @@ public class OrderController {
 
   // 주문 목록 검색
   @GetMapping("")
-  public ResponseEntity<List<OrderResponse>> getOrders(){
+  public ResponseEntity<Page<OrderResponse>> getOrders(@RequestParam(name = "page", defaultValue = "0") int page,
+      @RequestParam(name = "size", defaultValue = "5") int size){
 
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
     log.info("Authentication object: {}", authentication);
@@ -143,12 +147,11 @@ public class OrderController {
     Users users = userService.getUsersInfoByEmail(email);
     Long usersId = users.getId();
 
-    List<OrderResponse> orderResponses = orderService.findAllByUserId(usersId)
-        .stream()
-        .map(OrderResponse::new)
-        .toList();
+    Pageable pageable = PageRequest.of(page, size);
+    Page<Order> orderPage = orderService.findAllByUserId(usersId, pageable);
+    Page<OrderResponse> orderResponsePage = orderPage.map(OrderResponse::new);
 
-    return ResponseEntity.ok().body(orderResponses);
+    return ResponseEntity.ok().body(orderResponsePage);
   }
 
   // 하나의 주문 검색

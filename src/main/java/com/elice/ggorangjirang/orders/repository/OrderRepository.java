@@ -5,6 +5,8 @@ import com.elice.ggorangjirang.orders.entity.Order;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -12,7 +14,7 @@ import org.springframework.data.repository.query.Param;
 public interface OrderRepository extends JpaRepository<Order, Long>, SaleAggregationRepository {
 
   // 추후 userId 매핑 후 변경
-  List<Order> findAllByUsers_Id(Long userId);
+//  List<Order> findAllByUsers_Id(Long userId);
 
   Optional<Order> findByIdAndUsers_Id(Long orderId, Long userId);
 
@@ -26,4 +28,6 @@ public interface OrderRepository extends JpaRepository<Order, Long>, SaleAggrega
       "ORDER BY week", nativeQuery = true)
   List<Object[]> findRefundsByWeek(@Param("start") LocalDateTime start,
       @Param("end") LocalDateTime end);
+
+  Page<Order> findAllByUsers_Id(Long userId, Pageable pageable);
 }
