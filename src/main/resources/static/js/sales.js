@@ -292,12 +292,18 @@ $(document).ready(function () {
             });
           },
           error: function (prevError) {
-            console.error('이전 기간 API 호출 에러:', prevError);
+            var code = prevError.responseJSON.code;
+            var msg = prevError.responseJSON.msg;
+
+            alert('Error Code: ' + code + '\nMessage: ' + msg);
           }
         });
       },
       error: function (error) {
-        console.error('API 호출 에러:', error);
+        var code = error.responseJSON.code;
+        var msg = error.responseJSON.msg;
+
+        alert('Error Code: ' + code + '\nMessage: ' + msg);
       }
     });
   }

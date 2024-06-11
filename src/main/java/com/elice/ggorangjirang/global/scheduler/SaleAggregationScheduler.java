@@ -30,7 +30,7 @@ public class SaleAggregationScheduler {
   }
 
   // 매 정시에 (하루 + 1시간) ~ (하루) 전 주문을 찾아 결제가 완료되었다면 매출로 잡는다.
-  @Scheduled(cron = "0 0 * * * *")
+  @Scheduled(cron = "0 1 * * * *")
   public void calculateHourlySale() {
     LocalDateTime now = LocalDateTime.now();
     LocalDateTime start = now.minusDays(1).minusHours(1);
