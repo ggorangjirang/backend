@@ -2,6 +2,7 @@ package com.elice.ggorangjirang.websocket;
 
 import com.elice.ggorangjirang.deliveries.dto.DeliveryStatusDto;
 import com.elice.ggorangjirang.deliveries.entity.Deliveries;
+import com.elice.ggorangjirang.deliveries.entity.DeliveryStatus; // 추가
 import com.elice.ggorangjirang.deliveries.service.DeliveryService;
 import com.elice.ggorangjirang.deliveries.repository.DeliveryRepository;
 import com.elice.ggorangjirang.orders.entity.Order;
@@ -34,7 +35,7 @@ public class DeliveryStatusController {
     }
 
     long orderId = statusDto.getOrderId();
-    String status = statusDto.getStatus();
+    DeliveryStatus status = DeliveryStatus.valueOf(statusDto.getStatus().toUpperCase());
 
     List<Deliveries> deliveriesList = deliveryRepository.findByOrderId(orderId);
     if (deliveriesList.isEmpty()) {
@@ -42,17 +43,17 @@ public class DeliveryStatusController {
     }
 
     Deliveries delivery = deliveriesList.get(0);
-    delivery.setStatus(status);
+    delivery.setStatus(status.name());
 
-    if ("DELIVERY_COMPLETE".equalsIgnoreCase(status)) {
+    if (status == DeliveryStatus.DELIVERY_COMPLETE) {
       delivery.setArrivalDate(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS));
-    } else if ("DELIVERING".equalsIgnoreCase(status)) {
+    } else if (status == DeliveryStatus.DELIVERING) {
       delivery.setStartDate(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS));
     }
 
     deliveryRepository.save(delivery);
 
-    Order order = deliveryService.getOrderWithItems(orderId); // 수정된 부분
+    Order order = deliveryService.getOrderWithItems(orderId);
     if (order != null && order.getUsers() != null) {
       Long userId = order.getUsers().getId();
       String notificationMessage = getNotificationMessage(status);
@@ -60,13 +61,13 @@ public class DeliveryStatusController {
     }
   }
 
-  private String getNotificationMessage(String status) {
-    if ("DELIVERY_COMPLETE".equalsIgnoreCase(status)) {
+  private String getNotificationMessage(DeliveryStatus status) {
+    if (status == DeliveryStatus.DELIVERY_COMPLETE) {
       return "배달이 완료되었습니다.";
-    } else if ("DELIVERING".equalsIgnoreCase(status)) {
+    } else if (status == DeliveryStatus.DELIVERING) {
       return "배달이 시작되었습니다.";
     }
-    return "";
+    return "배달준비";
   }
 
   @MessageMapping("/bellAlarm")
@@ -76,7 +77,7 @@ public class DeliveryStatusController {
     }
 
     long orderId = statusDto.getOrderId();
-    String status = statusDto.getStatus();
+    DeliveryStatus status = DeliveryStatus.valueOf(statusDto.getStatus().toUpperCase());
 
     List<Deliveries> deliveriesList = deliveryRepository.findByOrderId(orderId);
     if (deliveriesList.isEmpty()) {
@@ -84,28 +85,30 @@ public class DeliveryStatusController {
     }
 
     Deliveries delivery = deliveriesList.get(0);
-    delivery.setStatus(status);
+    delivery.setStatus(status.name());
 
-    if ("DELIVERY_COMPLETE".equalsIgnoreCase(status)) {
+    if (status == DeliveryStatus.DELIVERY_COMPLETE) {
       delivery.setArrivalDate(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS));
-    } else if ("DELIVERING".equalsIgnoreCase(status)) {
+    } else if (status == DeliveryStatus.DELIVERING) {
       delivery.setStartDate(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS));
     }
 
     deliveryRepository.save(delivery);
 
-    Order order = deliveryService.getOrderWithItems(orderId); // 수정된 부분
+    Order order = deliveryService.getOrderWithItems(orderId);
     if (order != null && order.getUsers() != null) {
       Long userId = order.getUsers().getId();
       String notificationMessage = "";
 
-      if ("DELIVERY_COMPLETE".equalsIgnoreCase(status)) {
+      if (status == DeliveryStatus.DELIVERY_COMPLETE) {
         notificationMessage = createDeliveryCompleteNotificationMessage(order);
-      } else if ("DELIVERING".equalsIgnoreCase(status)) {
+      } else if (status == DeliveryStatus.DELIVERING) {
         notificationMessage = createDeliveringNotificationMessage(order);
       }
 
-      messagingTemplate.convertAndSendToUser(String.valueOf(userId), "/queue/bellDeliveryStatus", notificationMessage);
+      if (status != DeliveryStatus.DELIVERY_READY) {
+        messagingTemplate.convertAndSendToUser(String.valueOf(userId), "/queue/bellDeliveryStatus", notificationMessage);
+      }
     }
   }
 
