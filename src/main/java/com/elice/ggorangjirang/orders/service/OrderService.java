@@ -1,9 +1,6 @@
 package com.elice.ggorangjirang.orders.service;
 
 
-import static com.elice.ggorangjirang.global.constant.GlobalConstants.NEW_ORDER_NOTICE;
-import static com.elice.ggorangjirang.global.constant.GlobalConstants.NEW_PRODUCT_NOTICE;
-
 import com.elice.ggorangjirang.carts.repository.CartItemRepository;
 import com.elice.ggorangjirang.carts.repository.CartRepository;
 import com.elice.ggorangjirang.deliveries.entity.Deliveries;
@@ -18,6 +15,8 @@ import jakarta.transaction.Transactional;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import static com.elice.ggorangjirang.global.constant.GlobalConstants.*;
 
 @Service
 @RequiredArgsConstructor
@@ -43,6 +42,14 @@ public class OrderService {
     cartItemRepository.deleteByCartIdAndProductIdIn(cartId, productIds);
 
     discordWebhook.sendInfoMessage(NEW_ORDER_NOTICE + " (ID: " + savedOrder.getOrderNumber() + ")");
+
+    // 재고량 확인 및 알림
+    orderItems.forEach(orderItem -> {
+      if (orderItem.getProduct().getStock() < 5) {
+        String productName = orderItem.getProduct().getName();
+        discordWebhook.sendWarningMessage("Product " + productName + PRODUCT_STOCK_NOTICE);
+      }
+    });
 
     return savedOrder;
   }
