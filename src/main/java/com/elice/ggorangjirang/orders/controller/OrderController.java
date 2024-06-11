@@ -13,6 +13,7 @@ import com.elice.ggorangjirang.jwt.service.JwtService;
 import com.elice.ggorangjirang.jwt.util.CustomUserDetails;
 import com.elice.ggorangjirang.orders.dto.OrderItemDTO;
 import com.elice.ggorangjirang.orders.dto.OrderItemRequest;
+import com.elice.ggorangjirang.orders.dto.OrderPageableResponse;
 import com.elice.ggorangjirang.orders.dto.OrderRequest;
 import com.elice.ggorangjirang.orders.dto.OrderResponse;
 import com.elice.ggorangjirang.orders.entity.Order;
@@ -156,9 +157,12 @@ public class OrderController {
 
   // 하나의 주문 검색
   @GetMapping("/{id}")
-  public ResponseEntity<OrderResponse> getOrder(@PathVariable(value = "id") Long id){
+  public ResponseEntity<OrderPageableResponse> getOrder(@PathVariable(value = "id") Long id,
+      @RequestParam(name = "page", defaultValue = "0") int page,
+      @RequestParam(name = "size", defaultValue = "5") int size) {
+    Pageable pageable = PageRequest.of(page, size);
     Order order = orderService.findById(id);
-    return ResponseEntity.ok().body(new OrderResponse(order));
+    return ResponseEntity.ok().body(new OrderPageableResponse(order, pageable));
   }
 
   @DeleteMapping("/{orderId}")
