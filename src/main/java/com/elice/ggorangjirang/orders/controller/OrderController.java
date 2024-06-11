@@ -13,6 +13,7 @@ import com.elice.ggorangjirang.jwt.service.JwtService;
 import com.elice.ggorangjirang.jwt.util.CustomUserDetails;
 import com.elice.ggorangjirang.orders.dto.OrderItemDTO;
 import com.elice.ggorangjirang.orders.dto.OrderItemRequest;
+import com.elice.ggorangjirang.orders.dto.OrderPageableResponse;
 import com.elice.ggorangjirang.orders.dto.OrderRequest;
 import com.elice.ggorangjirang.orders.dto.OrderResponse;
 import com.elice.ggorangjirang.orders.entity.Order;
@@ -156,29 +157,50 @@ public class OrderController {
 
   // 하나의 주문 검색
   @GetMapping("/{id}")
-  public ResponseEntity<OrderResponse> getOrder(@PathVariable(value = "id") Long id){
+  public ResponseEntity<OrderPageableResponse> getOrder(@PathVariable(value = "id") Long id,
+      @RequestParam(name = "page", defaultValue = "0") int page,
+      @RequestParam(name = "size", defaultValue = "5") int size) {
+    Pageable pageable = PageRequest.of(page, size);
     Order order = orderService.findById(id);
-    return ResponseEntity.ok().body(new OrderResponse(order));
+    return ResponseEntity.ok().body(new OrderPageableResponse(order, pageable));
   }
 
   @DeleteMapping("/{orderId}")
-  public ResponseEntity<Void> deleteOrder(
-      @PathVariable Long orderId, HttpServletRequest request) {
+  public ResponseEntity<OrderResponse> deleteOrder(@PathVariable Long orderId) {
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    log.info("Authentication object: {}", authentication);
+
+    if (authentication == null || !authentication.isAuthenticated()) {
+      log.warn("Authentication is null or not authenticated");
+      return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+    }
+
+    Object principal = authentication.getPrincipal();
+    String email = null;
+
+    if (principal instanceof UserDetails) {
+      email = ((UserDetails) principal).getUsername();
+    } else if (principal instanceof String) {
+      email = (String) principal;
+    }
+
+    if (email == null || email.equals("anonymousUser")) {
+      log.warn("Email is null or anonymousUser");
+      return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+    }
+
+    log.info("Authenticated user email: {}", email);
+
     try {
+      Users user = userService.getUsersInfoByEmail(email);
+      Long userId = user.getId();
 
-      String token = jwtService.extractAccessToken(request)
-          .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 토큰입니다."));
-
-      String email = jwtService.extractEmail(token)
-          .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 토큰입니다."));
-
-      // 서비스 메소드 호출하여 주문 삭제
-      orderService.deleteByUserIdAndOrderId(email, orderId);
-      return ResponseEntity.noContent().build();
+      // 서비스 메소드 호출하여 주문 취소
+      Order canceledOrder = orderService.cancelOrder(userId, orderId);
+      return ResponseEntity.ok().body(new OrderResponse(canceledOrder));
     } catch (IllegalArgumentException | IllegalStateException e) {
       return ResponseEntity.badRequest().build();
     }
   }
-
 
 }
