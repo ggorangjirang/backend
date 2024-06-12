@@ -53,7 +53,7 @@ public class SecurityConfig {
     http.cors(cors -> {
         CorsConfigurationSource source = request -> {
           CorsConfiguration config = new CorsConfiguration();
-          config.setAllowedOrigins(List.of("http://localhost:3000", "https://ggorangjirang.duckdns.org"));
+          config.setAllowedOrigins(List.of("http://localhost:3000", "https://ggorangjirang.duckdns.org","http://localhost:8080/"));
           config.setAllowedHeaders(List.of("*"));
           config.setExposedHeaders(List.of("Authorization", "Refresh-Token"));
           config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
