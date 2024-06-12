@@ -1,8 +1,8 @@
 package com.elice.ggorangjirang;
 
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -18,13 +18,8 @@ public class TestController {
     return "Post Hello " + name;
   }
 
-  @PostMapping("/api/test")
-  public String test(String name) {
-    return "test post Hello " + name;
-  }
-
-  @PostMapping("/api/test2")
-  public String test2(String name, @RequestHeader("Authorization") String token) {
-    return "test2 post Hello " + name;
+  @PatchMapping("/api/v1/hello")
+  public String patchHello(String name) {
+    return "Patch Hello " + name;
   }
 }
