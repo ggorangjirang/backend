@@ -181,7 +181,7 @@ public class ReviewService {
     }
 
     @Transactional
-    public void deleteReview(String email, Long id) {
+    public Page<ReviewResponseMy> deleteReview(String email, Long id, int page, int size) {
         Users user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new IllegalArgumentException("회원을 찾을 수 없습니다."));
 
@@ -197,5 +197,9 @@ public class ReviewService {
         }
 
         reviewRepository.delete(review);
+
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Review> reviewPage = reviewRepository.findByUserId(user.getId(), pageable);
+        return reviewPage.map(this::convertToReviewResponseMy);
     }
 }
