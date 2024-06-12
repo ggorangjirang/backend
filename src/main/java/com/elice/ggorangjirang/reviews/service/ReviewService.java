@@ -1,6 +1,8 @@
 package com.elice.ggorangjirang.reviews.service;
 
 import com.elice.ggorangjirang.amazonS3.service.S3Service;
+import com.elice.ggorangjirang.orders.dto.ReviewableOrderItemResponse;
+import com.elice.ggorangjirang.orders.entity.OrderItem;
 import com.elice.ggorangjirang.orders.repository.OrderItemRepository;
 import com.elice.ggorangjirang.products.entity.Product;
 import com.elice.ggorangjirang.products.exception.ProductNotFoundException;
@@ -17,6 +19,7 @@ import com.elice.ggorangjirang.users.repository.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -24,6 +27,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static com.elice.ggorangjirang.global.constant.GlobalConstants.*;
 
@@ -87,7 +92,8 @@ public class ReviewService {
     }
 
     @Transactional
-    public ReviewResponseMy addReview(String email, String requestJson, MultipartFile imageFile) throws IOException {
+    public Page<ReviewableOrderItemResponse> addReview(String email, String requestJson, MultipartFile imageFile,
+                                                       int page, int size) throws IOException {
         Users user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new IllegalArgumentException("회원을 찾을 수 없습니다."));
 
@@ -115,7 +121,26 @@ public class ReviewService {
                 .build();
 
         reviewRepository.save(review);
-        return convertToReviewResponseMy(review);
+
+        Pageable pageable = PageRequest.of(page, size);
+        Page<OrderItem> deliveredOrderItems = orderItemRepository.findByOrder_Users_EmailAndOrder_Deliveries_Status(email, "DELIVERY_COMPLETE", pageable);
+
+        Long userId = user.getId();
+
+        List<ReviewableOrderItemResponse> reviewableItems = deliveredOrderItems.getContent().stream()
+                .filter(orderItem -> !reviewRepository.existsByProduct_IdAndUser_Email(orderItem.getProduct().getId(), email))
+                .map(orderItem -> new ReviewableOrderItemResponse(
+                        orderItem.getProduct().getId(),
+                        userId,
+                        orderItem.getProduct().getName(),
+                        orderItem.getProduct().getProductImageUrl(),
+                        orderItem.getOrderPrice(),
+                        orderItem.getQuantity(),
+                        orderItem.getTotalPrice()
+                ))
+                .collect(Collectors.toList());
+
+        return new PageImpl<>(reviewableItems, pageable, deliveredOrderItems.getTotalElements());
     }
 
     @Transactional
