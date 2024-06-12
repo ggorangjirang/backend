@@ -15,7 +15,7 @@ compile:
   script:
     - gradle build --exclude-task test
   tags:
-    - junylocal
+    - juny
   rules:
     - if: $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "main"
     - if: $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == $CI_DEFAULT_BRANCH
@@ -28,7 +28,7 @@ test:
     - cat $ENV_YML > src/main/resources/env.yml
     - gradle build test
   tags:
-    - junylocal
+    - juny
   rules:
     - if: $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "main"
     - if: $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == $CI_DEFAULT_BRANCH
