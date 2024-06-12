@@ -119,7 +119,7 @@ public class ReviewController {
     public ResponseEntity<Page<ReviewResponseMy>> deleteReview(
             @PathVariable("reviewId") Long id,
             @RequestParam(name = "page", defaultValue = "0") int page,
-            @RequestParam(name = "size", defaultValue = "3") int size) {
+            @RequestParam(name = "size", defaultValue = "5") int size) {
 
         String email = getAuthenticatedUserEmail();
         if (email == null) {
