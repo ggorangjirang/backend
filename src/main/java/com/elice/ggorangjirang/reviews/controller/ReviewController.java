@@ -116,14 +116,17 @@ public class ReviewController {
     }
 
     @DeleteMapping("/users/review/{reviewId}")
-    public ResponseEntity<Void> deleteReview(@PathVariable("reviewId") Long id) {
+    public ResponseEntity<Page<ReviewResponseMy>> deleteReview(
+            @PathVariable("reviewId") Long id,
+            @RequestParam(name = "page", defaultValue = "0") int page,
+            @RequestParam(name = "size", defaultValue = "3") int size) {
 
         String email = getAuthenticatedUserEmail();
         if (email == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
-        reviewService.deleteReview(email, id);
-        return ResponseEntity.noContent().build();
+        Page<ReviewResponseMy> reviews = reviewService.deleteReview(email, id, page, size);
+        return ResponseEntity.ok(reviews);
     }
 }
