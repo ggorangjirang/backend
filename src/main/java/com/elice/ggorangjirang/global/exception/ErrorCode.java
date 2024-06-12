@@ -30,15 +30,6 @@ public enum ErrorCode {
   ORDER_CANNOT_CANCEL_DELIVERED(HttpStatus.CONFLICT, ExceptionConstants.ORDER_CANNOT_CANCEL_DELIVERED_CODE, ExceptionConstants.ORDER_CANNOT_CANCEL_DELIVERED_MSG);
 
 
-  // Order Specific Exception
-  ORDER_NOT_FOUND(HttpStatus.NOT_FOUND, ExceptionConstants.ORDER_NOT_FOUND_CODE, ExceptionConstants.ORDER_NOT_FOUND_MSG),
-  ORDER_CANNOT_CANCEL_DELIVERING(HttpStatus.CONFLICT, ExceptionConstants.ORDER_CANNOT_CANCEL_DELIVERING_CODE, ExceptionConstants.ORDER_CANNOT_CANCEL_DELIVERING_MSG),
-  ORDER_CANNOT_CANCEL_DELIVERED(HttpStatus.CONFLICT, ExceptionConstants.ORDER_CANNOT_CANCEL_DELIVERED_CODE, ExceptionConstants.ORDER_CANNOT_CANCEL_DELIVERED_MSG),
-
-  // User Specific Exception
-  EMAIL_NOT_VERIFIED(HttpStatus.UNAUTHORIZED, ExceptionConstants.EMAIL_NOT_VERIFIED_CODE, ExceptionConstants.EMAIL_NOT_VERIFIED_MSG),
-  BAD_CREDENTIALS(HttpStatus.UNAUTHORIZED, ExceptionConstants.BAD_CREDENTIALS_CODE, ExceptionConstants.BAD_CREDENTIALS_MSG),
-  USER_NOT_FOUND(HttpStatus.NOT_FOUND, ExceptionConstants.USER_NOT_FOUND_CODE, ExceptionConstants.USER_NOT_FOUND_MSG);
 
   private final HttpStatus status;
   private final String code;

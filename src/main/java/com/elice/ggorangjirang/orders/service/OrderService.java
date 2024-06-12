@@ -41,8 +41,8 @@ public class OrderService {
     // 주문 생성 후 장바구니 아이템 삭제
     Long cartId = cartRepository.findByUser_Id(users.getId()).getId();
     List<Long> productIds = orderItems.stream()
-            .map(orderItem -> orderItem.getProduct().getId())
-            .toList();
+        .map(orderItem -> orderItem.getProduct().getId())
+        .toList();
     cartItemRepository.deleteByCartIdAndProductIdIn(cartId, productIds);
 
     discordWebhook.sendInfoMessage(NEW_ORDER_NOTICE + " (ID: " + savedOrder.getOrderNumber() + ")");
