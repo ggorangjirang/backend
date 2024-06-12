@@ -98,7 +98,7 @@ public class ReviewController {
     }
 
 
-    @PatchMapping("/users/review/{reviewId}")
+    @PutMapping("/users/review/{reviewId}")
     public ResponseEntity<ReviewResponseMy> editReview(
             @PathVariable("reviewId") Long id,
             @RequestPart("review") String requestJson,
