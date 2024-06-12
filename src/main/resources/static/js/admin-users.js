@@ -1,5 +1,30 @@
-import { checkAdmin, addCommas, createNavbar } from "./useful-functions.js";
-import * as Api from "./api.js";
+async function get(url) {
+  const response = await fetch(url);
+  return response.json();
+}
+
+async function patch(url, id, data) {
+  const response = await fetch(`${url}/${id}`, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(data),
+  });
+  return response.json();
+}
+
+function checkAdmin() {
+  // 관리자 권한 확인 로직 구현
+}
+
+function addCommas(num) {
+  return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+}
+
+function createNavbar() {
+  // 네비게이션 바 생성 로직 구현
+}
 
 // 요소(element), input 혹은 상수
 const usersCount = document.querySelector("#usersCount");
@@ -34,7 +59,7 @@ function addAllEvents() {
 // 페이지 로드 시 실행, 삭제할 회원 id를 전역변수로 관리함
 let userIdToDelete;
 async function insertUsers() {
-  const users = await Api.get("/api/users");
+  const users = await get("/api/users");
 
   // 총 요약에 활용
   const summary = {
@@ -107,7 +132,7 @@ async function insertUsers() {
       roleSelectBox.className = roleSelectBox[index].className;
 
       // api 요청
-      await Api.patch("/api/users", id, data);
+      await patch("/api/users", id, data);
     });
 
     // 이벤트 - 탈퇴버튼 클릭 시 Modal 창 띄우고, 동시에, 전역변수에 해당 주문의 id 할당
@@ -129,7 +154,7 @@ async function deleteUserData(e) {
 
   try {
     const data = { deletedAt: new Date().toISOString() };
-    await Api.patch("/api/users", userIdToDelete, data);
+    await patch("/api/users", userIdToDelete, data);
 
     // 탈퇴 처리 성공
     alert("회원이 탈퇴 처리되었습니다.");
