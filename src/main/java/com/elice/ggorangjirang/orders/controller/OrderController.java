@@ -9,6 +9,7 @@ import static com.elice.ggorangjirang.global.constant.GlobalConstants.ORDER_COMP
 import com.elice.ggorangjirang.deliveries.entity.Deliveries;
 import com.elice.ggorangjirang.deliveries.service.DeliveryService;
 import com.elice.ggorangjirang.global.email.service.EmailService;
+import com.elice.ggorangjirang.global.exception.hierachy.common.OrderCannotCancelDeliveringException;
 import com.elice.ggorangjirang.jwt.service.JwtService;
 import com.elice.ggorangjirang.jwt.util.CustomUserDetails;
 import com.elice.ggorangjirang.orders.dto.OrderItemDTO;
@@ -33,6 +34,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -53,6 +55,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 @RequestMapping("api/orders")
 public class OrderController {
+
   private final OrderService orderService;
   private final OrderItemService orderItemService;
   private final DeliveryService deliveryService;
@@ -60,9 +63,10 @@ public class OrderController {
   private final JwtService jwtService;
   private final ProductService productService;
   private final EmailService emailService;
+
   // 주문 생성
   @PostMapping("")
-  public ResponseEntity<Long> addOrder(@RequestBody OrderRequest request){
+  public ResponseEntity<Long> addOrder(@RequestBody OrderRequest request) {
 
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
     log.info("Authentication object: {}", authentication);
@@ -100,7 +104,8 @@ public class OrderController {
       Product product = productService.findProduct(orderItemRequest.getProductId());
 
       int orderPrice = product.getPrice();
-      OrderItem orderItem = orderItemService.createOrderItem(product, orderPrice, orderItemRequest.getQuantity());
+      OrderItem orderItem = orderItemService.createOrderItem(product, orderPrice,
+          orderItemRequest.getQuantity());
       orderItems.add(orderItem);
     }
 
@@ -118,8 +123,9 @@ public class OrderController {
 
   // 주문 목록 검색
   @GetMapping("")
-  public ResponseEntity<Page<OrderResponse>> getOrders(@RequestParam(name = "page", defaultValue = "0") int page,
-      @RequestParam(name = "size", defaultValue = "5") int size){
+  public ResponseEntity<Page<OrderResponse>> getOrders(
+      @RequestParam(name = "page", defaultValue = "0") int page,
+      @RequestParam(name = "size", defaultValue = "5") int size) {
 
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
     log.info("Authentication object: {}", authentication);
@@ -148,7 +154,8 @@ public class OrderController {
     Users users = userService.getUsersInfoByEmail(email);
     Long usersId = users.getId();
 
-    Pageable pageable = PageRequest.of(page, size);
+    // 최신순으로 정렬
+    Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "orderDate"));
     Page<Order> orderPage = orderService.findAllByUserId(usersId, pageable);
     Page<OrderResponse> orderResponsePage = orderPage.map(OrderResponse::new);
 
@@ -166,7 +173,9 @@ public class OrderController {
   }
 
   @DeleteMapping("/{orderId}")
-  public ResponseEntity<OrderResponse> deleteOrder(@PathVariable Long orderId) {
+  public ResponseEntity<OrderPageableResponse> deleteOrder(@PathVariable Long orderId,
+      @RequestParam(name = "page", defaultValue = "0") int page,
+      @RequestParam(name = "size", defaultValue = "5") int size) {
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
     log.info("Authentication object: {}", authentication);
 
@@ -191,16 +200,16 @@ public class OrderController {
 
     log.info("Authenticated user email: {}", email);
 
-    try {
-      Users user = userService.getUsersInfoByEmail(email);
-      Long userId = user.getId();
+    Users user = userService.getUsersInfoByEmail(email);
+    Long userId = user.getId();
 
-      // 서비스 메소드 호출하여 주문 취소
-      Order canceledOrder = orderService.cancelOrder(userId, orderId);
-      return ResponseEntity.ok().body(new OrderResponse(canceledOrder));
-    } catch (IllegalArgumentException | IllegalStateException e) {
-      return ResponseEntity.badRequest().build();
-    }
+    // 서비스 메소드 호출하여 주문 취소
+    Order canceledOrder = orderService.cancelOrder(userId, orderId);
+
+    Pageable pageable = PageRequest.of(page, size);
+    OrderPageableResponse orderResponsePage = new OrderPageableResponse(canceledOrder, pageable);
+
+    return ResponseEntity.ok().body(orderResponsePage);
   }
 
 }
