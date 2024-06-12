@@ -47,9 +47,11 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
                 jwtService.setAccessTokenHeader(response, accessToken);
                 jwtService.sendAccessAndRefreshToken(response, accessToken, newUser.getRefreshToken());
                 log.info("Jwt AccessToken 및 RefreshToken 생성 및 설정 완료");
+
+                response.sendRedirect("http://localhost:3000/main");
             } else if (oAuth2User.getRole() == Role.USER) {
                 loginSuccess(response, oAuth2User); // 로그인에 성공한 경우 access, refresh 토큰 생성
-                response.sendRedirect("/main");
+                response.sendRedirect("http://localhost:3000/main");
             }
         } catch (Exception e) {
             log.error("OAuth2 Login 성공 후 예외 발생", e);
