@@ -144,7 +144,8 @@ public class ReviewService {
     }
 
     @Transactional
-    public ReviewResponseMy updateReview(String email, Long id, String requestJson, MultipartFile imageFile) throws IOException {
+    public Page<ReviewResponseMy> updateReview(String email, Long id, String requestJson, MultipartFile imageFile,
+                                               int page, int size) throws IOException {
         Users user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new IllegalArgumentException("회원을 찾을 수 없습니다."));
 
@@ -173,7 +174,10 @@ public class ReviewService {
                 newImageUrl);
 
         reviewRepository.save(review);
-        return convertToReviewResponseMy(review);
+
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Review> reviewPage = reviewRepository.findByUserId(user.getId(), pageable);
+        return reviewPage.map(this::convertToReviewResponseMy);
     }
 
     @Transactional
