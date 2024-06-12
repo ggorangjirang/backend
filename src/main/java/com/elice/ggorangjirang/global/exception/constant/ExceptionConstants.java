@@ -25,5 +25,13 @@ public class ExceptionConstants {
 
   public static final String DATA_INTEGRITY_VIOLATION_CODE = "D1";
   public static final String DATA_INTEGRITY_VIOLATION = "Data Integrity Violation";
+
+  // Order Specific
+  public static final String ORDER_NOT_FOUND_CODE = "EO1";
+  public static final String ORDER_NOT_FOUND_MSG = "Order not found.";
+  public static final String ORDER_CANNOT_CANCEL_DELIVERING_CODE = "EO2";
+  public static final String ORDER_CANNOT_CANCEL_DELIVERING_MSG = "배송 중이라 취소가 불가능합니다.";
+  public static final String ORDER_CANNOT_CANCEL_DELIVERED_CODE = "EO3";
+  public static final String ORDER_CANNOT_CANCEL_DELIVERED_MSG = "배송 완료라 취소가 불가능합니다.";
   private ExceptionConstants() {}
 }
