@@ -41,6 +41,12 @@ public class Users {
     @Embedded
     private Address address;
 
+    @Embedded
+    private VerificationToken verificationToken;
+
+    @Column(name = "enabled")
+    private boolean enabled; // 이메일 인증 여부
+
     @CreatedDate
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
@@ -50,7 +56,7 @@ public class Users {
     private LocalDateTime updatedAt;
 
     @Column(name = "deleted_at")
-    private LocalDateTime deletedAt;
+    private LocalDateTime deletedAt; // 탈퇴 여부
 
     @Enumerated(EnumType.STRING)
     private Role role;
@@ -66,10 +72,11 @@ public class Users {
     @OneToMany(mappedBy = "user")
     private List<Review> reviews = new ArrayList<>();
 
-    public Users(String name, String email, String password){
+    public Users(String name, String email, String password, boolean enalbed){
         this.name = name;
         this.password = password;
         this.email = email;
+        this.enabled = enalbed;
         this.createdAt = LocalDateTime.now();
     }
 
@@ -85,6 +92,14 @@ public class Users {
 
     public void updateRefreshToken(String updatedRefreshToken) {
         this.refreshToken = updatedRefreshToken;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+    }
+
+    public boolean isEnabled() {
+        return enabled;
     }
 
     // 탈퇴 여부를 확인하는 메소드
