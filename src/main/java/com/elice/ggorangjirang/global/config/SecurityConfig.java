@@ -79,7 +79,7 @@ public class SecurityConfig {
                         "/oauth2/**",
                         "/api/test",
                         "/api/test2",
-                        "/login/oauth2/code/kakao")
+                        "/login/oauth2/code/kakao","/ws/**","/wss/**")
                     .permitAll()
                     .anyRequest().authenticated());
 
