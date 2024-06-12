@@ -1,22 +1,25 @@
 package com.elice.ggorangjirang.users.service;
 
 import com.elice.ggorangjirang.carts.service.CartService;
+import com.elice.ggorangjirang.global.email.service.EmailService;
 import com.elice.ggorangjirang.users.dto.UserDto;
 import com.elice.ggorangjirang.users.dto.UserSignupDto;
 import com.elice.ggorangjirang.users.dto.UserUpdateRequest;
 import com.elice.ggorangjirang.users.entity.Role;
 import com.elice.ggorangjirang.users.entity.Users;
+import com.elice.ggorangjirang.users.entity.VerificationToken;
 import com.elice.ggorangjirang.users.repository.UserRepository;
+import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -27,7 +30,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final CartService cartService;
-
+    private final EmailService emailService;
 
     public void signUp(UserSignupDto userSignupDto) throws Exception {
         if (userRepository.findByEmail(userSignupDto.getEmail()).isPresent()) {
@@ -39,12 +42,50 @@ public class UserService {
             .password(userSignupDto.getPassword())
             .name(userSignupDto.getName())
             .role(Role.USER)
+            .enabled(false)
             .build();
 
         users.passwordEncode(passwordEncoder);
         userRepository.save(users);
 
         cartService.createCartForUser(users);
+        sendVerficationEmail(users);
+    }
+
+    private void sendVerficationEmail(Users users) {
+        String token = UUID.randomUUID().toString();
+        LocalDateTime expiryDate = LocalDateTime.now().plusHours(1);
+
+        VerificationToken verificationToken = new VerificationToken(token, expiryDate);
+        users.setVerificationToken(verificationToken);
+        userRepository.save(users);
+
+        String recipientAddress = users.getEmail();
+        String subject = "회원가입 이메일 인증";
+        String confirmationUrl = "http://localhost:8080/api/users/confirm?token=" + token;
+        String message = "<p>회원가입을 완료하려면 아래 버튼을 클릭하세요.</p>"
+            + "<a href=\"" + confirmationUrl + "\" style=\"display: inline-block; padding: 10px 20px; " +
+            "font-size: 16px; color: #fff; background-color: #007bff; text-decoration: none; " +
+            "border-radius: 5px;\">이메일 인증</a>";
+
+        try {
+            emailService.sendHtmlMessage(recipientAddress, subject, message);
+        } catch (MessagingException e) {
+            throw new RuntimeException("이메일 전송에 실패했습니다.", e);
+        }
+    }
+
+    public void confirmUser(String token) {
+        Users users = userRepository.findByVerificationToken_Token(token)
+            .orElseThrow(() -> new RuntimeException("유효하지 않은 토큰입니다."));
+
+        if (users.getVerificationToken().getExpiryDate().isBefore(LocalDateTime.now())) {
+            throw new RuntimeException("토큰이 만료되었습니다.");
+        }
+
+        users.setEnabled(true); // 계정 활성화
+        users.setVerificationToken(null); // 토큰 제거
+        userRepository.save(users);
     }
 
     public Users findByUsername(String username) {
