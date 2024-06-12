@@ -10,7 +10,6 @@ import com.elice.ggorangjirang.jwt.filter.JwtAuthenticationProcessingFilter;
 import com.elice.ggorangjirang.jwt.service.JwtService;
 import com.elice.ggorangjirang.users.repository.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.util.Collections;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
@@ -27,9 +26,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.security.web.authentication.logout.LogoutFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import java.util.List;
-import static org.springframework.security.config.Customizer.withDefaults;
 
 // 인증은 CustomUsernamePasswordAuthenticationFilter에서 authenticate()로 인증된 사용자로 처리
 // JwtAuthenticationProcessingFilter는 AccessToken, RefreshToken 재발급
