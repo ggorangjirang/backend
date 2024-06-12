@@ -99,17 +99,19 @@ public class ReviewController {
 
 
     @PatchMapping("/users/review/{reviewId}")
-    public ResponseEntity<ReviewResponseMy> editReview(
+    public ResponseEntity<Page<ReviewResponseMy>> editReview(
             @PathVariable("reviewId") Long id,
             @RequestPart("review") String requestJson,
-            @RequestPart(value = "imageFile", required = false) MultipartFile imageFile) throws IOException {
+            @RequestPart(value = "imageFile", required = false) MultipartFile imageFile,
+            @RequestParam(name = "page", defaultValue = "0") int page,
+            @RequestParam(name = "size", defaultValue = "5") int size) throws IOException {
 
         String email = getAuthenticatedUserEmail();
         if (email == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
-        ReviewResponseMy updatedReview = reviewService.updateReview(email, id, requestJson, imageFile);
+        Page<ReviewResponseMy> updatedReview = reviewService.updateReview(email, id, requestJson, imageFile, page, size);
         return ResponseEntity.ok(updatedReview);
     }
 
