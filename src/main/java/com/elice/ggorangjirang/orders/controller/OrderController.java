@@ -9,10 +9,12 @@ import static com.elice.ggorangjirang.global.constant.GlobalConstants.ORDER_COMP
 import com.elice.ggorangjirang.deliveries.entity.Deliveries;
 import com.elice.ggorangjirang.deliveries.service.DeliveryService;
 import com.elice.ggorangjirang.global.email.service.EmailService;
+import com.elice.ggorangjirang.global.exception.hierachy.common.OrderCannotCancelDeliveringException;
 import com.elice.ggorangjirang.jwt.service.JwtService;
 import com.elice.ggorangjirang.jwt.util.CustomUserDetails;
 import com.elice.ggorangjirang.orders.dto.OrderItemDTO;
 import com.elice.ggorangjirang.orders.dto.OrderItemRequest;
+import com.elice.ggorangjirang.orders.dto.OrderPageableResponse;
 import com.elice.ggorangjirang.orders.dto.OrderRequest;
 import com.elice.ggorangjirang.orders.dto.OrderResponse;
 import com.elice.ggorangjirang.orders.entity.Order;
@@ -32,6 +34,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -52,6 +55,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 @RequestMapping("api/orders")
 public class OrderController {
+
   private final OrderService orderService;
   private final OrderItemService orderItemService;
   private final DeliveryService deliveryService;
@@ -59,9 +63,10 @@ public class OrderController {
   private final JwtService jwtService;
   private final ProductService productService;
   private final EmailService emailService;
+
   // 주문 생성
   @PostMapping("")
-  public ResponseEntity<Long> addOrder(@RequestBody OrderRequest request){
+  public ResponseEntity<Long> addOrder(@RequestBody OrderRequest request) {
 
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
     log.info("Authentication object: {}", authentication);
@@ -99,7 +104,8 @@ public class OrderController {
       Product product = productService.findProduct(orderItemRequest.getProductId());
 
       int orderPrice = product.getPrice();
-      OrderItem orderItem = orderItemService.createOrderItem(product, orderPrice, orderItemRequest.getQuantity());
+      OrderItem orderItem = orderItemService.createOrderItem(product, orderPrice,
+          orderItemRequest.getQuantity());
       orderItems.add(orderItem);
     }
 
@@ -117,8 +123,9 @@ public class OrderController {
 
   // 주문 목록 검색
   @GetMapping("")
-  public ResponseEntity<Page<OrderResponse>> getOrders(@RequestParam(name = "page", defaultValue = "0") int page,
-      @RequestParam(name = "size", defaultValue = "5") int size){
+  public ResponseEntity<Page<OrderResponse>> getOrders(
+      @RequestParam(name = "page", defaultValue = "0") int page,
+      @RequestParam(name = "size", defaultValue = "5") int size) {
 
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
     log.info("Authentication object: {}", authentication);
@@ -147,7 +154,8 @@ public class OrderController {
     Users users = userService.getUsersInfoByEmail(email);
     Long usersId = users.getId();
 
-    Pageable pageable = PageRequest.of(page, size);
+    // 최신순으로 정렬
+    Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "orderDate"));
     Page<Order> orderPage = orderService.findAllByUserId(usersId, pageable);
     Page<OrderResponse> orderResponsePage = orderPage.map(OrderResponse::new);
 
@@ -156,29 +164,52 @@ public class OrderController {
 
   // 하나의 주문 검색
   @GetMapping("/{id}")
-  public ResponseEntity<OrderResponse> getOrder(@PathVariable(value = "id") Long id){
+  public ResponseEntity<OrderPageableResponse> getOrder(@PathVariable(value = "id") Long id,
+      @RequestParam(name = "page", defaultValue = "0") int page,
+      @RequestParam(name = "size", defaultValue = "5") int size) {
+    Pageable pageable = PageRequest.of(page, size);
     Order order = orderService.findById(id);
-    return ResponseEntity.ok().body(new OrderResponse(order));
+    return ResponseEntity.ok().body(new OrderPageableResponse(order, pageable));
   }
 
   @DeleteMapping("/{orderId}")
-  public ResponseEntity<Void> deleteOrder(
-      @PathVariable Long orderId, HttpServletRequest request) {
-    try {
+  public ResponseEntity<OrderPageableResponse> deleteOrder(@PathVariable Long orderId,
+      @RequestParam(name = "page", defaultValue = "0") int page,
+      @RequestParam(name = "size", defaultValue = "5") int size) {
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    log.info("Authentication object: {}", authentication);
 
-      String token = jwtService.extractAccessToken(request)
-          .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 토큰입니다."));
-
-      String email = jwtService.extractEmail(token)
-          .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 토큰입니다."));
-
-      // 서비스 메소드 호출하여 주문 삭제
-      orderService.deleteByUserIdAndOrderId(email, orderId);
-      return ResponseEntity.noContent().build();
-    } catch (IllegalArgumentException | IllegalStateException e) {
-      return ResponseEntity.badRequest().build();
+    if (authentication == null || !authentication.isAuthenticated()) {
+      log.warn("Authentication is null or not authenticated");
+      return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
-  }
 
+    Object principal = authentication.getPrincipal();
+    String email = null;
+
+    if (principal instanceof UserDetails) {
+      email = ((UserDetails) principal).getUsername();
+    } else if (principal instanceof String) {
+      email = (String) principal;
+    }
+
+    if (email == null || email.equals("anonymousUser")) {
+      log.warn("Email is null or anonymousUser");
+      return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+    }
+
+    log.info("Authenticated user email: {}", email);
+
+    Users user = userService.getUsersInfoByEmail(email);
+    Long userId = user.getId();
+
+    // 서비스 메소드 호출하여 주문 취소
+    Order canceledOrder = orderService.cancelOrder(userId, orderId);
+
+    Pageable pageable = PageRequest.of(page, size);
+    OrderPageableResponse orderResponsePage = new OrderPageableResponse(canceledOrder, pageable);
+
+    return ResponseEntity.ok().body(orderResponsePage);
+  }
 
 }

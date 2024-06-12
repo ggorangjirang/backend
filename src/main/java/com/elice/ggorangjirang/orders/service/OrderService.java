@@ -6,6 +6,8 @@ import com.elice.ggorangjirang.carts.repository.CartRepository;
 import com.elice.ggorangjirang.deliveries.entity.Deliveries;
 import com.elice.ggorangjirang.deliveries.repository.DeliveryRepository;
 import com.elice.ggorangjirang.discord.DiscordWebhook;
+import com.elice.ggorangjirang.global.exception.hierachy.common.OrderCannotCancelDeliveredException;
+import com.elice.ggorangjirang.global.exception.hierachy.common.OrderCannotCancelDeliveringException;
 import com.elice.ggorangjirang.orders.entity.Order;
 import com.elice.ggorangjirang.orders.entity.OrderItem;
 import com.elice.ggorangjirang.orders.repository.OrderRepository;
@@ -68,26 +70,31 @@ public class OrderService {
   }
 
   @Transactional
-  public void deleteByUserIdAndOrderId(String email, Long orderId) {
-
-    Users user = userRepository.findByEmail(email).orElseThrow(()-> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
-    Long userId = user.getId();
-
+  public Order cancelOrder(Long userId, Long orderId) {
     Order order = orderRepository.findByIdAndUsers_Id(orderId, userId)
         .orElseThrow(() -> new IllegalArgumentException("해당 주문이 존재하지 않습니다. Order ID: " + orderId + ", User ID: " + userId));
 
-    if(order.getDeliveries().getStatus().equals("DELIVERING")) {
-      throw new IllegalStateException("배송 중이라 취소가 불가능합니다.");
-    } else if(order.getDeliveries().getStatus().equals("DELIVERY_COMPLETE")) {
-      throw new IllegalStateException("배송 완료라 취소가 불가능합니다.");
+
+    String deliveryStatus = order.getDeliveries().getStatus();
+    if ("DELIVERING".equals(deliveryStatus)) {
+      throw new OrderCannotCancelDeliveringException();
+    } else if ("DELIVERY_COMPLETE".equals(deliveryStatus)) {
+      throw new OrderCannotCancelDeliveredException();
     }
 
     for(OrderItem orderItem : order.getOrderItems()) {
       orderItem.delete();
     }
 
-    orderRepository.deleteById(orderId);
+
+    Deliveries deliveries = order.getDeliveries();
+    deliveries.setStatus("DELIVERY_CANCEL");
+
+    order.cancel();
+
+    return order;
   }
+
 
 
   // 주문 삭제
