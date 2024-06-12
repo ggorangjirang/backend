@@ -41,7 +41,10 @@ CREATE TABLE users (
     deleted_at TIMESTAMP,
     role VARCHAR(50),
     social_id VARCHAR(255),
-    refresh_token VARCHAR(255)
+    refresh_token VARCHAR(255),
+    enabled BOOLEAN DEFAULT false,
+    token VARCHAR(255),
+    expiry_date TIMESTAMP
 );
 
 CREATE TABLE products (
