@@ -34,7 +34,17 @@ public class UserController {
     public String signUp(@RequestBody UserSignupDto userSignupDto) throws Exception {
         userService.signUp(userSignupDto);
 
-        return "회원가입이 완료되었습니다.";
+        return "회원가입이 완료되었습니다. 이메일을 확인하여 인증을 완료해주세요.";
+    }
+
+    @GetMapping("/confirm")
+    public ResponseEntity<?> confirmUser(@RequestParam("token") String token) {
+        try {
+            userService.confirmUser(token);
+            return ResponseEntity.ok("이메일 인증이 완료되었습니다.");
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
     }
 
     @PostMapping("/login")
