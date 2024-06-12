@@ -120,7 +120,7 @@
 </div>
 <script>
     document.addEventListener('DOMContentLoaded', () => {
-        const socket = new WebSocket('ws://localhost:8080/ws');
+        const socket = new WebSocket('wss://ggorangjirang.duckdns.org/ws');
         let stompClient = Stomp.over(socket);
 
         stompClient.connect({}, function(frame) {

@@ -17,7 +17,7 @@ public class DeliveryMapper {
     delivery.setStreetAddress(deliveryDto.getStreetAddress());
     delivery.setDetailAddress(deliveryDto.getDetailAddress());
     delivery.setRequest(deliveryDto.getRequest());
-    delivery.setStatus("Pending");
+    delivery.setStatus("DELIVERY_READY");
 
     return delivery;
   }

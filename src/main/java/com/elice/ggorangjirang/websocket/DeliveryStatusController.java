@@ -114,12 +114,21 @@ public class DeliveryStatusController {
     String firstItemName = orderItems.get(0).getProduct().getName();
     int remainingItemsCount = orderItems.size() - 1;
 
+    if (orderItems.size() == 1) {
+      return firstItemName + " 상품이 배송 완료되었습니다.";
+    }
+
     return firstItemName + " 외 " + remainingItemsCount + "개의 상품이 배송 완료되었습니다.";
   }
 
   private String createDeliveringNotificationMessage(Order order) {
     List<OrderItem> orderItems = order.getOrderItems();
     String firstItemName = orderItems.get(0).getProduct().getName();
+
+    if (orderItems.size() == 1) {
+      return firstItemName + " 상품이 배송 중입니다.";
+    }
+
     return firstItemName + " 외 " + (orderItems.size() - 1) + "개의 상품이 배송 중입니다.";
   }
 }
