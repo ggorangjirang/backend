@@ -6,6 +6,8 @@ import com.elice.ggorangjirang.carts.repository.CartRepository;
 import com.elice.ggorangjirang.deliveries.entity.Deliveries;
 import com.elice.ggorangjirang.deliveries.repository.DeliveryRepository;
 import com.elice.ggorangjirang.discord.DiscordWebhook;
+import com.elice.ggorangjirang.global.exception.hierachy.common.OrderCannotCancelDeliveredException;
+import com.elice.ggorangjirang.global.exception.hierachy.common.OrderCannotCancelDeliveringException;
 import com.elice.ggorangjirang.orders.entity.Order;
 import com.elice.ggorangjirang.orders.entity.OrderItem;
 import com.elice.ggorangjirang.orders.repository.OrderRepository;
@@ -39,8 +41,8 @@ public class OrderService {
     // 주문 생성 후 장바구니 아이템 삭제
     Long cartId = cartRepository.findByUser_Id(users.getId()).getId();
     List<Long> productIds = orderItems.stream()
-            .map(orderItem -> orderItem.getProduct().getId())
-            .toList();
+        .map(orderItem -> orderItem.getProduct().getId())
+        .toList();
     cartItemRepository.deleteByCartIdAndProductIdIn(cartId, productIds);
 
     discordWebhook.sendInfoMessage(NEW_ORDER_NOTICE + " (ID: " + savedOrder.getOrderNumber() + ")");
@@ -72,10 +74,12 @@ public class OrderService {
     Order order = orderRepository.findByIdAndUsers_Id(orderId, userId)
         .orElseThrow(() -> new IllegalArgumentException("해당 주문이 존재하지 않습니다. Order ID: " + orderId + ", User ID: " + userId));
 
-    if(order.getDeliveries().getStatus().equals("DELIVERING")) {
-      throw new IllegalStateException("배송 중이라 취소가 불가능합니다.");
-    } else if(order.getDeliveries().getStatus().equals("DELIVERY_COMPLETE")) {
-      throw new IllegalStateException("배송 완료라 취소가 불가능합니다.");
+
+    String deliveryStatus = order.getDeliveries().getStatus();
+    if ("DELIVERING".equals(deliveryStatus)) {
+      throw new OrderCannotCancelDeliveringException();
+    } else if ("DELIVERY_COMPLETE".equals(deliveryStatus)) {
+      throw new OrderCannotCancelDeliveredException();
     }
 
     for(OrderItem orderItem : order.getOrderItems()) {
