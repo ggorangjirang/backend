@@ -1,5 +1,6 @@
 package com.elice.ggorangjirang.global.login.service;
 
+import com.elice.ggorangjirang.global.exception.hierachy.common.EmailNotVerfiedException;
 import com.elice.ggorangjirang.jwt.service.JwtService;
 import com.elice.ggorangjirang.jwt.util.CustomUserDetails;
 import com.elice.ggorangjirang.users.dto.UserLoginDto;
@@ -51,6 +52,10 @@ public class LoginService implements UserDetailsService {
 
         if (users.isDeleted()) {
             throw new UsernameNotFoundException("탈퇴한 사용자입니다.");
+        }
+
+        if (!users.isEnabled()) {
+            throw new EmailNotVerfiedException("이메일 인증이 완료되지 않았습니다.");
         }
 
         if (passwordEncoder.matches(userLoginDto.getPassword(), users.getPassword())) {

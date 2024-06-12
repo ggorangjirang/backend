@@ -2,6 +2,7 @@ package com.elice.ggorangjirang.global.exception;
 
 import com.elice.ggorangjirang.discord.DiscordWebhook;
 import com.elice.ggorangjirang.global.exception.hierachy.CustomBusinessException;
+import com.elice.ggorangjirang.global.exception.hierachy.common.EmailNotVerfiedException;
 import com.elice.ggorangjirang.global.exception.hierachy.common.ProductNotFoundException;
 import com.elice.ggorangjirang.global.exception.hierachy.common.ProductOutOfStockException;
 import com.elice.ggorangjirang.products.exception.InvalidProductDataException;
@@ -15,6 +16,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
@@ -109,7 +112,7 @@ public class GlobalExceptionHandler {
   public ResponseEntity<String> handleRuntimeException(RuntimeException e, HttpServletRequest request,
                                                        HttpServletResponse response) {
     if (response.isCommitted()) {
-      log.warn("Response is already committed for SubcategoryNotFoundException: {}", e.getMessage());
+      log.warn("Response is already committed for handleRuntimeException: {}", e.getMessage());
       return null;
     }
 
@@ -133,5 +136,50 @@ public class GlobalExceptionHandler {
         .status(ErrorCode.INVALID_PARAMETER.getStatus())
         .contentType(MediaType.APPLICATION_JSON)
         .body(new ErrorResponse(ErrorCode.INTERNAL_SERVER_ERROR));
+  }
+
+  @ExceptionHandler(EmailNotVerfiedException.class)
+  public ResponseEntity<ErrorResponse> handleEmailNotVerfiedException(EmailNotVerfiedException e,
+        HttpServletRequest request, HttpServletResponse response) {
+    if (response.isCommitted()) {
+      log.warn("Response is already committed for handleEmailNotVerfiedException: {}", e.getMessage());
+      return null;
+    }
+
+    log.error("error: {}", e);
+    return ResponseEntity
+        .status(ErrorCode.EMAIL_NOT_VERIFIED.getStatus())
+        .contentType(MediaType.APPLICATION_JSON)
+        .body(new ErrorResponse(ErrorCode.EMAIL_NOT_VERIFIED));
+  }
+
+  @ExceptionHandler(BadCredentialsException.class)
+  public ResponseEntity<ErrorResponse> handleBadCredentialsException(BadCredentialsException e, HttpServletRequest request,
+                                                                     HttpServletResponse response) {
+    if (response.isCommitted()) {
+      log.warn("Response is already committed for BadCredentialsException: {}", e.getMessage());
+      return null;
+    }
+
+    log.error("error: {}", e);
+    return ResponseEntity
+        .status(ErrorCode.BAD_CREDENTIALS.getStatus())
+        .contentType(MediaType.APPLICATION_JSON)
+        .body(new ErrorResponse(ErrorCode.BAD_CREDENTIALS));
+  }
+
+  @ExceptionHandler(UsernameNotFoundException.class)
+  public ResponseEntity<ErrorResponse> handleUsernameNotFoundException(UsernameNotFoundException e, HttpServletRequest request,
+                                                                       HttpServletResponse response) {
+    if (response.isCommitted()) {
+      log.warn("Response is already committed for UsernameNotFoundException: {}", e.getMessage());
+      return null;
+    }
+
+    log.error("error: {}", e);
+    return ResponseEntity
+        .status(ErrorCode.USER_NOT_FOUND.getStatus())
+        .contentType(MediaType.APPLICATION_JSON)
+        .body(new ErrorResponse(ErrorCode.USER_NOT_FOUND));
   }
 }
