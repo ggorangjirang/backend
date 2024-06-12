@@ -82,17 +82,19 @@ public class ReviewController {
 
 
     @PostMapping("/users/review")
-    public ResponseEntity<ReviewResponseMy> addReview(
+    public ResponseEntity<Page<ReviewableOrderItemResponse>> addReview(
             @RequestPart("review") String requestJson,
-            @RequestPart(value = "imageFile", required = false) MultipartFile imageFile) throws IOException {
+            @RequestPart(value = "imageFile", required = false) MultipartFile imageFile,
+            @RequestParam(name = "page", defaultValue = "0") int page,
+            @RequestParam(name = "size", defaultValue = "5") int size) throws IOException {
 
         String email = getAuthenticatedUserEmail();
         if (email == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
-        ReviewResponseMy review = reviewService.addReview(email, requestJson, imageFile);
-        return ResponseEntity.ok(review);
+        Page<ReviewableOrderItemResponse> reviewableItems = reviewService.addReview(email, requestJson, imageFile, page, size);
+        return ResponseEntity.ok(reviewableItems);
     }
 
 
