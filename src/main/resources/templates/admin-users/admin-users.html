@@ -93,23 +93,16 @@
                 <div class="column is-2">관리</div>
             </div>
         </div>
-        <!--        <div th:if="${!userList.isEmpty}">-->
-        <!--          <nav th:with="pageSize=${userList.pageable.pageSize},-->
-        <!--                        start=${(userList.number/pageSize) * pageSize + 1-->
-        <!--                        end=(${(userList.totalPages == 0) ? 1 : (start + (pageSize - 1) < userList.totalPages ? start + (pageSize - 1) : userList.totalPages)})">-->
-
-        <!--          </nav>-->
-        <!--        </div>-->
     </div>
 </section>
 
-<!-- 회원정보를 정말 삭제할 지 묻는 Modal 창 -->
+<!-- 회원 탈퇴 여부를 묻는 Modal 창 -->
 <div id="modal" class="modal">
     <div class="modal-background" id="modalBackground"></div>
     <div class="modal-content">
         <div class="box">
             <p class="mb-3">
-                회원정보 삭제 시 복구할 수 없습니다. 정말로 삭제하시겠습니까?
+                해당 회원을 탈퇴 처리하시겠습니까? 탈퇴 처리된 회원은 복구할 수 없습니다.
             </p>
 
             <div class="buttons">

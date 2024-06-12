@@ -71,7 +71,7 @@ public class UserController {
         }
     }
 
-    @GetMapping("/userProfile")
+    @GetMapping("/mypage")
     public ResponseEntity<UserDto> getUserProfile() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         log.info("Authentication object: {}", authentication);
@@ -109,7 +109,7 @@ public class UserController {
         return ResponseEntity.ok(userDto);
     }
 
-    @PatchMapping("/userProfile")
+    @PatchMapping("/mypage")
     public ResponseEntity<?> updateUserProfile(@RequestBody UserUpdateRequest userUpdateRequest) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 

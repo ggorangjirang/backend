@@ -44,29 +44,29 @@ async function insertUsers() {
   };
 
   for (const user of users) {
-    const { id, email, name, role, createdAt } = user;
+    const { id, email, name, role, createdAt, deletedAt } = user;
     const date = createdAt;
 
     summary.usersCount += 1;
 
     if (role.includes('CONSUMER')) {
       summary.consumersCount += 1;
-        }
+    }
 
     if (role.includes('SELLER')) {
       summary.sellersCount += 1;
     }
 
     usersContainer.insertAdjacentHTML(
-      "beforeend",
-      `
-        <div class="columns orders-item" id="user-${id}">
+        "beforeend",
+        `
+        <div class="columns orders-item ${deletedAt ? 'is-deleted' : ''}" id="user-${id}">
           <div class="column is-2">${date}</div>
           <div class="column is-2">${email}</div>
           <div class="column is-2">${name}</div>
           <div class="column is-2">
-            <div class="select" >
-              <select id="roleSelectBox-${id}">
+            <div class="select">
+              <select id="roleSelectBox-${id}" ${deletedAt ? 'disabled' : ''}>
                 <option
                   class="has-background-link-light has-text-link"
                   ${role.includes('CONSUMER') === true ? "selected" : ""}
@@ -83,7 +83,7 @@ async function insertUsers() {
             </div>
           </div>
           <div class="column is-2">
-            <button class="button" id="deleteButton-${id}" >회원정보 삭제</button>
+            <button class="button" id="deleteButton-${id}" ${deletedAt ? 'disabled' : ''}>회원 탈퇴</button>
           </div>
         </div>
       `
@@ -110,7 +110,7 @@ async function insertUsers() {
       await Api.patch("/api/users", id, data);
     });
 
-    // 이벤트 - 삭제버튼 클릭 시 Modal 창 띄우고, 동시에, 전역변수에 해당 주문의 id 할당
+    // 이벤트 - 탈퇴버튼 클릭 시 Modal 창 띄우고, 동시에, 전역변수에 해당 주문의 id 할당
     deleteButton.addEventListener("click", () => {
       userIdToDelete = id;
       openModal();
@@ -123,27 +123,31 @@ async function insertUsers() {
   sellersCount.innerText = addCommas(summary.sellersCount);
 }
 
-// db에서 회원정보 삭제
+// db에서 회원정보 탈퇴 처리
 async function deleteUserData(e) {
   e.preventDefault();
 
   try {
-    await Api.delete("/api/users", userIdToDelete);
+    const data = { deletedAt: new Date().toISOString() };
+    await Api.patch("/api/users", userIdToDelete, data);
 
-    // 삭제 성공
-    alert("회원 정보가 삭제되었습니다.");
+    // 탈퇴 처리 성공
+    alert("회원이 탈퇴 처리되었습니다.");
 
-    // 삭제한 아이템 화면에서 지우기
+    // 탈퇴 처리한 아이템 화면에서 비활성화
     const deletedItem = document.querySelector(`#user-${userIdToDelete}`);
-    deletedItem.remove();
+    deletedItem.classList.add("is-deleted");
+    const roleSelectBox = deletedItem.querySelector(`#roleSelectBox-${userIdToDelete}`);
+    roleSelectBox.disabled = true;
+    const deleteButton = deletedItem.querySelector(`#deleteButton-${userIdToDelete}`);
+    deleteButton.disabled = true;
 
     // 전역변수 초기화
     userIdToDelete = "";
 
     closeModal();
-    window.location.reload();
   } catch (err) {
-    alert(`회원정보 삭제 과정에서 오류가 발생하였습니다: ${err}`);
+    alert(`회원 탈퇴 처리 과정에서 오류가 발생하였습니다: ${err}`);
   }
 }
 
