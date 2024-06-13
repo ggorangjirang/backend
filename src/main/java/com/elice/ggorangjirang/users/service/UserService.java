@@ -163,6 +163,9 @@ public class UserService {
             if (!updateRequest.getNewPassword().equals(updateRequest.getConfirmPassword())) {
                 throw new IllegalArgumentException("새 비밀번호와 비밀번호 확인이 일치하지 않습니다.");
             }
+            if (updateRequest.getNewPassword().trim().isEmpty()) {
+                throw new IllegalArgumentException("새 비밀번호는 공백일 수 없습니다.");
+            }
             users.setPassword(passwordEncoder.encode(updateRequest.getNewPassword()));
         }
         if (updateRequest.getZipcode() != null || updateRequest.getStreetAddress() != null ||

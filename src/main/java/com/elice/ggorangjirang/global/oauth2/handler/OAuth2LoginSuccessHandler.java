@@ -39,8 +39,8 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
 
     public static final String ACCESS_TOKEN_SUBJECT = "AccessToken";
     public static final String REFRESH_TOKEN_SUBJECT = "RefreshToken";
-    public static final String ACCESS_TOKEN_EXPIRATION = "accessTokenExpired";
-    public static final String REFRESH_TOKEN_EXPIRATION = "refreshTokenExpired";
+    public static final String ACCESS_TOKEN_EXPIRATION = "AccessTokenExpired";
+    public static final String REFRESH_TOKEN_EXPIRATION = "RefreshTokenExpired";
 
     private final JwtService jwtService;
     private final UserRepository userRepository;
