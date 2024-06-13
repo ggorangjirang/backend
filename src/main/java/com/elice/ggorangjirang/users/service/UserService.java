@@ -53,6 +53,10 @@ public class UserService {
         sendVerficationEmail(users);
     }
 
+    public boolean isEmailDuplicate(String email) {
+        return userRepository.findByEmail(email).isPresent();
+    }
+
     private void sendVerficationEmail(Users users) {
         String token = UUID.randomUUID().toString();
         LocalDateTime expiryDate = LocalDateTime.now().plusHours(1);
