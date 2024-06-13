@@ -54,6 +54,7 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
 
         try {
             CustomOAuth2User oAuth2User = (CustomOAuth2User) authentication.getPrincipal();
+            log.debug("Authenticated user: {}", oAuth2User);
 
             // User의 Role이 GUEST인 경우 처음 요청한 회원
             if (oAuth2User.getRole() == Role.GUEST) {
@@ -63,38 +64,10 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
                 Users newUser = customOAuth2UserService.addUser(oAuthAttributes);
                 log.info("유저 DB: {}", newUser);
 
-                String accessToken = jwtService.createAccessToken(newUser.getEmail());
-                String refreshToken = jwtService.createRefreshToken();
-
-                Map<String, String> responseBody = new HashMap<>();
-
-                responseBody.put(ACCESS_TOKEN_SUBJECT, accessToken);
-                responseBody.put(REFRESH_TOKEN_SUBJECT, refreshToken);
-                responseBody.put(ACCESS_TOKEN_EXPIRATION, String.valueOf(System.currentTimeMillis() + accessTokenExpirationPeriod));
-                responseBody.put(REFRESH_TOKEN_EXPIRATION, String.valueOf(System.currentTimeMillis() + refreshTokenExpirationPeriod));
-
-                String jsonResponse = objectMapper.writeValueAsString(responseBody);
-
-                response.setContentType("text/html");
-                response.setCharacterEncoding("UTF-8");
-
-                PrintWriter writer = response.getWriter();
-                writer.write("<html><body>");
-                writer.write("<script>");
-                writer.write("const response = " + jsonResponse + ";");
-                writer.write("if (window.opener) {");
-                writer.write("  window.opener.postMessage(response, '*');");
-                writer.write("  window.close();");
-                writer.write("} else {");
-                writer.write("  console.error('No window.opener available');");
-                writer.write("}");
-                writer.write("</script>");
-                writer.write("</body></html>");
-                writer.flush();
-
-                log.info("Jwt AccessToken 및 RefreshToken 생성 및 설정 완료");
+                handleSuccessResponse(response, newUser.getEmail());
             } else if (oAuth2User.getRole() == Role.USER) {
-                loginSuccess(response, oAuth2User); // 로그인에 성공한 경우 access, refresh 토큰 생성
+                log.info("ROLE.USER if문 진입");
+                handleSuccessResponse(response, oAuth2User.getEmail());
             }
         } catch (Exception e) {
             log.error("OAuth2 Login 성공 후 예외 발생", e);
@@ -102,14 +75,37 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
         }
     }
 
-    private void loginSuccess(HttpServletResponse response, CustomOAuth2User oAuth2User) throws IOException {
-        String accessToken = jwtService.createAccessToken(oAuth2User.getEmail());
+    private void handleSuccessResponse(HttpServletResponse response, String email) throws IOException {
+        String accessToken = jwtService.createAccessToken(email);
         String refreshToken = jwtService.createRefreshToken();
 
-        jwtService.setAccessTokenHeader(response, accessToken);
-        jwtService.setRefreshTokenHeader(response, refreshToken);
+        Map<String, String> responseBody = new HashMap<>();
+        responseBody.put(ACCESS_TOKEN_SUBJECT, accessToken);
+        responseBody.put(REFRESH_TOKEN_SUBJECT, refreshToken);
+        responseBody.put(ACCESS_TOKEN_EXPIRATION, String.valueOf(System.currentTimeMillis() + accessTokenExpirationPeriod));
+        responseBody.put(REFRESH_TOKEN_EXPIRATION, String.valueOf(System.currentTimeMillis() + refreshTokenExpirationPeriod));
 
-        jwtService.sendAccessAndRefreshToken(response, accessToken, refreshToken);
-        jwtService.updateRefreshToken(oAuth2User.getEmail(), refreshToken);
+        String jsonResponse = objectMapper.writeValueAsString(responseBody);
+        log.info("JSON Response: {}", jsonResponse);
+
+        response.setContentType("text/html");
+        response.setCharacterEncoding("UTF-8");
+
+        PrintWriter writer = response.getWriter();
+        writer.write("<html><body>");
+        writer.write("<script>");
+        writer.write("const response = " + jsonResponse + ";");
+        writer.write("if (window.opener) {");
+        writer.write("  console.log('Posting message to opener and closing window');");
+        writer.write("  window.opener.postMessage(response, '*');");
+        writer.write("  window.close();");
+        writer.write("} else {");
+        writer.write("  console.error('No window.opener available');");
+        writer.write("}");
+        writer.write("</script>");
+        writer.write("</body></html>");
+        writer.flush();
+
+        log.info("Jwt AccessToken 및 RefreshToken 생성 및 설정 완료");
     }
 }
