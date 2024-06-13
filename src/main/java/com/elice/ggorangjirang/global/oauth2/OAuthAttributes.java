@@ -12,7 +12,6 @@ import java.util.UUID;
 @Getter
 public class OAuthAttributes {
 
-    private static final String EMAIL_DOMAIN = "@socialUser.com";
     private String nameAttributeKey; // OAuth2 로그인 진행 시 키가 되는 필드 값
     private OAuth2UserInfo oAuth2UserInfo;
 
