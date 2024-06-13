@@ -38,6 +38,15 @@ public class UserController {
         return "회원가입이 완료되었습니다. 이메일을 확인하여 인증을 완료해주세요.";
     }
 
+    @GetMapping("/duplicate")
+    public ResponseEntity<Map<String, Boolean>> checkEmailDuplicate(@RequestParam String email) {
+        boolean isDuplicate = userService.isEmailDuplicate(email);
+        Map<String, Boolean> responseBody = new HashMap<>();
+        responseBody.put("isDuplicate", isDuplicate);
+
+        return ResponseEntity.ok(responseBody);
+    }
+
     @GetMapping("/confirm")
     public ResponseEntity<?> confirmUser(@RequestParam("token") String token) {
         try {
@@ -101,7 +110,7 @@ public class UserController {
         UserDto userDto;
 
         try {
-            userDto = userService.getUserProfileByEmail(email);
+            userDto = userService.getUserMypageByEmail(email);
         } catch (RuntimeException e) {
             log.error("Error fetching user info for email: {}", email, e);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
@@ -132,7 +141,7 @@ public class UserController {
         }
 
         try {
-            userService.updateUserProfile(email, userUpdateRequest);
+            userService.updateUserMypage(email, userUpdateRequest);
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
@@ -179,12 +188,20 @@ public class UserController {
         }
 
         Object principal = authentication.getPrincipal();
-        if (principal instanceof CustomUserDetails) {
-            Long userId = ((CustomUserDetails) principal).getUserId();
-            return ResponseEntity.ok(userId);
-        } else {
+        String email = null;
+
+        if (principal instanceof UserDetails) {
+            email = ((UserDetails) principal).getUsername();
+        } else if (principal instanceof String) {
+            email = (String) principal;
+        }
+
+        if (email == null || email.equals("anonymousUser")) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("사용자 인증 정보를 찾을 수 없습니다.");
         }
+
+        Long userId = userService.getUserIdByEmail(email);
+        return ResponseEntity.ok(userId);
     }
 
 }
