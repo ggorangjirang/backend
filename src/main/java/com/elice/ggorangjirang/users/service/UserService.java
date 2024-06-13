@@ -5,6 +5,7 @@ import com.elice.ggorangjirang.global.email.service.EmailService;
 import com.elice.ggorangjirang.users.dto.UserDto;
 import com.elice.ggorangjirang.users.dto.UserSignupDto;
 import com.elice.ggorangjirang.users.dto.UserUpdateRequest;
+import com.elice.ggorangjirang.users.entity.Address;
 import com.elice.ggorangjirang.users.entity.Role;
 import com.elice.ggorangjirang.users.entity.Users;
 import com.elice.ggorangjirang.users.entity.VerificationToken;
@@ -97,7 +98,7 @@ public class UserService {
         return userRepository.findById(id).orElseThrow(()-> new IllegalArgumentException("not found : " + id));
     }
 
-    public UserDto getUserProfileByEmail(String email) {
+    public UserDto getUserMypageByEmail(String email) {
         log.info("Searching for user with email: {}", email);
         Users users = userRepository.findByEmail(email)
             .orElseThrow(() -> {
@@ -116,7 +117,7 @@ public class UserService {
             .collect(Collectors.toList());
     }
 
-    private UserDto converToDto(Users users) {
+    public UserDto converToDto(Users users) {
         UserDto userDto = new UserDto();
 
         userDto.setId(users.getId());
@@ -140,7 +141,7 @@ public class UserService {
         return users;
     }
 
-    public void updateUserProfile(String email, UserUpdateRequest updateRequest) {
+    public void updateUserMypage(String email, UserUpdateRequest updateRequest) {
         Users users = userRepository.findByEmail(email)
             .orElseThrow(() -> new IllegalArgumentException("유저를 찾을 수 없습니다."));
 
@@ -160,8 +161,11 @@ public class UserService {
             }
             users.setPassword(passwordEncoder.encode(updateRequest.getNewPassword()));
         }
-        if (updateRequest.getAddress() != null) {
-            users.setAddress(updateRequest.getAddress());
+        if (updateRequest.getZipcode() != null || updateRequest.getStreetAddress() != null ||
+            updateRequest.getDetailAddress() != null) {
+            Address address = new Address(updateRequest.getZipcode(), updateRequest.getStreetAddress(),
+                updateRequest.getDetailAddress());
+            users.setAddress(address);
         }
 
         userRepository.save(users);
