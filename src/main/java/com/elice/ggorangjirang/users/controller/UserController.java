@@ -47,6 +47,7 @@ public class UserController {
         return ResponseEntity.ok(responseBody);
     }
 
+
     @GetMapping("/confirm")
     public ResponseEntity<?> confirmUser(@RequestParam("token") String token) {
         try {
@@ -82,7 +83,7 @@ public class UserController {
     }
 
     @GetMapping("/mypage")
-    public ResponseEntity<UserDto> getUserProfile() {
+    public ResponseEntity<UserDto> getUserMypage() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         log.info("Authentication object: {}", authentication);
 
@@ -120,7 +121,7 @@ public class UserController {
     }
 
     @PatchMapping("/mypage")
-    public ResponseEntity<?> updateUserProfile(@RequestBody UserUpdateRequest userUpdateRequest) {
+    public ResponseEntity<?> updateUserMypage(@RequestBody UserUpdateRequest userUpdateRequest) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         if (authentication == null || !authentication.isAuthenticated()) {
