@@ -9,6 +9,7 @@ import com.elice.ggorangjirang.users.entity.Users;
 import com.elice.ggorangjirang.users.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
@@ -32,6 +33,15 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
     private final UserRepository userRepository;
     private final JwtService jwtService;
     private final RestTemplate restTemplate;
+
+    @Value("${spring.security.oauth2.client.registration.kakao.client-id}")
+    private String clientId;
+
+    @Value("${spring.security.oauth2.client.registration.kakao.client-secret}")
+    private String clientSecret;
+
+    @Value("${spring.security.oauth2.client.registration.kakao.redirect-uri}")
+    private String redirectUri;
 
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
@@ -94,10 +104,10 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
 
         MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
         params.add("grant_type", "authorization_code");
-        params.add("client_id", "YOUR_KAKAO_CLIENT_ID"); // 실제 카카오 클라이언트 ID로 대체
-        params.add("redirect_uri", "YOUR_REDIRECT_URI"); // 실제 리다이렉트 URI로 대체
+        params.add("client_id", clientId);
+        params.add("redirect_uri", redirectUri);
         params.add("code", authorizationCode);
-        params.add("client_secret", "YOUR_CLIENT_SECRET"); // 클라이언트 시크릿이 필요한 경우 추가
+        params.add("client_secret", clientSecret); 
 
         HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(params, headers);
 
