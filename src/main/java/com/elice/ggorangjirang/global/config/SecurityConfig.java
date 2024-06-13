@@ -70,7 +70,7 @@ public class SecurityConfig {
                         "/swagger-ui/**",
                         "/swagger-resources/**",
                         "/v3/api-docs/**",
-                        "/admin/**",
+                        "/admin/login",
                         "/js/**",
                         "/css/**",
                         "/actuator/**",
@@ -79,8 +79,11 @@ public class SecurityConfig {
                         "/oauth2/**",
                         "/api/test",
                         "/api/test2",
-                        "/login/oauth2/code/kakao","/ws/**","/wss/**")
+                        "/login/oauth2/code/kakao",
+                        "/ws/**",
+                        "/wss/**")
                     .permitAll()
+                    .requestMatchers("/admin/**").hasRole("ADMIN")
                     .anyRequest().authenticated());
 
     http.formLogin(config -> config.disable())
