@@ -179,12 +179,20 @@ public class UserController {
         }
 
         Object principal = authentication.getPrincipal();
-        if (principal instanceof CustomUserDetails) {
-            Long userId = ((CustomUserDetails) principal).getUserId();
-            return ResponseEntity.ok(userId);
-        } else {
+        String email = null;
+
+        if (principal instanceof UserDetails) {
+            email = ((UserDetails) principal).getUsername();
+        } else if (principal instanceof String) {
+            email = (String) principal;
+        }
+
+        if (email == null || email.equals("anonymousUser")) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("사용자 인증 정보를 찾을 수 없습니다.");
         }
+
+        Long userId = userService.getUserIdByEmail(email);
+        return ResponseEntity.ok(userId);
     }
 
 }
