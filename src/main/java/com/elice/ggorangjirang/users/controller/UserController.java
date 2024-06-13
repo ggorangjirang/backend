@@ -101,7 +101,7 @@ public class UserController {
         UserDto userDto;
 
         try {
-            userDto = userService.getUserProfileByEmail(email);
+            userDto = userService.getUserMypageByEmail(email);
         } catch (RuntimeException e) {
             log.error("Error fetching user info for email: {}", email, e);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
@@ -132,7 +132,7 @@ public class UserController {
         }
 
         try {
-            userService.updateUserProfile(email, userUpdateRequest);
+            userService.updateUserMypage(email, userUpdateRequest);
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
