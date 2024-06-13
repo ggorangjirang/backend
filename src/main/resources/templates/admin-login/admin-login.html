@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>관리자 로그인</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.min.css" />
+    <link rel="stylesheet" href="/css/admin-login.css" />
+</head>
+<body>
+<section class="section">
+    <div class="container">
+        <div class="column is-4 is-offset-4">
+            <h1 class="title">관리자 로그인</h1>
+            <div id="message"></div>
+            <form id="login-form">
+                <div class="field">
+                    <label class="label">이메일</label>
+                    <div class="control">
+                        <input class="input" type="email" name="username" required>
+                    </div>
+                </div>
+                <div class="field">
+                    <label class="label">비밀번호</label>
+                    <div class="control">
+                        <input class="input" type="password" name="password" required>
+                    </div>
+                </div>
+                <div class="field">
+                    <div class="control">
+                        <button class="button is-yellow" type="submit">로그인</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
+<script src="/js/admin-login.js"></script>
+</body>
+</html>
