@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 
@@ -48,6 +49,28 @@ public class LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
         log.info("로그인에 성공하였습니다. 이메일 : {}", email);
         log.info("로그인에 성공하였습니다. AccessToken : {}", accessToken);
         log.info("발급된 AccessToken 만료 기간 : {}", accessTokenExpiration);
+
+        // 리다이렉트 처리
+        handleRedirect(request, response, authentication);
+    }
+
+    private void handleRedirect(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
+        String email = extractUsername(authentication);
+        userRepository.findByEmail(email).ifPresent(users -> {
+            try {
+                if (users.getRole().equals("ROLE_ADMIN")) {
+                    getRedirectStrategy().sendRedirect(request, response, "/admin-main/admin");
+                } else {
+                    if (request.getRequestURI().equals("/login/oauth2/code/kakao")) {
+                        response.sendError(HttpServletResponse.SC_FORBIDDEN, "Forbidden");
+                    } else {
+                        getRedirectStrategy().sendRedirect(request, response, "/");
+                    }
+                }
+            } catch (IOException e) {
+                log.error("리다이렉트에 실패했습니다.", e);
+            }
+        });
     }
 
     private String extractUsername(Authentication authentication) {
