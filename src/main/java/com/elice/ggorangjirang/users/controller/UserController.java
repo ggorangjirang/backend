@@ -1,6 +1,7 @@
 package com.elice.ggorangjirang.users.controller;
 
 import com.elice.ggorangjirang.global.login.service.LoginService;
+import com.elice.ggorangjirang.jwt.util.CustomUserDetails;
 import com.elice.ggorangjirang.users.dto.UserDto;
 import com.elice.ggorangjirang.users.dto.UserLoginDto;
 import com.elice.ggorangjirang.users.dto.UserSignupDto;
@@ -168,6 +169,22 @@ public class UserController {
         }
 
         return ResponseEntity.ok("유저가 탈퇴되었습니다.");
+    }
+
+    @GetMapping("/id")
+    public ResponseEntity<?> getLoggedInUserId() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !authentication.isAuthenticated()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인이 필요합니다.");
+        }
+
+        Object principal = authentication.getPrincipal();
+        if (principal instanceof CustomUserDetails) {
+            Long userId = ((CustomUserDetails) principal).getUserId();
+            return ResponseEntity.ok(userId);
+        } else {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("사용자 인증 정보를 찾을 수 없습니다.");
+        }
     }
 
 }
