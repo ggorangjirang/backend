@@ -38,9 +38,8 @@ public class UserController {
         return "회원가입이 완료되었습니다. 이메일을 확인하여 인증을 완료해주세요.";
     }
 
-    @GetMapping("/duplicate")
-    public ResponseEntity<Map<String, Boolean>> checkEmailDuplicate(@RequestBody Map<String, String> requestBody) {
-        String email = requestBody.get("email");
+    @GetMapping("/duplicate/{email}")
+    public ResponseEntity<Map<String, Boolean>> checkEmailDuplicate(@PathVariable String email) {
         boolean isDuplicate = userService.isEmailDuplicate(email);
         Map<String, Boolean> responseBody = new HashMap<>();
         responseBody.put("isDuplicate", isDuplicate);
