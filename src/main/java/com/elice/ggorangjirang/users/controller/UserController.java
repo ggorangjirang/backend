@@ -39,7 +39,8 @@ public class UserController {
     }
 
     @GetMapping("/duplicate")
-    public ResponseEntity<Map<String, Boolean>> checkEmailDuplicate(@RequestParam String email) {
+    public ResponseEntity<Map<String, Boolean>> checkEmailDuplicate(@RequestBody Map<String, String> requestBody) {
+        String email = requestBody.get("email");
         boolean isDuplicate = userService.isEmailDuplicate(email);
         Map<String, Boolean> responseBody = new HashMap<>();
         responseBody.put("isDuplicate", isDuplicate);
