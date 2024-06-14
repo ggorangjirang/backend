@@ -149,16 +149,33 @@ public class UserService {
         Users users = userRepository.findByEmail(email)
             .orElseThrow(() -> new IllegalArgumentException("유저를 찾을 수 없습니다."));
 
+        // 현재 비밀번호가 입력되지 않은 경우 예외 발생
+        if (updateRequest.getCurrentPassword() == null || updateRequest.getCurrentPassword().trim().isEmpty()) {
+            throw new IllegalArgumentException("현재 비밀번호를 입력해야 합니다.");
+        }
+
+        // 현재 비밀번호가 일치하는지 확인
+        if (!passwordEncoder.matches(updateRequest.getCurrentPassword(), users.getPassword())) {
+            throw new IllegalArgumentException("기존 비밀번호가 일치하지 않습니다.");
+        }
+
         if (updateRequest.getName() != null) {
             users.setName(updateRequest.getName());
         }
         if (updateRequest.getPhoneNumber() != null) {
             users.setPhoneNumber(updateRequest.getPhoneNumber());
         }
-        if (updateRequest.getCurrentPassword() != null && updateRequest.getNewPassword() != null
-            && updateRequest.getConfirmPassword() != null) {
-            if (!passwordEncoder.matches(updateRequest.getCurrentPassword(), users.getPassword())) {
-                throw new IllegalArgumentException("기존 비밀번호가 일치하지 않습니다.");
+        if (updateRequest.getZipcode() != null || updateRequest.getStreetAddress() != null ||
+            updateRequest.getDetailAddress() != null) {
+            Address address = new Address(updateRequest.getZipcode(), updateRequest.getStreetAddress(),
+                updateRequest.getDetailAddress());
+            users.setAddress(address);
+        }
+
+        // 새 비밀번호와 비밀번호 확인이 모두 입력된 경우(비밀번호 변경)
+        if (updateRequest.getNewPassword() != null || updateRequest.getConfirmPassword() != null) {
+            if (updateRequest.getNewPassword() == null || updateRequest.getConfirmPassword() == null) {
+                throw new IllegalArgumentException("새 비밀번호와 비밀번호 확인을 모두 입력해야 합니다.");
             }
             if (!updateRequest.getNewPassword().equals(updateRequest.getConfirmPassword())) {
                 throw new IllegalArgumentException("새 비밀번호와 비밀번호 확인이 일치하지 않습니다.");
@@ -167,12 +184,6 @@ public class UserService {
                 throw new IllegalArgumentException("새 비밀번호는 공백일 수 없습니다.");
             }
             users.setPassword(passwordEncoder.encode(updateRequest.getNewPassword()));
-        }
-        if (updateRequest.getZipcode() != null || updateRequest.getStreetAddress() != null ||
-            updateRequest.getDetailAddress() != null) {
-            Address address = new Address(updateRequest.getZipcode(), updateRequest.getStreetAddress(),
-                updateRequest.getDetailAddress());
-            users.setAddress(address);
         }
 
         userRepository.save(users);
