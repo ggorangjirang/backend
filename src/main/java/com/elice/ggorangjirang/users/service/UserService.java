@@ -128,7 +128,10 @@ public class UserService {
         userDto.setName(users.getName());
         userDto.setEmail(users.getEmail());
         userDto.setPhoneNumber(users.getPhoneNumber());
-        userDto.setAddress(users.getAddress());
+        userDto.setAddress(users.getAddress() != null ? users.getAddress().toString() : ""); // Address 객체가 null일 경우 빈 문자열 반환
+        userDto.setCreatedAt(users.getCreatedAt());
+        userDto.setDeletedAt(users.getDeletedAt());
+        userDto.setRole(users.getRole().toString());
 
         return userDto;
     }
