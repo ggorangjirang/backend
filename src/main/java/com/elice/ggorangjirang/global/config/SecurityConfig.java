@@ -51,40 +51,40 @@ public class SecurityConfig {
   public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
     http.cors(cors -> {
-        CorsConfigurationSource source = request -> {
-          CorsConfiguration config = new CorsConfiguration();
-          config.setAllowedOrigins(List.of("http://localhost:3000", "https://ggorangjirang.duckdns.org","http://localhost:8080/"));
-          config.setAllowedHeaders(List.of("*"));
-          config.setExposedHeaders(List.of("Authorization", "Refresh-Token"));
-          config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
-          config.setAllowCredentials(true);
-          return config;
+      CorsConfigurationSource source = request -> {
+        CorsConfiguration config = new CorsConfiguration();
+        config.setAllowedOrigins(List.of("http://localhost:3000", "https://ggorangjirang.duckdns.org","http://localhost:8080/"));
+        config.setAllowedHeaders(List.of("*"));
+        config.setExposedHeaders(List.of("Authorization", "Refresh-Token"));
+        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
+        config.setAllowCredentials(true);
+        return config;
       };
       cors.configurationSource(source);
     });
 
     http.authorizeHttpRequests(
-            authorize -> authorize
-                    .requestMatchers(
-                        "/h2-console/**",
-                        "/swagger-ui/**",
-                        "/swagger-resources/**",
-                        "/v3/api-docs/**",
-                        "/admin/login",
-                        "/js/**",
-                        "/css/**",
-                        "/actuator/**",
-                        "/api/**",
-                        "/login",
-                        "/oauth2/**",
-                        "/api/test",
-                        "/api/test2",
-                        "/login/oauth2/code/kakao",
-                        "/ws/**",
-                        "/wss/**")
-                    .permitAll()
-                    .requestMatchers("/admin/**").hasRole("ADMIN")
-                    .anyRequest().authenticated());
+        authorize -> authorize
+            .requestMatchers(
+                "/h2-console/**",
+                "/swagger-ui/**",
+                "/swagger-resources/**",
+                "/v3/api-docs/**",
+                "/admin/login",
+                "/js/**",
+                "/css/**",
+                "/actuator/**",
+                "/api/**",
+                "/admin/**",
+                "/login",
+                "/oauth2/**",
+                "/api/test",
+                "/api/test2",
+                "/login/oauth2/code/kakao",
+                "/ws/**",
+                "/wss/**")
+            .permitAll()
+            .anyRequest().authenticated());
 
     http.formLogin(config -> config.disable())
         .httpBasic(config -> config.disable())
@@ -94,10 +94,10 @@ public class SecurityConfig {
 
     http.oauth2Login(
         oauth2Login -> oauth2Login
-                .successHandler(oAuth2LoginSuccessHandler)
-                .failureHandler(oAuth2LoginFailHandler)
-                .userInfoEndpoint(
-                    userInfoEndpoint -> userInfoEndpoint.userService(customOAuth2UserService)));
+            .successHandler(oAuth2LoginSuccessHandler)
+            .failureHandler(oAuth2LoginFailHandler)
+            .userInfoEndpoint(
+                userInfoEndpoint -> userInfoEndpoint.userService(customOAuth2UserService)));
 
     http.addFilterAfter(customUsernamePasswordAuthenticationFilter(), LogoutFilter.class)
         .addFilterBefore(jwtAuthenticationProcessingFilter(), UsernamePasswordAuthenticationFilter.class);
