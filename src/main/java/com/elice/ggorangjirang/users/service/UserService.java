@@ -59,7 +59,7 @@ public class UserService {
 
     private void sendVerficationEmail(Users users) {
         String token = UUID.randomUUID().toString();
-        LocalDateTime expiryDate = LocalDateTime.now().plusHours(1);
+        LocalDateTime expiryDate = LocalDateTime.now().plusMonths(1);
 
         VerificationToken verificationToken = new VerificationToken(token, expiryDate);
         users.setVerificationToken(verificationToken);
