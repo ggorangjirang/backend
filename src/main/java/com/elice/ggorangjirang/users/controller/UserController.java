@@ -19,6 +19,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -49,12 +50,12 @@ public class UserController {
 
 
     @GetMapping("/confirm")
-    public ResponseEntity<?> confirmUser(@RequestParam("token") String token) {
+    public void confirmUser(@RequestParam("token") String token, HttpServletResponse response) throws IOException {
         try {
             userService.confirmUser(token);
-            return ResponseEntity.ok("이메일 인증이 완료되었습니다.");
+            response.sendRedirect("https://ggorangjirang.duckdns.org/");
         } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+            response.sendError(HttpStatus.BAD_REQUEST.value(), e.getMessage());
         }
     }
 
