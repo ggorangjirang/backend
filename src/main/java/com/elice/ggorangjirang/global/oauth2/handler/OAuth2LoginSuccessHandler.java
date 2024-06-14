@@ -26,6 +26,7 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
     private final JwtService jwtService;
     private final UserRepository userRepository;
     private final CustomOAuth2UserService customOAuth2UserService;
+    private final String redirectUrl = "users/redirect";
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
@@ -34,6 +35,7 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
 
         try {
             CustomOAuth2User oAuth2User = (CustomOAuth2User) authentication.getPrincipal();
+            String accessToken = jwtService.createAccessToken(oAuth2User.getEmail());
 
             // User의 Role이 GUEST인 경우 처음 요청한 회원
             if (oAuth2User.getRole() == Role.GUEST) {
@@ -43,7 +45,6 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
                 Users newUser = customOAuth2UserService.addUser(oAuthAttributes);
                 log.info("유저 DB: {}", newUser);
 
-                String accessToken = jwtService.createAccessToken(newUser.getEmail());
                 jwtService.setAccessTokenHeader(response, accessToken);
                 jwtService.sendAccessAndRefreshToken(response, accessToken, newUser.getRefreshToken());
                 log.info("Jwt AccessToken 및 RefreshToken 생성 및 설정 완료");
@@ -51,6 +52,8 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
             } else if (oAuth2User.getRole() == Role.USER) {
                 loginSuccess(response, oAuth2User); // 로그인에 성공한 경우 access, refresh 토큰 생성
             }
+
+            response.sendRedirect(redirectUrl + "?token=" + accessToken);
         } catch (Exception e) {
             log.error("OAuth2 Login 성공 후 예외 발생", e);
             throw new ServletException("OAuth2 Login 성공 후 예외 발생", e);
