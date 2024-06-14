@@ -80,6 +80,11 @@ public class Users {
         this.createdAt = LocalDateTime.now();
     }
 
+    public Users update(String name) {
+        this.name = name;
+        return this;
+    }
+
     // 유저 권한 설정 메소드
     public void authorizeUsers() {
         this.role = Role.USER;
