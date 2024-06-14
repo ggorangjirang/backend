@@ -46,3 +46,10 @@
 .modal .buttons {
   justify-content: center;
 }
+
+/* 이메일 칸 스타일링 */
+.email-column {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
