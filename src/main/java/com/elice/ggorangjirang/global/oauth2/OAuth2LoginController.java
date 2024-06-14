@@ -28,16 +28,22 @@ public class OAuth2LoginController {
     public ResponseEntity<Map<String, String>> handleKakaoCode(@RequestParam("code") String authorizationCode) {
         try {
             // 인가 코드를 사용하여 카카오 서버에서 액세스 토큰 및 사용자 정보를 가져옴
+            log.info("Received authorization code: {}", authorizationCode);
             String accessToken = customOAuth2UserService.getAccessToken(authorizationCode);
+            log.info("Received access token: {}", accessToken);
             OAuthAttributes oAuthAttributes = customOAuth2UserService.getUserInfo(accessToken);
+            log.info("User info retrieved: {}", oAuthAttributes);
 
             // 사용자 정보를 데이터베이스에 저장하거나 업데이트
             Users user = customOAuth2UserService.addOrUpdateUser(oAuthAttributes);
+            log.info("User saved or updated: {}", user);
 
             // JWT 토큰 생성
             String jwtAccessToken = jwtService.createAccessToken(user.getEmail());
             String jwtRefreshToken = jwtService.createRefreshToken();
             jwtService.updateRefreshToken(user.getEmail(), jwtRefreshToken);
+            log.info("JWT tokens created - Access Token: {}, Refresh Token: {}", jwtAccessToken, jwtRefreshToken);
+
 
             // JSON 응답 생성
             Map<String, String> tokens = new HashMap<>();
