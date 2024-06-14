@@ -14,8 +14,8 @@ public class GlobalConstants {
     public static final String DELIVERY_COMPLETE_EMAIL_TITLE = "[꼬랑지랑] 주문하신 상품이 배송 완료되었습니다. ";
     public static final String DELIVERY_COMPLETE_EMAIL_CONTENT= "주문하신 상품의 배송이 완료되었습니다. \n주문번호: ";
 
-    public static final String ORDER_COMPLETE_EMAIL_TITLE = "[꼬랑지랑] 주문하신 주문이 완료되었습니다. ";
-    public static final String ORDER_COMPLETE_EMAIL_CONTENT= "주문하신 주문이 완료되었습니다. \n주문번호: ";
+    public static final String ORDER_COMPLETE_EMAIL_TITLE = "[꼬랑지랑] 주문하신 상품의 결제가 완료되었습니다. ";
+    public static final String ORDER_COMPLETE_EMAIL_CONTENT= "주문하신 상품의 결제가 완료되었습니다. \n주문번호: ";
 
     public static final String NEW_ORDER_NOTICE = "New Orders has created: ";
 
