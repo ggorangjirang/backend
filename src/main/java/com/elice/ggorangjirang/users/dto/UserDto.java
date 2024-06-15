@@ -14,8 +14,5 @@ public class UserDto {
     private String name;
     private String phoneNumber;
     private String address;
-    private LocalDateTime createdAt;
-    private LocalDateTime deletedAt;
-    private String role;
 }
 

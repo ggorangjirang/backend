@@ -1,6 +1,7 @@
 package com.elice.ggorangjirang.users.controller;
 
 import com.elice.ggorangjirang.global.login.service.LoginService;
+import com.elice.ggorangjirang.users.dto.UserAdminDto;
 import com.elice.ggorangjirang.users.dto.UserDto;
 import com.elice.ggorangjirang.users.dto.UserLoginDto;
 import com.elice.ggorangjirang.users.entity.Users;
@@ -30,7 +31,7 @@ public class UserAdminController {
 
     @GetMapping("/users")
     public String getAllUsers(Model model) {
-        List<UserDto> users = userService.getAllUsers();
+        List<UserAdminDto> users = userService.getAllUsers();
         model.addAttribute("users", users);
         return "admin-users/admin-users";
     }
@@ -38,20 +39,20 @@ public class UserAdminController {
     // JSON 데이터를 반환하는 API 엔드포인트
     @GetMapping("/api")
     @ResponseBody
-    public List<UserDto> getAllUsersApi() {
+    public List<UserAdminDto> getAllUsersApi() {
         return userService.getAllUsers();
     }
 
     @PatchMapping("/api/{email}/cancellation")
     @ResponseBody
-    public UserDto deleteUser(@PathVariable String email) {
+    public UserAdminDto deleteUser(@PathVariable String email) {
         Users user = userRepository.findByEmail(email)
             .orElseThrow(() -> new IllegalArgumentException("유저를 찾을 수 없습니다."));
 
         user.delete();
         userRepository.save(user);
 
-        return userService.converToDto(user);
+        return userService.converAdminToDto(user);
     }
 
     @GetMapping("/login")
