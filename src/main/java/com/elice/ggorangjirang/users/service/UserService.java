@@ -2,6 +2,7 @@ package com.elice.ggorangjirang.users.service;
 
 import com.elice.ggorangjirang.carts.service.CartService;
 import com.elice.ggorangjirang.global.email.service.EmailService;
+import com.elice.ggorangjirang.users.dto.UserAdminDto;
 import com.elice.ggorangjirang.users.dto.UserDto;
 import com.elice.ggorangjirang.users.dto.UserSignupDto;
 import com.elice.ggorangjirang.users.dto.UserUpdateRequest;
@@ -13,7 +14,6 @@ import com.elice.ggorangjirang.users.repository.UserRepository;
 import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -114,15 +114,27 @@ public class UserService {
         return converToDto(users);
     }
 
-    public List<UserDto> getAllUsers() {
+    public List<UserAdminDto> getAllUsers() {
         List<Users> usersList = userRepository.findAll();
         return usersList.stream()
-            .map(this::converToDto)
+            .map(this::converAdminToDto)
             .collect(Collectors.toList());
     }
 
     public UserDto converToDto(Users users) {
         UserDto userDto = new UserDto();
+
+        userDto.setId(users.getId());
+        userDto.setName(users.getName());
+        userDto.setEmail(users.getEmail());
+        userDto.setPhoneNumber(users.getPhoneNumber());
+        userDto.setAddress(users.getAddress() != null ? users.getAddress().toString() : ""); // Address 객체가 null일 경우 빈 문자열 반환
+
+        return userDto;
+    }
+
+    public UserAdminDto converAdminToDto(Users users) {
+        UserAdminDto userDto = new UserAdminDto();
 
         userDto.setId(users.getId());
         userDto.setName(users.getName());
