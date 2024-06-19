@@ -27,3 +27,4 @@ jobs:
           cache: 'gradle'
             
       - run: ./gradlew build test --no-daemon
+
