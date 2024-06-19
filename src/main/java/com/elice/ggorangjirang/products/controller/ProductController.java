@@ -127,4 +127,5 @@ public class ProductController {
         DetailProductResponse productDetail = productService.getProductDetail(id);
         return ResponseEntity.ok(productDetail);
     }
+
 }
