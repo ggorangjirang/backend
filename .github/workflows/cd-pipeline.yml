@@ -8,11 +8,10 @@ on:
 
 env:
   IMAGE_NAME: junyhehe/ggorangjirang
-  IMAGE_TAG: 1.0
+  IMAGE_TAG: "1.0"
   DOCKER_REGISTRY_USER: ${{ secrets.DOCKER_REGISTRY_USER }}
   DOCKER_REGISTRY_PASS: ${{ secrets.DOCKER_REGISTRY_PASS }}
   
-
 jobs:
   build:
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
@@ -37,5 +36,6 @@ jobs:
           echo "${{ secrets.SSH_KEY }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
           ssh-keyscan -H 34.64.229.17 >> ~/.ssh/known_hosts
-          
+
+      - run: ssh -i ~/.ssh/id_rsa elice@34.64.229.17 "whoami"
       - run: ssh -i ~/.ssh/id_rsa elice@34.64.229.17 "echo $DOCKER_REGISTRY_PASS | docker login --username $DOCKER_REGISTRY_USER --password-stdin && docker rm app -f || true && docker pull $IMAGE_NAME:$IMAGE_TAG && docker run -d -p 8080:8080 --name app --network elice $IMAGE_NAME:$IMAGE_TAG"
