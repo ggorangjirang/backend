@@ -22,6 +22,6 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 public class GgorangjirangApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(GgorangjirangApplication.class, args);
+        SpringApplication.run(GgorangjirangApplication.class, args)
     }
 }
