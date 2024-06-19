@@ -16,7 +16,7 @@ jobs:
   Test:
     runs-on: ubuntu-24.04
     steps:
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
       - run: echo "${{ secrets.ENV_YML }}" > ./src/main/resources/env.yml
 
       - name: Set up jdk17
