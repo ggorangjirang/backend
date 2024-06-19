@@ -1,4 +1,5 @@
 name: CD Pipeline
+run-name: ${{ github.actor }} is currently deploying 🚀
 
 on:
   workflow_run:
