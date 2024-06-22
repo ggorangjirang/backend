@@ -7,15 +7,19 @@ import com.elice.ggorangjirang.subcategories.dto.UpdateSubcategoryRequest;
 import com.elice.ggorangjirang.subcategories.entity.Subcategory;
 import com.elice.ggorangjirang.subcategories.service.SubcategoryService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+import static com.elice.ggorangjirang.global.constant.GlobalConstants.*;
+
 @Controller
 @RequestMapping("/admin/subcategories")
 @RequiredArgsConstructor
+@Slf4j
 public class SubcategoryAdminController {
 
     private final CategoryService categoryService;
@@ -41,7 +45,8 @@ public class SubcategoryAdminController {
 
     @PostMapping("/add")
     public String createSubcategory(@ModelAttribute AddSubcategoryRequest request) {
-        subcategoryService.createSubcategory(request);
+        Subcategory subcategory = subcategoryService.createSubcategory(request);
+        log.info(SUBCATEGORY_ADD_SUCCESS + subcategory.getSubcategoryName());
         return "redirect:/admin/subcategories";
     }
 
@@ -60,12 +65,18 @@ public class SubcategoryAdminController {
 
     @PostMapping("/{id}/edit")
     public String editSubcategory(@PathVariable("id") Long id, @ModelAttribute UpdateSubcategoryRequest request) {
+        String subcategoryNameBeforeChanged = subcategoryService.findSubcategory(id).getSubcategoryName();
         Subcategory updatedSubcategory = subcategoryService.updateSubcategory(id, request);
+        String subcategoryNameAfterChanged = updatedSubcategory.getSubcategoryName();
+
+        log.info(SUBCATEGORY_EDIT_SUCCESS + subcategoryNameBeforeChanged + " --> " + subcategoryNameAfterChanged);
         return "redirect:/admin/subcategories";
     }
 
     @DeleteMapping("/{id}")
     public String deleteSubcategory(@PathVariable("id") Long id) {
+        Subcategory deletingSubcategory = subcategoryService.findSubcategory(id);
+        log.warn(SUBCATEGORY_DELETE + deletingSubcategory.getSubcategoryName());
         subcategoryService.deleteSubcategory(id);
         return "redirect:/admin/subcategories";
     }
