@@ -2,6 +2,19 @@ package com.elice.ggorangjirang.global.constant;
 
 
 public class GlobalConstants {
+    // 카테고리 관련 상수
+    public static final String CATEGORY_ADD_SUCCESS = "Category added successfully with name: ";
+    public static final String CATEGORY_EDIT_SUCCESS = "Category updated successfully with name: ";
+    public static final String CATEGORY_DELETE = "Category deleting with name: ";
+
+
+    // 서브 카테고리 관련 상수
+    public static final String SUBCATEGORY_ADD_SUCCESS = "Subcategory added successfully with name: ";
+    public static final String SUBCATEGORY_EDIT_SUCCESS = "Subcategory updated successfully with name: ";
+    public static final String SUBCATEGORY_DELETE = "Subcategory deleting with name: ";
+
+
+    // 상품 관련 상수
     public static final String PRODUCT_NOT_FOUND_MESSAGE = "Product not found with id: ";
     public static final String REVIEW_NOT_FOUND_MESSAGE = "Review not found with id: ";
     public static final String HAS_PURCHASED_MESSAGE = "There is no purchase history for this product.";
