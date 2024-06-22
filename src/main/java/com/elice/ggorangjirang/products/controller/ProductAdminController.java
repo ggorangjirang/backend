@@ -8,6 +8,7 @@ import com.elice.ggorangjirang.products.service.ProductService;
 import com.elice.ggorangjirang.subcategories.entity.Subcategory;
 import com.elice.ggorangjirang.subcategories.service.SubcategoryService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -16,9 +17,12 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.List;
 
+import static com.elice.ggorangjirang.global.constant.GlobalConstants.*;
+
 @Controller
 @RequestMapping("/admin/products")
 @RequiredArgsConstructor
+@Slf4j
 public class ProductAdminController {
 
     private final SubcategoryService subcategoryService;
@@ -49,7 +53,8 @@ public class ProductAdminController {
                                 @RequestPart(value = "productImageFile", required = false) MultipartFile productImageFile,
                                 @RequestPart(value = "descriptionImageFile", required = false) MultipartFile descriptionImageFile) throws IOException {
 
-        productService.createProduct(request, productImageFile, descriptionImageFile);
+        Product product = productService.createProduct(request, productImageFile, descriptionImageFile);
+        log.info(PRODUCT_ADD_SUCCESS_LOG + product.getId());
         return "redirect:/admin/products";
     }
 
@@ -73,11 +78,13 @@ public class ProductAdminController {
                               @RequestPart(value = "descriptionImageFile", required = false) MultipartFile descriptionImageFile) throws IOException {
 
         Product updatedProduct = productService.updateProduct(id, request, productImageFile, descriptionImageFile);
+        log.info(PRODUCT_EDIT_SUCCESS_LOG + id);
         return "redirect:/admin/products";
     }
 
     @PostMapping("/{id}")
     public String deleteProduct(@PathVariable("id") Long id) {
+        log.warn(PRODUCT_DELETE_LOG + id);
         productService.deleteProduct(id);
         return "redirect:/admin/products";
     }

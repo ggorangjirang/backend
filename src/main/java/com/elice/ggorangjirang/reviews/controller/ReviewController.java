@@ -6,6 +6,7 @@ import com.elice.ggorangjirang.reviews.dto.ReviewResponseMy;
 import com.elice.ggorangjirang.reviews.dto.ReviewResponsePublic;
 import com.elice.ggorangjirang.reviews.service.ReviewService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,9 +18,12 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 
+import static com.elice.ggorangjirang.global.constant.GlobalConstants.*;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api")
+@Slf4j
 public class ReviewController {
 
     private final ReviewService reviewService;
@@ -94,6 +98,7 @@ public class ReviewController {
         }
 
         Page<ReviewableOrderItemResponse> reviewableItems = reviewService.addReview(email, requestJson, imageFile, page, size);
+        log.info(REVIEW_ADD_SUCCESS_LOG, email);
         return ResponseEntity.ok(reviewableItems);
     }
 
@@ -112,6 +117,7 @@ public class ReviewController {
         }
 
         Page<ReviewResponseMy> updatedReview = reviewService.updateReview(email, id, requestJson, imageFile, page, size);
+        log.info(REVIEW_EDIT_SUCCESS_LOG, email, id);
         return ResponseEntity.ok(updatedReview);
     }
 
@@ -126,6 +132,7 @@ public class ReviewController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
+        log.info(REVIEW_DELETE_LOG, email, id);
         Page<ReviewResponseMy> reviews = reviewService.deleteReview(email, id, page, size);
         return ResponseEntity.ok(reviews);
     }

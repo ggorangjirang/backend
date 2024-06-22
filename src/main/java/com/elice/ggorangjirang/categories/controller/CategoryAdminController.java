@@ -38,7 +38,7 @@ public class CategoryAdminController {
     @PostMapping("/add")
     public String createCategory(@ModelAttribute AddCategoryRequest request) {
         Category category = categoryService.createCategory(request);
-        log.info(CATEGORY_ADD_SUCCESS + category.getCategoryName());
+        log.info(CATEGORY_ADD_SUCCESS_LOG + category.getCategoryName());
         return "redirect:/admin/categories";
     }
 
@@ -56,14 +56,14 @@ public class CategoryAdminController {
         Category updatedCategory = categoryService.updateCategory(id, request);
         String categoryNameAfterChanged = updatedCategory.getCategoryName();
 
-        log.info(CATEGORY_EDIT_SUCCESS + categoryNameBeforeChanged + " --> " + categoryNameAfterChanged);
+        log.info(CATEGORY_EDIT_SUCCESS_LOG + categoryNameBeforeChanged + " --> " + categoryNameAfterChanged);
         return "redirect:/admin/categories";
     }
 
     @DeleteMapping("/{id}")
     public String deleteCategory(@PathVariable("id") Long id) {
         Category deletingCategory = categoryService.findCategory(id);
-        log.warn(CATEGORY_DELETE + deletingCategory.getCategoryName());
+        log.warn(CATEGORY_DELETE_LOG + deletingCategory.getCategoryName());
         categoryService.deleteCategory(id);
         return "redirect:/admin/categories";
     }

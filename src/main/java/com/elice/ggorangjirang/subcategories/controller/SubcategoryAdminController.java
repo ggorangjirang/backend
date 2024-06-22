@@ -46,7 +46,7 @@ public class SubcategoryAdminController {
     @PostMapping("/add")
     public String createSubcategory(@ModelAttribute AddSubcategoryRequest request) {
         Subcategory subcategory = subcategoryService.createSubcategory(request);
-        log.info(SUBCATEGORY_ADD_SUCCESS + subcategory.getSubcategoryName());
+        log.info(SUBCATEGORY_ADD_SUCCESS_LOG + subcategory.getSubcategoryName());
         return "redirect:/admin/subcategories";
     }
 
@@ -69,14 +69,14 @@ public class SubcategoryAdminController {
         Subcategory updatedSubcategory = subcategoryService.updateSubcategory(id, request);
         String subcategoryNameAfterChanged = updatedSubcategory.getSubcategoryName();
 
-        log.info(SUBCATEGORY_EDIT_SUCCESS + subcategoryNameBeforeChanged + " --> " + subcategoryNameAfterChanged);
+        log.info(SUBCATEGORY_EDIT_SUCCESS_LOG + subcategoryNameBeforeChanged + " --> " + subcategoryNameAfterChanged);
         return "redirect:/admin/subcategories";
     }
 
     @DeleteMapping("/{id}")
     public String deleteSubcategory(@PathVariable("id") Long id) {
         Subcategory deletingSubcategory = subcategoryService.findSubcategory(id);
-        log.warn(SUBCATEGORY_DELETE + deletingSubcategory.getSubcategoryName());
+        log.warn(SUBCATEGORY_DELETE_LOG + deletingSubcategory.getSubcategoryName());
         subcategoryService.deleteSubcategory(id);
         return "redirect:/admin/subcategories";
     }
