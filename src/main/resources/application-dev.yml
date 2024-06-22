@@ -16,4 +16,6 @@ spring:
         format_sql: true
     hibernate:
       ddl-auto: validate
+    time:
+      zone: Asia/Seoul
 
