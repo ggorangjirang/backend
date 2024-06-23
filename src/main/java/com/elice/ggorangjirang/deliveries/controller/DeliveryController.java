@@ -39,13 +39,8 @@ public class DeliveryController {
     return ResponseEntity.ok(delivery);
   }
 
-  @GetMapping("/admin/orders/{orderId}/deliveries")
-  public ResponseEntity<List<Deliveries>> viewDeliveryByOrderId(@PathVariable("orderId") long orderId) {
-    List<Deliveries> deliveriesList = deliveryService.getDeliveriesByOrderId(orderId);
-    return ResponseEntity.ok(deliveriesList);
-  }
 
-  @PatchMapping("/admin/deliveries/order/{orderId}/status")
+  @PatchMapping("/admin/order/{orderId}/deliveries/status")
   public ResponseEntity<String> updateDeliveriesStatusByOrderId(@PathVariable("orderId") long orderId, @RequestBody DeliveryStatusDto statusDto) {
     List<Deliveries> deliveriesList = deliveryRepository.findByOrderId(orderId);
     if (deliveriesList.isEmpty()) {
