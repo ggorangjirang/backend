@@ -4,21 +4,21 @@ import com.elice.ggorangjirang.deliveries.Mapper.DeliveryMapper;
 import com.elice.ggorangjirang.deliveries.dto.DeliveryDto;
 import com.elice.ggorangjirang.deliveries.entity.Deliveries;
 import com.elice.ggorangjirang.deliveries.repository.DeliveryRepository;
-import com.elice.ggorangjirang.deliveries.service.DeliveryService;
 import com.elice.ggorangjirang.orders.entity.Order;
 import com.elice.ggorangjirang.orders.repository.OrderRepository;
+import com.elice.ggorangjirang.deliveries.service.DeliveryService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class DeliveryServiceTest {
@@ -43,6 +43,7 @@ public class DeliveryServiceTest {
         Order result = deliveryService.getOrderWithItems(1L);
 
         assertThat(result).isEqualTo(order);
+        verify(order).getOrderItems(); // This ensures that order items are accessed (initialized).
     }
 
     @Test
@@ -73,10 +74,25 @@ public class DeliveryServiceTest {
     public void testUpdateDeliveryStatus() {
         Deliveries delivery = new Deliveries();
         when(deliveryRepository.findById(1L)).thenReturn(Optional.of(delivery));
+        when(deliveryRepository.save(any(Deliveries.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
         Deliveries result = deliveryService.updateDeliveryStatus(1L, "DELIVERING");
 
         assertThat(result.getStatus()).isEqualTo("DELIVERING");
+        verify(deliveryRepository).save(delivery);
+    }
+
+    @Test
+    public void testUpdateDeliveryStatusToComplete() {
+        Deliveries delivery = new Deliveries();
+        when(deliveryRepository.findById(1L)).thenReturn(Optional.of(delivery));
+        when(deliveryRepository.save(any(Deliveries.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        Deliveries result = deliveryService.updateDeliveryStatus(1L, "DELIVERY_COMPLETE");
+
+        assertThat(result.getStatus()).isEqualTo("DELIVERY_COMPLETE");
+        assertThat(result.getArrivalDate()).isNotNull();
+        verify(deliveryRepository).save(delivery);
     }
 
     @Test
