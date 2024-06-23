@@ -154,7 +154,7 @@
                     console.log('WebSocket 연결이 준비되지 않았습니다.');
                 }
 
-                fetch(`/admin/deliveries/order/${orderId}/status`, {
+                fetch(`/admin/order/${orderId}/deliveries/status`, {
                     method: 'PATCH',
                     headers: {
                         'Content-Type': 'application/json'
