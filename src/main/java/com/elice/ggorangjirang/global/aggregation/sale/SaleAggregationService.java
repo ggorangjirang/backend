@@ -32,28 +32,33 @@ public class SaleAggregationService {
   }
 
   // 주간 집계 쿼리를 Querydsl 변환하지 못해서 NativeQuery 사용(주간 집계일 때 분기문 처리)
-  public SaleViewResponse getSales(String timeUnit, LocalDateTime start, LocalDateTime end){
+  public SaleViewResponse getSales(String timeUnit, LocalDateTime start, LocalDateTime end) {
 
     ChronoUnit chronoUnit = validateTimeIntervals(timeUnit, start, end);
 
-    if (chronoUnit == ChronoUnit.WEEKS){
+    if (chronoUnit == ChronoUnit.WEEKS) {
       List<Object[]> sales = saleRepository.findSalesByWeek(start, end);
       List<Object[]> refunds = orderRepository.findRefundsByWeek(start, end);
 
       return saleMapper.toResSaleFromObjects(sales, refunds);
     }
 
-    List<Tuple> sales = orderRepository.findSalesByTimeUnit(chronoUnit, start, end);
-    List<Tuple> refunds = saleRepository.findRefundsByTimeUnit(chronoUnit, start, end);
+    List<Tuple> sales = saleRepository.findSalesByTimeUnit(chronoUnit, start, end);
+    List<Tuple> refunds = orderRepository.findRefundsByTimeUnit(chronoUnit, start, end);
 
     return saleMapper.toResSale(sales, refunds);
   }
 
   private ChronoUnit validateTimeIntervals(String timeUnit, LocalDateTime start, LocalDateTime end) {
 
-    if (Objects.isNull(timeUnit) || Objects.isNull(start) || Objects.isNull(end)){
+    if (Objects.isNull(timeUnit) || Objects.isNull(start) || Objects.isNull(end)) {
 
-      throw new InvalidParameterException(ErrorCode.INVALID_PARAMETER);
+      throw new InvalidParameterException(ErrorCode.INVALID_PARAMETER, "parameters can't be null");
+    }
+
+    if (timeUnit.trim().isEmpty()) {
+
+      throw new InvalidParameterException(ErrorCode.INVALID_PARAMETER, "timeUnit can't be empty");
     }
 
     ChronoUnit chronoUnit = timeMapper.get(timeUnit);
