@@ -21,6 +21,7 @@ import java.util.List;
 @AllArgsConstructor
 @EntityListeners(AuditingEntityListener.class)
 @Table(name = "products")
+@Builder
 public class Product {
 
     @Id
