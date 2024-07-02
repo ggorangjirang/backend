@@ -4,7 +4,6 @@ import com.elice.ggorangjirang.global.login.handler.LoginFailHandler;
 import com.elice.ggorangjirang.global.login.handler.LoginSuccessHandler;
 import com.elice.ggorangjirang.global.login.service.LoginService;
 import com.elice.ggorangjirang.global.oauth2.handler.OAuth2LoginFailHandler;
-import com.elice.ggorangjirang.global.oauth2.handler.OAuth2LoginSuccessHandler;
 import com.elice.ggorangjirang.global.oauth2.service.CustomOAuth2UserService;
 import com.elice.ggorangjirang.jwt.filter.JwtAuthenticationProcessingFilter;
 import com.elice.ggorangjirang.jwt.service.JwtService;
@@ -19,6 +18,7 @@ import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -43,9 +43,13 @@ public class SecurityConfig {
   private final PasswordEncoder passwordEncoder;
   private final ObjectMapper objectMapper;
 
-  private final OAuth2LoginSuccessHandler oAuth2LoginSuccessHandler;
-
   private final OAuth2LoginFailHandler oAuth2LoginFailHandler;
+
+  @Bean
+  public WebSecurityCustomizer webSecurityCustomizer() { // security를 적용하지 않을 리소스
+    return web -> web.ignoring()
+        .requestMatchers("/error", "/favicon.ico");
+  }
 
   @Bean
   public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -66,7 +70,6 @@ public class SecurityConfig {
     http.authorizeHttpRequests(
         authorize -> authorize
             .requestMatchers(
-                "/h2-console/**",
                 "/swagger-ui/**",
                 "/swagger-resources/**",
                 "/v3/api-docs/**",
@@ -86,6 +89,7 @@ public class SecurityConfig {
             .permitAll()
             .anyRequest().authenticated());
 
+    // rest api 설정
     http.formLogin(config -> config.disable())
         .httpBasic(config -> config.disable())
         .csrf(config -> config.disable())
@@ -94,7 +98,8 @@ public class SecurityConfig {
 
     http.oauth2Login(
         oauth2Login -> oauth2Login
-            .successHandler(oAuth2LoginSuccessHandler)
+            .loginPage("/login")
+            .defaultSuccessUrl("/oauth2/loginSuccess", true)
             .failureHandler(oAuth2LoginFailHandler)
             .userInfoEndpoint(
                 userInfoEndpoint -> userInfoEndpoint.userService(customOAuth2UserService)));
@@ -106,22 +111,6 @@ public class SecurityConfig {
 
     return http.build();
   }
-
-  // cors() 설정을 별도의 bean으로 관리
-  //  @Bean
-  //  public CorsConfigurationSource configurationSource() {
-  //    CorsConfiguration configuration = new CorsConfiguration();
-  //    configuration.setAllowedOrigins(
-  //        List.of("http://localhost:3000", "https://ggorangjirang.duckdns.org"));
-  //    configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-  //    configuration.setAllowedHeaders(List.of("authorization", "content-type", "x-auth-token"));
-  //    configuration.setExposedHeaders(List.of("x-auth-token"));
-  //    configuration.setAllowCredentials(true); // 쿠키와 인증 정보를 포함한 요청이 가능하도록 설정
-  //
-  //    UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-  //    source.registerCorsConfiguration("/**", configuration);
-  //    return source;
-  //  }
 
   @Bean
   public AuthenticationManager authenticationManager() {
